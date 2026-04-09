@@ -3,7 +3,7 @@ import React from "react";
 const Hero = () => {
   return (
     <div className="">
-      <div className="w-9/12 mx-auto flex gap-8 mt-5">
+      <div className="w-10/12 mx-auto flex gap-8 mt-5">
         <div className="carousel w-full">
           <div id="slide1" className="carousel-item relative w-full">
             <img

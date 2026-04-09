@@ -5,7 +5,7 @@ const Navbar = () => {
   return (
     <div>
       <div className="mt-5 bg-black">
-        <ul className="flex items-center gap-8 py-3 w-9/12 mx-auto">
+        <ul className="flex items-center gap-8 py-3 w-10/12 mx-auto">
           <a href="#">
             <li>Oil & Ghee</li>
           </a>
