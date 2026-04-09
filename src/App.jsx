@@ -1,4 +1,5 @@
 import Header from "./Components/Header/Header"
+import Hero from "./Components/Hero_Section/Hero"
 import Navbar from "./Components/Navbar/Navbar"
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     
     {/* Navbar */}
     <Navbar></Navbar>
+    <Hero></Hero>
   </div>
   )
 }

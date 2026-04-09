@@ -17,7 +17,7 @@ const Navbar = () => {
               </a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block">
+            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-semibold">
                 <a href="">
                   <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
@@ -55,7 +55,7 @@ const Navbar = () => {
               </a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block">
+            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-thin">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Kalmi</a>
@@ -84,7 +84,7 @@ const Navbar = () => {
               </a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute mt-1 left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block">
+            <div className="absolute mt-1 left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-semibold">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Whole Spices</a>
@@ -105,7 +105,7 @@ const Navbar = () => {
               <a href="">Nuts & Seeds</a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block">
+            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-thin">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Nuts</a>
@@ -123,7 +123,7 @@ const Navbar = () => {
               <a href="">Beverage</a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block">
+            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-thin">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Tea</a>
@@ -146,7 +146,7 @@ const Navbar = () => {
               <a href="">Flours & Lentils</a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block">
+            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-semibold">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Flours</a>
