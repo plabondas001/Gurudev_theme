@@ -1,11 +1,5 @@
-import {
-  Heart,
-  List,
-  MapPinned,
-  ShoppingCart,
-  UserRoundKey,
-} from "lucide-react";
-import React from "react";
+import { Heart, List, MapPinned, ShoppingCart, UserRoundKey } from "lucide-react";
+
 
 const Header = () => {
   return (

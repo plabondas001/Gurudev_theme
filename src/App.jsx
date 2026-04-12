@@ -4,6 +4,7 @@ import Header from "./Components/Header/Header"
 import Hero from "./Components/Hero_Section/Hero"
 import Navbar from "./Components/Navbar/Navbar"
 import Selling_json from "./Components/Selling_json/Selling_json"
+import Brands from "./Components/Brands/Brands"
 
 
 const categFetch = async () => {
@@ -31,6 +32,9 @@ function App() {
 
     {/* Selling */}
     <Selling_json></Selling_json>
+
+    {/* Brands */}
+    <Brands></Brands>
   </div>
   )
 }

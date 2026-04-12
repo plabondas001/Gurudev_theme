@@ -4,7 +4,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 const Navbar = () => {
   return (
     <div>
-      <div className="mt-5 bg-black">
+      <div className="mt-5 bg-black text-white">
         <ul className="flex items-center gap-8 py-3 w-10/12 mx-auto">
           <a href="#">
             <li>Oil & Ghee</li>

@@ -3,10 +3,10 @@ import { FiShoppingCart } from "react-icons/fi";
 
 const Selling_product = ({ selling }) => {
   return (
-    <div className="text-black">
-      <div className="p-5 flex flex-col md:flex-row items-center bg-white rounded-xl">
+    <div className="text-black border rounded-xl">
+      <div className="p-5 flex flex-col md:flex-row items-center rounded-xl">
         <img
-          className="w-90 h-88 transition duration-300 ease-in-out hover:scale-105 px-2 cursor-pointer"
+          className="w-90 h-88 p-10 rounded-2xl transition duration-300 ease-in-out hover:scale-105 px-10 cursor-pointer"
           src={selling.img}
           alt=""
         />
