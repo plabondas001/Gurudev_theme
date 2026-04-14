@@ -8,6 +8,7 @@ import Brands from "./Components/Brands/Brands"
 import FetchHoney from "./Components/Honey/FetchHoney/FetchHoney"
 import LoadHoney from "./Components/Honey/LoadHoney/LoadHoney"
 import Honey from "./Components/Honey/ProductHoney/Honey"
+import FetchDates from "./Components/Dates/FetchDates"
 
 
 const categFetch = async () => {
@@ -41,6 +42,9 @@ function App() {
 
     {/* Honey */}
     <FetchHoney></FetchHoney>
+
+    {/* Dates */}
+    <FetchDates></FetchDates>
   </div>
   )
 }

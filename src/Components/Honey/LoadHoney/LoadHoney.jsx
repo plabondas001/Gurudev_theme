@@ -1,6 +1,5 @@
 import React, { use } from 'react';
 import Honey from '../ProductHoney/Honey';
-import { Key } from 'lucide-react';
 
 const LoadHoney = ({promiseHoney}) => {
     const data = use(promiseHoney)
