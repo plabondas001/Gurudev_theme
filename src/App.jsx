@@ -11,6 +11,7 @@ import Honey from "./Components/Honey/ProductHoney/Honey"
 import FetchDates from "./Components/Dates/FetchDates"
 import Img from "./Components/Img_Section/Img"
 import FetchCooking from "./Components/Cooking/FetchCooking"
+import Fetch_You from "./Components/For_You/Fetch_You"
 
 
 const categFetch = async () => {
@@ -52,6 +53,9 @@ function App() {
 
     {/* Cooking */}
     <FetchCooking> </FetchCooking>
+
+    {/* For you */}
+    <Fetch_You></Fetch_You>
   </div>
   )
 }
