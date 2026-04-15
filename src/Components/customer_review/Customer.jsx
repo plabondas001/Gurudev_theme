@@ -2,7 +2,8 @@ import React from "react";
 
 const Customer = () => {
   return (
-    <div className="w-10/12 mx-auto mt-30">
+    <div className="w-10/12 mx-auto mt-22">
+        <h1 className="text-center mb-8 font-bold text-2xl">Customer Review</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
