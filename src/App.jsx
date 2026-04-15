@@ -12,6 +12,7 @@ import FetchDates from "./Components/Dates/FetchDates"
 import Img from "./Components/Img_Section/Img"
 import FetchCooking from "./Components/Cooking/FetchCooking"
 import Fetch_You from "./Components/For_You/Fetch_You"
+import FetchOr from "./Components/Organic/FetchOr"
 
 
 const categFetch = async () => {
@@ -56,6 +57,9 @@ function App() {
 
     {/* For you */}
     <Fetch_You></Fetch_You>
+
+    {/* Organic */}
+    <FetchOr></FetchOr>
   </div>
   )
 }
