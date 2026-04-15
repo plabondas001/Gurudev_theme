@@ -14,6 +14,7 @@ import FetchCooking from "./Components/Cooking/FetchCooking"
 import Fetch_You from "./Components/For_You/Fetch_You"
 import FetchOr from "./Components/Organic/FetchOr"
 import Customer from "./Components/customer_review/Customer"
+import Footer from "./Components/Footer/Footer"
 
 
 const categFetch = async () => {
@@ -64,6 +65,9 @@ function App() {
 
     {/* Customer */}
     <Customer></Customer>
+
+    {/* Footer */}
+    <Footer></Footer>
   </div>
   )
 }

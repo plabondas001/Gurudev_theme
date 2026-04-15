@@ -7,7 +7,7 @@ const LoadDates = ({ promise }) => {
   return (
     <div className="w-10/12 mx-auto mt-30">
       <div className="flex items-center justify-between border-b mb-5 border-gray-300">
-        <h1 className="font-bold text-2xl">All Natural Honey</h1>
+        <h1 className="font-bold text-2xl">Premium Dates</h1>
         <button className="text-orange-400 font-bold text-sm underline underline-offset-4 hover:text-black cursor-pointer">
           VIEW ALL ITEMS
         </button>

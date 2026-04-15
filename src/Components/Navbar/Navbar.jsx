@@ -12,9 +12,9 @@ const Navbar = () => {
           {/* Honey */}
           <div className="relative group">
             <div className="flex items-center">
-              <a href="#">
-                <li>Honey</li>
-              </a>
+              <li>
+                <a href="#">Honey</a>
+              </li>
               <IoMdArrowDropdown />
             </div>
             <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
@@ -56,7 +56,7 @@ const Navbar = () => {
               <IoMdArrowDropdown />
             </div>
             <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
-              <ul className="py-1 text-black font-thin">
+              <ul className="py-1 text-black font-semibold">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Kalmi</a>
                 </li>
@@ -84,7 +84,7 @@ const Navbar = () => {
               </a>
               <IoMdArrowDropdown />
             </div>
-            <div className="absolute mt-1 left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
+            <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
               <ul className="py-1 text-black font-semibold">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Whole Spices</a>
@@ -106,7 +106,7 @@ const Navbar = () => {
               <IoMdArrowDropdown />
             </div>
             <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
-              <ul className="py-1 text-black font-thin">
+              <ul className="py-1 text-black font-semibold">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Nuts</a>
                 </li>
@@ -124,7 +124,7 @@ const Navbar = () => {
               <IoMdArrowDropdown />
             </div>
             <div className="absolute left-0 w-60 bg-white shadow-lg rounded hidden group-hover:block z-50">
-              <ul className="py-1 text-black font-thin">
+              <ul className="py-1 text-black font-semibold">
                 <li className="hover:bg-orange-400 px-2 mb-1 hover:text-white rounded-md">
                   <a href="">Tea</a>
                 </li>

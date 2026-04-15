@@ -16,7 +16,7 @@ const Dates = ({ dates }) => {
         <p className="text-gray-400 line-through">{old_price}</p>
       </div>
       <div className="">
-        <button className="flex border border-orange-400 text-orange-400 items-center gap-2 cursor-pointer w-full px-3 py-2 hover:text-white justify-center mt-3 rounded-md hover:bg-orange-400 transition-all duration-450 delay-50">
+        <button className="flex border border-orange-400 text-orange-400 items-center gap-2 cursor-pointer w-full px-3 py-2 hover:text-white justify-center rounded-md hover:bg-orange-400 transition-all duration-450 delay-50 mb-auto">
           <FiShoppingCart />
           Add To Cart
         </button>
@@ -26,3 +26,4 @@ const Dates = ({ dates }) => {
 };
 
 export default Dates;
+
