@@ -6,12 +6,12 @@ const fetchOrg = async () => {
   return res.json();
 };
 
-const FetchOr = () => {
+const FetchOr = ({ handleCart }) => {
   const promise = fetchOrg();
   return (
     <div>
       <Suspense>
-        <LoadOr promise={promise}></LoadOr>
+        <LoadOr promise={promise} handleCart={handleCart}></LoadOr>
       </Suspense>
     </div>
   );

@@ -1,9 +1,10 @@
-import React, { use } from 'react';
+import React, { use} from 'react';
 import Honey from '../ProductHoney/Honey';
+import Header from '../../Header/Header';
 
-const LoadHoney = ({promiseHoney}) => {
+const LoadHoney = ({promiseHoney,handleCart}) => {
     const data = use(promiseHoney)
-    
+
     return (
         <div className='w-10/12 mx-auto'>
             <div className='flex items-center justify-between border-b mb-5'>
@@ -12,7 +13,7 @@ const LoadHoney = ({promiseHoney}) => {
             </div>
                 <div className='grid grid-cols-1 md:grid-cols-5 gap-5'>
                     {
-                        data.map((allHoney,i) => <Honey key={i} honey={allHoney}></Honey>)
+                        data.map((allHoney,i) => <Honey handleCart={handleCart} key={i} honey={allHoney}></Honey>)
                     }
                 </div>
         </div>

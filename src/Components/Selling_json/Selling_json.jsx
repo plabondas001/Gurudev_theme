@@ -6,12 +6,12 @@ const sellingFetch = async () => {
   return res.json();
 };
 
-const Selling_json = () => {
+const Selling_json = ({ handleCart }) => {
   const promise = sellingFetch();
   return (
     <div>
       <Suspense>
-        <SellingData promise={promise}></SellingData>
+        <SellingData promise={promise} handleCart={handleCart}></SellingData>
       </Suspense>
     </div>
   );

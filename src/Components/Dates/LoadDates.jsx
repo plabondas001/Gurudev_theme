@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import Dates from "./Dates";
 
-const LoadDates = ({ promise }) => {
+const LoadDates = ({ promise, handleCart }) => {
   const data = use(promise);
 
   return (
@@ -14,7 +14,7 @@ const LoadDates = ({ promise }) => {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
         {data.map((dates, i) => (
-          <Dates key={i} dates={dates}></Dates>
+          <Dates key={i} dates={dates} handleCart={handleCart}></Dates>
         ))}
       </div>
     </div>

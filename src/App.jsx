@@ -1,4 +1,6 @@
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import CategoriesData from "./Components/CategoriesData/CategoriesData"
 import Header from "./Components/Header/Header"
 import Hero from "./Components/Hero_Section/Hero"
@@ -25,10 +27,30 @@ const categFetch = async () => {
 function App() {
   const promise = categFetch()
 
+    const [addCart,setAddCart] = useState([])
+
+    const handleCart = (e) =>{
+        const newitem = [...addCart,e]
+        setAddCart(newitem)
+      toast.success("Add To Cart")
+
+    }
+    
+   const removeItem = (id) => {
+    const remove = addCart.filter(p => p.id !== id)
+    setAddCart(remove)
+   toast.info("Remove item")
+   }
+
+    const handleBuyNow = (item) => {
+    toast("Buy Now",item)
+    }
+
+
   return (
   <div>
     {/* Header */}
-    <Header></Header>
+    <Header cartItems={addCart} removeItem={removeItem} buyNow={handleBuyNow}></Header>
 
     
     {/* Navbar */}
@@ -41,33 +63,50 @@ function App() {
     </Suspense>
 
     {/* Selling */}
-    <Selling_json></Selling_json>
+    <Selling_json handleCart={handleCart}></Selling_json>
 
     {/* Brands */}
     <Brands></Brands>
 
     {/* Honey */}
-    <FetchHoney></FetchHoney>
+    <FetchHoney handleCart={handleCart}></FetchHoney>
 
     {/* Dates */}
-    <FetchDates></FetchDates>
+    <FetchDates handleCart={handleCart}></FetchDates>
 
     <Img></Img>
 
     {/* Cooking */}
-    <FetchCooking> </FetchCooking>
+    <FetchCooking handleCart={handleCart}> </FetchCooking>
 
     {/* For you */}
-    <Fetch_You></Fetch_You>
+    <Fetch_You handleCart={handleCart}></Fetch_You>
 
     {/* Organic */}
-    <FetchOr></FetchOr>
+    <FetchOr handleCart={handleCart}></FetchOr>
 
     {/* Customer */}
     <Customer></Customer>
 
     {/* Footer */}
     <Footer></Footer>
+
+
+
+
+    {/* Toastfy */}
+<ToastContainer
+position="top-right"
+autoClose={3000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick={false}
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+/>
   </div>
   )
 }

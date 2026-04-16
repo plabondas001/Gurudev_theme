@@ -1,10 +1,19 @@
-import { Heart, List, MapPinned, ShoppingCart, UserRoundKey } from "lucide-react";
+import {
+  Heart,
+  List,
+  MapPinned,
+  ShoppingCart,
+  UserRoundKey,
+} from "lucide-react";
+import { useState } from "react";
+import { RiCloseLargeLine } from "react-icons/ri";
+import { CiCircleRemove } from "react-icons/ci";
 
-
-const Header = () => {
+const Header = ({ cartItems = [], removeItem, buyNow }) => {
+  const [cartOpen, setCartOpen] = useState(false);
   return (
     <div className="w-10/12 mx-auto">
-      <div className="mt-5 flex items-center justify-between">
+      <div className="flex items-center justify-between mt-8">
         <div>
           <a href="#">
             <img className="w-31" src="/public/Img/logo.png" alt="" />
@@ -31,8 +40,18 @@ const Header = () => {
             <p>Wishlist</p>
           </div>
           <div className="flex flex-col items-center">
-            <ShoppingCart />
-            <p>Cart</p>
+            <button
+              onClick={() => setCartOpen(true)}
+              className="cursor-pointer"
+            >
+              <div className="flex items-center relative">
+                <ShoppingCart />
+                <p className="text-white absolute left-4 bottom-2 bg-orange-400 rounded-full min-w-5 text-center px-1">
+                  {cartItems.length}
+                </p>
+              </div>
+              <p>Cart</p>
+            </button>
           </div>
           <div className="relative group flex flex-col items-center">
             <List />
@@ -74,9 +93,75 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Cart Open */}
+      <div
+        className={`fixed top-0 right-0 h-full w-90 bg-white shadow-lg transform transition-transform duration-300 ${
+          cartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-5 flex justify-between items-center border-b">
+          <h2 className="text-xl font-bold">Your Cart</h2>
+          <button
+            onClick={() => setCartOpen(false)}
+            className="text-orange-400 font-bold"
+          >
+            <RiCloseLargeLine className="cursor-pointer" size={25} />
+          </button>
+        </div>
+
+        <div className="p-5">
+          {cartItems.length === 0 ? (
+            <p>No items in cart</p>
+          ) : (
+            cartItems.map((item, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-3 border-b py-2"
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    src={item.img}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div>
+                    <h3 className="font-bold">{item.name}</h3>
+                    <p className="text-orange-500">{item.price}</p>
+                    {item.old_price && (
+                      <p className="line-through text-gray-500">
+                        {item.old_price}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 items-end">
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="font-bold cursor-pointer text-orange-400 hover:text-red-700"
+                    aria-label="Remove item"
+                  >
+                    <CiCircleRemove className="mb-5" size={25} />
+                  </button>
+                  <button
+                    onClick={() =>
+                      buyNow
+                        ? buyNow(item)
+                        : window.alert(`Buy now: ${item.name}`)
+                    }
+                    className="text-green-600 font-bold cursor-pointer hover:text-green-800 whitespace-nowrap"
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Header;
-

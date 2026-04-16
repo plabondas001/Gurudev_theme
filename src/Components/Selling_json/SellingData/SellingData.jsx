@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import Selling_product from "./Selling_product";
 
-const SellingData = ({ promise }) => {
+const SellingData = ({ promise, handleCart }) => {
   const sellingdata = use(promise);
 
   return (
@@ -11,7 +11,7 @@ const SellingData = ({ promise }) => {
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10 mb-5">
         {sellingdata.map((selling, i) => (
-          <Selling_product key={i} selling={selling}></Selling_product>
+          <Selling_product key={i} selling={selling} handleCart={handleCart}></Selling_product>
         ))}
       </div>
     </div>

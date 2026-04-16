@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import Organic from "./Organic";
 
-const LoadOr = ({ promise }) => {
+const LoadOr = ({ promise, handleCart }) => {
   const data = use(promise);
   console.log(data);
 
@@ -15,7 +15,7 @@ const LoadOr = ({ promise }) => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
         {data.map((org, i) => (
-          <Organic key={i} org={org}></Organic>
+          <Organic key={i} org={org} handleCart={handleCart}></Organic>
         ))}
       </div>
     </div>

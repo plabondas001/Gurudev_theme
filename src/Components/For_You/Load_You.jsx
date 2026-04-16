@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import For_You from "./For_You";
 
-const Load_You = ({ promise }) => {
+const Load_You = ({ promise, handleCart }) => {
   const data = use(promise);
   return (
     <div className="w-10/12 mx-auto mt-30">
@@ -14,7 +14,7 @@ const Load_You = ({ promise }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-5 mt-5">
         {data.map((you, i) => (
-          <For_You key={i} you={you}></For_You>
+          <For_You key={i} you={you} handleCart={handleCart}></For_You>
         ))}
       </div>
     </div>

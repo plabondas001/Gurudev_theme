@@ -1,7 +1,7 @@
 import React from "react";
 import { FiShoppingCart } from "react-icons/fi";
 
-const Selling_product = ({ selling }) => {
+const Selling_product = ({ selling, handleCart }) => {
   return (
     <div className="text-black border rounded-xl">
       <div className="p-5 flex flex-col md:flex-row items-center rounded-xl">
@@ -22,11 +22,11 @@ const Selling_product = ({ selling }) => {
             Save ৳300
           </p>
           <div className="mt-10 flex gap-5">
-            <button className="flex items-center gap-3 border border-orange-400 px-3 py-2 rounded-md text-orange-400 font-semibold cursor-pointer hover:bg-orange-400 hover:text-white transition-all duration-450 delay-50">
+            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(selling); }} className="flex items-center gap-3 border border-orange-400 px-3 py-2 rounded-md text-orange-400 font-semibold cursor-pointer hover:bg-orange-400 hover:text-white transition-all duration-450 delay-50">
               <FiShoppingCart />
               Add To Cart
             </button>
-            <button className="flex items-center gap-3 px-3 font-semibold py-1 bg-orange-400 text-white rounded-md cursor-pointer hover:bg-black transition-all duration-450 delay-50">
+            <button type="button" className="flex items-center gap-3 px-3 font-semibold py-1 bg-orange-400 text-white rounded-md cursor-pointer hover:bg-black transition-all duration-450 delay-50">
               <FiShoppingCart />
               Buy Now
             </button>

@@ -6,13 +6,13 @@ const fetchDates = async () => {
     return res.json()
 }
 
-const FetchDates = () => {
+const FetchDates = ({ handleCart }) => {
 
     const promise = fetchDates()
     return (
         <div>
             <Suspense>
-                <LoadDates promise={promise}></LoadDates>
+                <LoadDates promise={promise} handleCart={handleCart}></LoadDates>
             </Suspense>
         </div>
     );

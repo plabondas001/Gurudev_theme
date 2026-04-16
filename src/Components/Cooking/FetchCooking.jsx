@@ -5,13 +5,13 @@ const fetchCook = async () => {
     const res = await fetch("/public/Json/Cooking/cooking.json")
     return res.json()
 }
-const FetchCooking = () => {
+const FetchCooking = ({ handleCart }) => {
 
     const promise = fetchCook()
     return (
         <div>
             <Suspense>
-                <LoadCooking promise={promise}></LoadCooking>
+                <LoadCooking promise={promise} handleCart={handleCart}></LoadCooking>
             </Suspense>
         </div>
     );

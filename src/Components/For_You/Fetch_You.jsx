@@ -7,12 +7,12 @@ const fetchYou = async () => {
   return res.json();
 };
 
-const Fetch_You = () => {
+const Fetch_You = ({ handleCart }) => {
   const promise = fetchYou();
   return (
     <div>
       <Suspense>
-        <Load_You promise={promise}></Load_You>
+        <Load_You promise={promise} handleCart={handleCart}></Load_You>
       </Suspense>
     </div>
   );

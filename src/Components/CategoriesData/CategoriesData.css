@@ -1,0 +1,41 @@
+ /* Horizontal auto-scroll (marquee) for categories */
+.categories-marquee {
+  overflow: hidden;
+  width: 100%; /* container width fix */
+}
+
+.categories-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  will-change: transform;
+  animation: marquee 30s linear infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+.categories-track:hover {
+  animation-play-state: paused; /* pause on hover */
+}
+
+.categories-track__inner {
+  display: flex;
+  gap: 2rem; /* spacing between items */
+  align-items: center;
+  padding: 0 1rem; /* extra breathing space */
+}
+
+.categories-item {
+  flex: 0 0 auto; /* prevent squishing */
+  min-width: 120px; /* each item fixed width */
+  text-align: center;
+  white-space: nowrap; /* prevent text breaking */
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-30%, 0, 0);
+  }
+}

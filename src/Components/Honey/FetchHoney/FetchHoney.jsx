@@ -6,12 +6,12 @@ const fetchHoney = async () => {
     return res.json()
 }
 
-const FetchHoney = () => {
+const FetchHoney = ({handleCart}) => {
     const promiseHoney = fetchHoney()
     return (
         <div>
             <Suspense fallback={"Loading..."}>
-                <LoadHoney promiseHoney={promiseHoney}></LoadHoney>
+                <LoadHoney handleCart={handleCart} promiseHoney={promiseHoney}></LoadHoney>
             </Suspense>
         </div>
     );

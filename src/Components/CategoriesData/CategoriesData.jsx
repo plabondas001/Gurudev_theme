@@ -1,5 +1,6 @@
 import React, { use } from "react";
 import CatData from "./CatData";
+import "./CategoriesData.css";
 
 const CategoriesData = ({ promise }) => {
   const cateData = use(promise);
@@ -10,10 +11,23 @@ const CategoriesData = ({ promise }) => {
         <h1 className="text-center font-semibold text-2xl">
           Featured Categories
         </h1>
-        <div className="grid grid-cols-10 gap-8 mt-5 text-center">
-          {cateData.map((catdata, i) => (
-            <CatData key={i} catdata={catdata}></CatData>
-          ))}
+        <div className="mt-5 text-center categories-marquee">
+          <div className="categories-track">
+            <div className="categories-track__inner">
+              {cateData.map((catdata, i) => (
+                <div key={i} className="categories-item">
+                  <CatData catdata={catdata}></CatData>
+                </div>
+              ))}
+            </div>
+            <div aria-hidden className="categories-track__inner">
+              {cateData.map((catdata, i) => (
+                <div key={`dup-${i}`} className="categories-item">
+                  <CatData catdata={catdata}></CatData>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
