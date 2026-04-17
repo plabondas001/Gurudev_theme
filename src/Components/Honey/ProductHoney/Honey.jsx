@@ -6,22 +6,22 @@ const Honey = ({ honey,handleCart }) => {
   const { img, name, price, old_price } = honey;
 
   return (
-    <div className="border shadow-sm p-5 rounded-xl mb-5 flex flex-col h-full">
+    <div className="border shadow-sm p-3 md:p-5 rounded-xl mb-5 flex flex-col h-full">
       <div className="flex justify-center">
         <img
-          className="w-75 p-5 transition duration-300 ease-in-out hover:scale-105"
+          className="w-40 md:w-60 lg:w-75 p-2 md:p-5 transition duration-300 ease-in-out hover:scale-105 object-contain"
           src={img}
-          alt=""
+          alt={name}
         />
       </div>
-      <h1 className="font-bold text-xl">{name}</h1>
-      <div className="flex items-center gap-3 ">
-        <p className="font-semibold text-orange-400">{price}</p>
-        <p className="line-through text-gray-400">{old_price}</p>
+      <h1 className="font-semibold text-base md:text-lg lg:text-xl">{name}</h1>
+      <div className="flex items-center gap-2 md:gap-3 mt-2">
+        <p className="font-bold text-orange-400 text-sm md:text-base">{price}</p>
+        <p className="line-through text-gray-400 text-xs md:text-sm">{old_price}</p>
       </div>
-      <div className="mt-auto">
-        <button type="button" onClick={(e)=>{e.preventDefault(); e.stopPropagation(); handleCart && handleCart(honey)}} className="flex items-center border w-full justify-center py-2 rounded-md gap-2 border-orange-400 text-orange-400 cursor-pointer hover:bg-orange-400 transition-all duration-500 hover:scale-105 hover:text-white">
-          <FiShoppingCart />
+      <div className="mt-auto pt-3">
+        <button type="button" onClick={(e)=>{e.preventDefault(); e.stopPropagation(); handleCart && handleCart(honey)}} className="flex items-center border w-full justify-center py-2 rounded-md gap-2 border-orange-400 text-orange-400 cursor-pointer hover:bg-orange-400 transition-all duration-500 hover:scale-105 hover:text-white text-sm">
+          <FiShoppingCart size={16} />
           Add To Cart
         </button>
       </div>

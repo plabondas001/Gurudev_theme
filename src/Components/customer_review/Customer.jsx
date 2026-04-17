@@ -2,23 +2,23 @@ import React from "react";
 
 const Customer = () => {
   return (
-    <div className="w-10/12 mx-auto mt-22">
-        <h1 className="text-center mb-8 font-bold text-2xl">Customer Review</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="border rounded-xl border-gray-400 p-3">
-          <h1>
+    <div className="w-11/12 md:w-10/12 mx-auto mt-10 md:mt-22">
+        <h1 className="text-center mb-6 md:mb-8 font-bold text-xl md:text-2xl">Customer Review</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
+        <div className="border rounded-lg md:rounded-xl border-gray-400 p-3 md:p-4 flex flex-col h-full">
+          <h1 className="text-xs md:text-sm leading-5 md:leading-6 flex-1">
             Thanks Ghorerbazar for free Honeyraj. Of course, I got it for being
             a regular customer.
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 mt-3 md:mt-5">
             <img
-              className="w-15 h-15 mt-5 rounded-full"
+              className="w-12 md:w-15 h-12 md:h-15 rounded-full object-cover"
               src="/public/Img/customers/download.jpg"
-              alt=""
+              alt="Jeni"
             />
             <div>
-              <h1 className="font-semibold mt-4">Jeni</h1>
-              <p className="text-sm">Housewife</p>
+              <h1 className="font-semibold text-sm md:text-base">Jeni</h1>
+              <p className="text-xs md:text-sm text-gray-600">Housewife</p>
             </div>
           </div>
         </div>
