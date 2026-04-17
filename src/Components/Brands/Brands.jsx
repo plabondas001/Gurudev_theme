@@ -13,7 +13,7 @@ const Brands = () => {
     <div className="w-11/12 md:w-10/12 mx-auto">
       <div className="flex items-center justify-between border-b-1 border-b-gray-300 py-3 md:py-4">
         <h1 className="font-bold text-xl md:text-2xl">Our Brands</h1>
-        <button className="text-orange-400 font-semibold text-xs md:text-sm cursor-pointer underline hover:text-black underline-offset-4 transition">
+        <button className="text-[#fc6313] font-semibold text-xs md:text-sm cursor-pointer underline hover:text-black underline-offset-4 transition">
           SEE ALL
         </button>
       </div>

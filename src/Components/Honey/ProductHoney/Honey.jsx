@@ -16,11 +16,11 @@ const Honey = ({ honey,handleCart }) => {
       </div>
       <h1 className="font-semibold text-base md:text-lg lg:text-xl">{name}</h1>
       <div className="flex items-center gap-2 md:gap-3 mt-2">
-        <p className="font-bold text-orange-400 text-sm md:text-base">{price}</p>
+        <p className="font-bold text-[#fc6313] text-sm md:text-base">{price}</p>
         <p className="line-through text-gray-400 text-xs md:text-sm">{old_price}</p>
       </div>
       <div className="mt-auto pt-3">
-        <button type="button" onClick={(e)=>{e.preventDefault(); e.stopPropagation(); handleCart && handleCart(honey)}} className="flex items-center border w-full justify-center py-2 rounded-md gap-2 border-orange-400 text-orange-400 cursor-pointer hover:bg-orange-400 transition-all duration-500 hover:scale-105 hover:text-white text-sm">
+        <button type="button" onClick={(e)=>{e.preventDefault(); e.stopPropagation(); handleCart && handleCart(honey)}} className="flex items-center border w-full justify-center py-2 rounded-md gap-2 border-[#fc6313] text-[#fc6313] cursor-pointer hover:bg-[#fc6313] transition-all duration-500 hover:scale-105 hover:text-white text-sm">
           <FiShoppingCart size={16} />
           Add To Cart
         </button>

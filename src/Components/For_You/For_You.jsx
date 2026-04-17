@@ -13,11 +13,11 @@ const For_You = ({ you, handleCart }) => {
       </div>
       <h1 className="font-semibold text-sm md:text-base mt-2">{name}</h1>
       <div className="flex items-center gap-2 mt-1">
-        <p className="text-orange-400 font-bold text-sm md:text-base">{price}</p>
+        <p className="text-[#fc6313] font-bold text-sm md:text-base">{price}</p>
         <p className="text-gray-400 line-through text-xs md:text-sm">{old_price}</p>
       </div>
       <div className="mt-auto pt-3">
-        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(you); }} className="font-bold border w-full py-2 rounded-md border-orange-400 text-orange-400 hover:text-white hover:bg-orange-400 cursor-pointer transition duration-500 hover:scale-105 text-sm">
+        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(you); }} className="font-bold border w-full py-2 rounded-md border-[#fc6313] text-[#fc6313] hover:text-white hover:bg-[#fc6313] cursor-pointer transition duration-500 hover:scale-105 text-sm">
           Add To Cart
         </button>
       </div>

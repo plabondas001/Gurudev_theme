@@ -9,7 +9,7 @@ const LoadOr = ({ promise, handleCart }) => {
     <div className="w-11/12 md:w-10/12 mx-auto mt-10 md:mt-20">
       <div className="flex items-center justify-between border-b mb-4 md:mb-5 py-3">
         <h1 className="font-bold text-lg md:text-2xl">Organic Certified</h1>
-        <button className="font-semibold text-xs md:text-sm cursor-pointer text-orange-400 hover:text-black underline underline-offset-4 transition">
+        <button className="font-semibold text-xs md:text-sm cursor-pointer text-[#fc6313] hover:text-black underline underline-offset-4 transition">
           VIEW ALL
         </button>
       </div>

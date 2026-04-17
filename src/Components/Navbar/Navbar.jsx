@@ -107,7 +107,7 @@ const Navbar = () => {
             {navItems.map((item, idx) =>
               item.submenu ? (
                 <div key={idx} className="relative group">
-                  <div className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:text-orange-400 transition">
+                  <div className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:text-[#fc6313] transition">
                     <a href={item.href}>
                       <span className="text-sm lg:text-base">{item.label}</span>
                     </a>
@@ -118,7 +118,7 @@ const Navbar = () => {
                       {item.submenu.map((subitem, subidx) => (
                         <li
                           key={subidx}
-                          className="hover:bg-orange-400 px-3 py-2 hover:text-white transition text-sm"
+                          className="hover:bg-[#fc6313] px-3 py-2 hover:text-white transition text-sm"
                         >
                           <a href={subitem.href}>{subitem.label}</a>
                         </li>
@@ -127,7 +127,7 @@ const Navbar = () => {
                   </div>
                 </div>
               ) : (
-                <li key={idx} className="px-2 py-1 hover:text-orange-400 transition text-sm lg:text-base">
+                <li key={idx} className="px-2 py-1 hover:text-[#fc6313] transition text-sm lg:text-base">
                   <a href={item.href}>{item.label}</a>
                 </li>
               )
@@ -145,7 +145,7 @@ const Navbar = () => {
                     <div>
                       <button
                         onClick={() => toggleMobileSubmenu(idx)}
-                        className="flex items-center justify-between w-full text-white hover:text-orange-400 transition text-sm"
+                        className="flex items-center justify-between w-full text-white hover:text-[#fc6313] transition text-sm"
                       >
                         <span>{item.label}</span>
                         <IoMdArrowDropdown
@@ -161,7 +161,7 @@ const Navbar = () => {
                             <li key={subidx}>
                               <a
                                 href={subitem.href}
-                                className="text-gray-300 hover:text-orange-400 transition text-xs"
+                                className="text-gray-300 hover:text-[#fc6313] transition text-xs"
                               >
                                 {subitem.label}
                               </a>
@@ -173,7 +173,7 @@ const Navbar = () => {
                   ) : (
                     <a
                       href={item.href}
-                      className="text-white hover:text-orange-400 transition text-sm"
+                      className="text-white hover:text-[#fc6313] transition text-sm"
                     >
                       {item.label}
                     </a>

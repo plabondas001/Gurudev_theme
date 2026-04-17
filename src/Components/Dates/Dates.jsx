@@ -12,11 +12,11 @@ const Dates = ({ dates, handleCart }) => {
       />
       <h1 className="font-semibold text-sm md:text-base mt-2">{name}</h1>
       <div className="flex items-center gap-2 mt-1">
-        <p className="font-bold text-orange-400 text-sm md:text-base">{price}</p>
+        <p className="font-bold text-[#fc6313] text-sm md:text-base">{price}</p>
         <p className="text-gray-400 line-through text-xs md:text-sm">{old_price}</p>
       </div>
       <div className="mt-auto pt-3">
-        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(dates); }} className="flex border border-orange-400 text-orange-400 items-center gap-2 cursor-pointer w-full px-2 md:px-3 py-2 hover:text-white justify-center rounded-md hover:bg-orange-400 transition-all duration-450 delay-50 text-sm">
+        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(dates); }} className="flex border border-[#fc6313] text-[#fc6313] items-center gap-2 cursor-pointer w-full px-2 md:px-3 py-2 hover:text-white justify-center rounded-md hover:bg-[#fc6313] transition-all duration-450 delay-50 text-sm">
           <FiShoppingCart size={14} />
           Add To Cart
         </button>

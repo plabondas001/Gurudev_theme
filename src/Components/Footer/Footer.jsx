@@ -10,7 +10,7 @@ import { MdEmail } from "react-icons/md";
 
 const Footer = () => {
   return (
-    <div className="mt-10 md:mt-20 text-white bg-orange-400">
+    <div className="mt-10 md:mt-20 text-white bg-[#fc6313]">
       <div className="w-11/12 md:w-10/12 mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 py-8">
           {/* Brand Section */}

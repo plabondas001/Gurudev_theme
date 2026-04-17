@@ -15,13 +15,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <a
                 href="#slide4"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </a>
               <a
                 href="#slide2"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </a>
@@ -36,13 +36,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <a
                 href="#slide1"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </a>
               <a
                 href="#slide3"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </a>
@@ -57,13 +57,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <a
                 href="#slide2"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </a>
               <a
                 href="#slide4"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </a>
@@ -78,13 +78,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <a
                 href="#slide3"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </a>
               <a
                 href="#slide1"
-                className="btn btn-sm sm:btn-md hover:bg-amber-400 border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-[#fc6313] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </a>

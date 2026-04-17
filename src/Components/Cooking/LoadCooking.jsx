@@ -8,7 +8,7 @@ const LoadCooking = ({ promise, handleCart }) => {
         <div className='w-11/12 md:w-10/12 mx-auto mt-6 md:mt-10'>
             <div className='flex items-center justify-between border-b mb-3 md:mb-4 py-3'>
                 <h1 className='font-bold text-lg md:text-2xl'>Cooking Essentials</h1>
-                <button className='flex items-center gap-1 md:gap-2 font-bold text-xs md:text-sm text-orange-400 cursor-pointer underline underline-offset-4 hover:text-black transition'>VIEW ALL
+                <button className='flex items-center gap-1 md:gap-2 font-bold text-xs md:text-sm text-[#fc6313] cursor-pointer underline underline-offset-4 hover:text-black transition'>VIEW ALL
                     <ArrowRight size={16} className='hidden sm:block' />
                 </button>
             </div>

@@ -13,7 +13,7 @@ const Selling_product = ({ selling, handleCart }) => {
         <div className="w-full md:w-auto">
           <h1 className="font-semibold text-base md:text-xl lg:text-2xl">{selling.name}</h1>
           <div className="flex items-center gap-3 md:gap-5 mt-2">
-            <p className="text-base md:text-lg lg:text-xl text-orange-400 font-bold">{selling.price}</p>
+            <p className="text-base md:text-lg lg:text-xl text-[#fc6313] font-bold">{selling.price}</p>
             <p className="line-through text-base md:text-lg lg:text-xl text-gray-400">
               {selling.main_p}
             </p>
@@ -22,11 +22,11 @@ const Selling_product = ({ selling, handleCart }) => {
             Save ৳300
           </p>
           <div className="mt-4 md:mt-10 flex flex-col sm:flex-row gap-2 md:gap-5 w-full">
-            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(selling); }} className="flex items-center justify-center gap-2 md:gap-3 border border-orange-400 px-2 md:px-3 py-2 rounded-md text-orange-400 font-semibold cursor-pointer hover:bg-orange-400 hover:text-white transition-all duration-450 delay-50 text-sm flex-1 md:flex-none">
+            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(selling); }} className="flex items-center justify-center gap-2 md:gap-3 border border-[#fc6313] px-2 md:px-3 py-2 rounded-md text-[#fc6313] font-semibold cursor-pointer hover:bg-[#fc6313] hover:text-white transition-all duration-450 delay-50 text-sm flex-1 md:flex-none">
               <FiShoppingCart size={16} />
               <span>Add To Cart</span>
             </button>
-            <button type="button" className="flex items-center justify-center gap-2 md:gap-3 px-2 md:px-3 font-semibold py-2 bg-orange-400 text-white rounded-md cursor-pointer hover:bg-black transition-all duration-450 delay-50 text-sm flex-1 md:flex-none">
+            <button type="button" className="flex items-center justify-center gap-2 md:gap-3 px-2 md:px-3 font-semibold py-2 bg-[#fc6313] text-white rounded-md cursor-pointer hover:bg-black transition-all duration-450 delay-50 text-sm flex-1 md:flex-none">
               <FiShoppingCart size={16} />
               <span>Buy Now</span>
             </button>
