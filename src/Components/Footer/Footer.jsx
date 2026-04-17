@@ -18,12 +18,12 @@ const Footer = () => {
             <div className="py-4 md:py-8">
               <img
                 className="w-20 md:w-28 lg:w-30 h-10 md:h-12 lg:h-15 rounded-md bg-white p-2 object-contain"
-                src="/public/Img/logo.png"
-                alt="Ghorer Bazar Logo"
+                src="/public/Img/brands/amar_bazar.jpg"
+                alt="Amar Bazar Logo"
               />
             </div>
             <p className="text-xs md:text-sm leading-5">
-              Ghorer Bazar is an e-commerce platform dedicated to providing safe
+              Amar Bazar is an e-commerce platform dedicated to providing safe
               and reliable food to every home.
             </p>
             <div className="flex items-center gap-2 mt-3 md:mt-4 text-xs md:text-sm">
@@ -36,7 +36,7 @@ const Footer = () => {
             </button>
             <button className="flex items-center gap-2 cursor-pointer mt-2 hover:text-black transition duration-700 hover:scale-105 text-xs md:text-sm">
               <MdEmail size={16} className="flex-shrink-0" />
-              <span>ghorerbazar@gmail.com</span>
+              <span>amarbazar@gmail.com</span>
             </button>
 
             {/* Social Icons */}
@@ -96,7 +96,7 @@ const Footer = () => {
               Company Info
             </a>
             <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Ghorer Stories
+              Amar Stories
             </a>
             <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
               Terms & Conditions
@@ -189,7 +189,7 @@ const Footer = () => {
       {/* Copyright & Payment Methods */}
       <div className="w-11/12 md:w-10/12 mx-auto py-4 md:py-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="font-semibold text-xs md:text-sm text-black order-2 md:order-1">
-          © 2026 GhorerBazar. All rights reserved.
+          © 2026 AmarBazar. All rights reserved.
         </p>
         <img
           className="w-64 sm:w-96 md:w-full md:max-w-2xl h-auto order-1 md:order-2"

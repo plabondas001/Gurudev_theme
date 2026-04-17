@@ -2,7 +2,7 @@ import React from "react";
 
 const Brands = () => {
   const brands = [
-    "/public/Img/brands/7hNKq1768887947.png",
+    "/public/Img/brands/amar_bazar.jpg",
     "/public/Img/brands/8Gpl21757919440.png",
     "/public/Img/brands/8matO1757919401.png",
     "/public/Img/brands/lCfRt1759553456.png",
