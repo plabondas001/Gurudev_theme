@@ -100,7 +100,7 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
       <div className="md:hidden flex items-center justify-between mt-3 gap-2">
         <div>
           <a href="#">
-            <img className="w-16" src="/public/Img/logo.png" alt="logo" />
+            <img className="w-16" src="/public/Img/brands/amar_bazar.jpg" alt="logo" />
           </a>
         </div>
         <div className="flex-1">

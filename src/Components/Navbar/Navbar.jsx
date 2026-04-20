@@ -19,7 +19,7 @@ const Navbar = () => {
     },
     {
       label: "Honey",
-      href: "#",
+      href: "/honey",
       submenu: [
         { label: "Sundarban Honey", href: "" },
         { label: "Black Seed Honey", href: "" },
@@ -30,7 +30,7 @@ const Navbar = () => {
     },
     {
       label: "Dates",
-      href: "#",
+      href: "/dates",
       submenu: [
         { label: "Kalmi", href: "" },
         { label: "Medjool", href: "" },
@@ -41,7 +41,7 @@ const Navbar = () => {
     },
     {
       label: "Spices",
-      href: "#",
+      href: "/spices",
       submenu: [
         { label: "Whole Spices", href: "" },
         { label: "Basic Spices", href: "" },
@@ -50,7 +50,7 @@ const Navbar = () => {
     },
     {
       label: "Nuts & Seeds",
-      href: "#",
+      href: "/nuts",
       submenu: [
         { label: "Nuts", href: "" },
         { label: "Seeds", href: "" },
@@ -58,7 +58,7 @@ const Navbar = () => {
     },
     {
       label: "Beverage",
-      href: "#",
+      href: "/beverage",
       submenu: [
         { label: "Tea", href: "" },
         { label: "Coffee", href: "" },
@@ -66,7 +66,7 @@ const Navbar = () => {
     },
     {
       label: "Rice",
-      href: "#",
+      href: "/rice",
       submenu: null,
     },
     {
@@ -79,12 +79,12 @@ const Navbar = () => {
     },
     {
       label: "Certified",
-      href: "#",
+      href: "/certified",
       submenu: null,
     },
     {
       label: "Pickle",
-      href: "#",
+      href: "pickle",
       submenu: null,
     },
   ];
