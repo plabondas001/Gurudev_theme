@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { RiCloseLargeLine } from "react-icons/ri";
+import { NavLink } from "react-router";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,54 +15,54 @@ const Navbar = () => {
   const navItems = [
     {
       label: "Oil & Ghee",
-      href: "/oil",
+      href: "oil",
       submenu: null,
     },
     {
       label: "Honey",
-      href: "/honey",
+      href: "honey",
       submenu: [
-        { label: "Sundarban Honey", href: "" },
-        { label: "Black Seed Honey", href: "" },
-        { label: "Lichu Flower Honey", href: "" },
-        { label: "Sidr Honey", href: "" },
-        { label: "Honeycomb", href: "" },
+        { label: "Sundarban Honey", href:"sundarban_hony" },
+        { label: "Black Seed Honey", href: "black_hony" },
+        { label: "Lichu Flower Honey", href: "lichu" },
+        { label: "Sidr Honey", href: "sidr" },
+        { label: "Honeycomb", href: "honeycomb" },
       ],
     },
     {
       label: "Dates",
       href: "/dates",
       submenu: [
-        { label: "Kalmi", href: "" },
-        { label: "Medjool", href: "" },
-        { label: "Sukkari", href: "" },
-        { label: "Ajwa", href: "" },
-        { label: "Mabroom", href: "" },
+        { label: "Kalmi", href: "kalmi" },
+        { label: "Medjool", href: "medjool" },
+        { label: "Sukkari", href: "sukkari" },
+        { label: "Ajwa", href: "ajwa" },
+        { label: "Mabroom", href: "mabroom" },
       ],
     },
     {
       label: "Spices",
       href: "/spices",
       submenu: [
-        { label: "Whole Spices", href: "" },
-        { label: "Basic Spices", href: "" },
-        { label: "Mixed Spices", href: "" },
+        { label: "Whole Spices", href: "whole_spices" },
+        { label: "Basic Spices", href: "basic_spices" },
+        { label: "Mixed Spices", href: "mixed_spcies" },
       ],
     },
     {
       label: "Nuts & Seeds",
       href: "/nuts",
       submenu: [
-        { label: "Nuts", href: "" },
-        { label: "Seeds", href: "" },
+        { label: "Nuts", href: "nut" },
+        { label: "Seeds", href: "seeds" },
       ],
     },
     {
       label: "Beverage",
       href: "/beverage",
       submenu: [
-        { label: "Tea", href: "" },
-        { label: "Coffee", href: "" },
+        { label: "Tea", href: "tea" },
+        { label: "Coffee", href: "coffee" },
       ],
     },
     {
@@ -71,10 +72,10 @@ const Navbar = () => {
     },
     {
       label: "Flours & Lentils",
-      href: "#",
+      href: "/flours",
       submenu: [
-        { label: "Flours", href: "" },
-        { label: "Lentils", href: "" },
+        { label: "Flours", href: "flour" },
+        { label: "Lentils", href: "lentils" },
       ],
     },
     {
@@ -108,9 +109,9 @@ const Navbar = () => {
               item.submenu ? (
                 <div key={idx} className="relative group">
                   <div className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:text-[#fc6313] transition">
-                    <a href={item.href}>
+                    <NavLink to={item.href}>
                       <span className="text-sm lg:text-base">{item.label}</span>
-                    </a>
+                    </NavLink>
                     <IoMdArrowDropdown size={14} />
                   </div>
                   <div className="absolute left-0 w-48 bg-white shadow-lg rounded hidden group-hover:block z-50">
@@ -120,7 +121,7 @@ const Navbar = () => {
                           key={subidx}
                           className="hover:bg-[#fc6313] px-3 py-2 hover:text-white transition text-sm"
                         >
-                          <a href={subitem.href}>{subitem.label}</a>
+                          <NavLink to={subitem.href}>{subitem.label}</NavLink>
                         </li>
                       ))}
                     </ul>
@@ -128,7 +129,7 @@ const Navbar = () => {
                 </div>
               ) : (
                 <li key={idx} className="px-2 py-1 hover:text-[#fc6313] transition text-sm lg:text-base">
-                  <a href={item.href}>{item.label}</a>
+                  <NavLink to={item.href}>{item.label}</NavLink>
                 </li>
               )
             )}
@@ -159,24 +160,24 @@ const Navbar = () => {
                         <ul className="ml-4 mt-2 flex flex-col gap-2">
                           {item.submenu.map((subitem, subidx) => (
                             <li key={subidx}>
-                              <a
-                                href={subitem.href}
+                              <NavLink
+                                to={subitem.href}
                                 className="text-gray-300 hover:text-[#fc6313] transition text-xs"
                               >
                                 {subitem.label}
-                              </a>
+                              </NavLink>
                             </li>
                           ))}
                         </ul>
                       )}
                     </div>
                   ) : (
-                    <a
-                      href={item.href}
+                    <NavLink
+                      to={item.href}
                       className="text-white hover:text-[#fc6313] transition text-sm"
                     >
                       {item.label}
-                    </a>
+                    </NavLink>
                   )}
                 </li>
               ))}

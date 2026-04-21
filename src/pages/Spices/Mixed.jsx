@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Honey = () => {
+const Mixed = () => {
     return (
         <div>
-            <h1>Honey</h1>
+            <h1>Mixed Spcies</h1>
         </div>
     );
 };
 
-export default Honey;
+export default Mixed;
