@@ -36,7 +36,7 @@ import Lentils from './pages/Flours/Lentils.jsx'
 const router = createBrowserRouter([
   {
     path:"/",
-    Component:App
+    Component:App,
   },
   {
     path:"oil",
