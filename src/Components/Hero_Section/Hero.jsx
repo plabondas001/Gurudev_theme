@@ -1,11 +1,58 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(1);
+  const carouselRef = useRef(null);
+  const totalSlides = 4;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentSlide((prev) => (prev === totalSlides ? 1 : prev + 1));
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [currentSlide]);
+
+  useEffect(() => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const targetLeft = (currentSlide - 1) * container.offsetWidth;
+    const startLeft = container.scrollLeft;
+    const distance = targetLeft - startLeft;
+    const duration = 800; // Slower, smoother transition (800ms)
+    let startTime = null;
+
+    // Temporarily disable scroll-snap to prevent fighting with JS animation
+    container.style.scrollSnapType = "none";
+
+    const animation = (currentTime) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+
+      // Ease-in-out cubic for a very smooth feel
+      const ease =
+        progress < 0.5
+          ? 4 * Math.pow(progress, 3)
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      container.scrollLeft = startLeft + distance * ease;
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      } else {
+        container.style.scrollSnapType = ""; // Restore snap after animation
+      }
+    };
+
+    requestAnimationFrame(animation);
+  }, [currentSlide]);
+
   return (
     <div className="">
       <div className="w-11/12 md:w-10/12 mx-auto flex flex-col lg:flex-row gap-3 md:gap-6 lg:gap-8 mt-3 md:mt-5">
         {/* Carousel */}
-        <div className="carousel w-full lg:w-2/3">
+        <div className="carousel w-full lg:w-2/3" ref={carouselRef}>
           <div id="slide1" className="carousel-item relative w-full">
             <img
               src="/public/Img/hero/iphone-17-pro-max-05.webp"
@@ -13,18 +60,18 @@ const Hero = () => {
               alt="Hero slide 1"
             />
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-              <a
-                href="#slide4"
+              <button
+                onClick={() => setCurrentSlide(4)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
-              </a>
-              <a
-                href="#slide2"
+              </button>
+              <button
+                onClick={() => setCurrentSlide(2)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
-              </a>
+              </button>
             </div>
           </div>
           <div id="slide2" className="carousel-item relative w-full">
@@ -34,18 +81,18 @@ const Hero = () => {
               alt="Hero slide 2"
             />
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-              <a
-                href="#slide1"
+              <button
+                onClick={() => setCurrentSlide(1)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
-              </a>
-              <a
-                href="#slide3"
+              </button>
+              <button
+                onClick={() => setCurrentSlide(3)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
-              </a>
+              </button>
             </div>
           </div>
           <div id="slide3" className="carousel-item relative w-full">
@@ -55,18 +102,18 @@ const Hero = () => {
               alt="Hero slide 3"
             />
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-              <a
-                href="#slide2"
+              <button
+                onClick={() => setCurrentSlide(2)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
-              </a>
-              <a
-                href="#slide4"
+              </button>
+              <button
+                onClick={() => setCurrentSlide(4)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
-              </a>
+              </button>
             </div>
           </div>
           <div id="slide4" className="carousel-item relative w-full">
@@ -76,21 +123,25 @@ const Hero = () => {
               alt="Hero slide 4"
             />
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-              <a
-                href="#slide3"
+              <button
+                onClick={() => setCurrentSlide(3)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❮
-              </a>
-              <a
-                href="#slide1"
+              </button>
+              <button
+                onClick={() => setCurrentSlide(1)}
                 className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
               >
                 ❯
-              </a>
+              </button>
             </div>
           </div>
         </div>
+
+
+
+
 
         {/* Side Image */}
         <div className="hidden lg:block lg:w-1/3">
