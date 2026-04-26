@@ -1,16 +1,82 @@
-# React + Vite
+# API Client Documentation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the API client module for interacting with the Sarker.shop API.
 
-Currently, two official plugins are available:
+## Installation & Usage
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Fetching Categories
 
-## React Compiler
+```javascript
+import apiClient from "@/api/apiClient";
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+// Fetch all categories
+const categories = await apiClient.fetchCategories();
+```
 
-## Expanding the ESLint configuration
+The response is automatically mapped to include both `img` (alias for logo) and the full category data.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Fetching Products
+
+```javascript
+// Fetch products with optional filters
+const products = await apiClient.fetchProducts({
+  page: 1,
+  category: "smart-phones",
+  search: "iphone",
+});
+```
+
+### Fetching Brands
+
+```javascript
+// Fetch brands
+const brands = await apiClient.fetchBrands();
+```
+
+### Generic Fetch
+
+For any other endpoint:
+
+```javascript
+// Fetch from any endpoint
+const data = await apiClient.fetch("/endpoint-name/", {
+  param1: "value1",
+  param2: "value2",
+});
+```
+
+## Base URL
+
+- **API Base:** `https://sarker.shop/api`
+
+## Available Methods
+
+| Method | Endpoint | Returns |
+|--------|----------|---------|
+| `fetchCategories()` | `/categories/` | Array of categories |
+| `fetchProducts(params)` | `/products/` | Paginated products |
+| `fetchBrands(params)` | `/brands/` | Array of brands |
+| `fetch(endpoint, params)` | Any endpoint | Raw API response |
+
+## Error Handling
+
+All methods include built-in error handling. Errors are logged to the console and thrown for component-level handling.
+
+```javascript
+try {
+  const categories = await apiClient.fetchCategories();
+} catch (error) {
+  console.error("Failed to load categories:", error);
+  // Handle error in UI
+}
+```
+
+## Future Expansion
+
+As more API endpoints become available, add new methods to `apiClient` following the existing patterns:
+
+```javascript
+fetchOrderHistory: async (params = {}) => {
+  // Implementation
+},
+```
