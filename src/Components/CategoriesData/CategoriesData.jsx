@@ -9,7 +9,7 @@ const CategoriesData = ({ promise }) => {
     <div className="w-11/12 md:w-10/12 mx-auto">
       <div className="mt-4 md:mt-15 text-black">
         <h1 className="text-center font-semibold text-xl md:text-3xl">
-          Featured Categories
+          Categories
         </h1>
         <div className="mt-5 text-center categories-marquee">
           <div className="categories-track">

@@ -2,7 +2,7 @@ import React from "react";
 import { FiShoppingCart } from "react-icons/fi";
 
 const Dates = ({ dates, handleCart }) => {
-  const { img, name, price} = dates;
+  const { img, name, price } = dates;
   return (
     <div className="border rounded-lg md:rounded-2xl shadow-sm p-3 md:p-5 flex flex-col h-full">
       <img
@@ -15,7 +15,15 @@ const Dates = ({ dates, handleCart }) => {
         <p className="font-bold text-[#31714f] text-sm md:text-base">{price}</p>
       </div>
       <div className="mt-auto pt-3">
-        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCart && handleCart(dates); }} className="flex items-center border w-full justify-center py-2 rounded-md gap-2 border-[#31714f] text-[#31714f] cursor-pointer hover:bg-[#31714f] transition-all duration-500 hover:scale-105 hover:text-white text-xl">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleCart && handleCart(dates);
+          }}
+          className="flex items-center border w-full justify-center py-2 rounded-md gap-2 cursor-pointer bg-[#31714f] transition-all duration-500 hover:scale-105 text-white font-semibold"
+        >
           <FiShoppingCart size={16} />
           Add To Cart
         </button>
@@ -25,4 +33,3 @@ const Dates = ({ dates, handleCart }) => {
 };
 
 export default Dates;
-

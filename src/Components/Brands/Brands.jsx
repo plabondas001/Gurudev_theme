@@ -2,11 +2,16 @@ import React from "react";
 
 const Brands = () => {
   const brands = [
-    "/public/Img/brands/Samsung_logo_blue-removebg-preview.png",
+    "/public/Img/brands/Samsung-emblem.png",
     "/public/Img/brands/Realme_Brand.webp",
     "/public/Img/brands/oppo-aas.png",
     "/public/Img/brands/techno-aas.png",
+    "/public/Img/brands/vivo-brand-logo-phone-symbol-design-chinese-mobile-vector-46234545.avif",
+    "/public/Img/brands/XiaomiLogoNew2.avif",
+    "/public/Img/brands/onepng.webp",
     "/public/Img/brands/infinix-brand-logo-phone-symbol-name-green-design-china-mobile-illustration-free-vector.jpg",
+    "/public/Img/brands/lenovo-300x300.png",
+    "/public/Img/brands/ora.png",
   ];
 
   return (
@@ -18,7 +23,7 @@ const Brands = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 mt-4 md:mt-5 mb-10 md:mb-20">
+      <div className="grid grid-cols-2 space-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6 mt-4 md:mt-5 mb-10 md:mb-20">
         {brands.map((brand, index) => (
           <div
             key={index}
