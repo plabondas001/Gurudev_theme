@@ -23,7 +23,7 @@ const Footer = () => {
               />
             </div>
             <p className="text-xs md:text-sm leading-5">
-              Amar Bazar is an e-commerce platform dedicated to providing safe
+              Gurudev Enterprise is an e-commerce platform dedicated to providing safe
               and reliable food to every home.
             </p>
             <div className="flex items-center gap-2 mt-3 md:mt-4 text-xs md:text-sm">

@@ -7,7 +7,7 @@ const Customer = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
         <div className="border rounded-lg md:rounded-xl border-gray-400 p-3 md:p-4 flex flex-col h-full">
           <h1 className="text-xs md:text-sm leading-5 md:leading-6 flex-1">
-            Thanks Amar Bazar for free Honeyraj. Of course, I got it for being
+            Thanks Gurudev Enterprise for free Honeyraj. Of course, I got it for being
             a regular customer.
           </h1>
           <div className="flex items-center gap-2 md:gap-3 mt-3 md:mt-5">
@@ -73,7 +73,7 @@ const Customer = () => {
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
-            ২য় বার Amar Bazar থেকে অর্ডার করলাম। আগের মতো এবারও দারুণ কোয়ালিটি
+            ২য় বার Gurudev Enterprise থেকে অর্ডার করলাম। আগের মতো এবারও দারুণ কোয়ালিটি
             আর দ্রুত ডেলিভারি পেয়েছি। একদম সন্তুষ্ট।
           </h1>
           <div className="flex items-center gap-3">

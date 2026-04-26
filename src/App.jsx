@@ -12,8 +12,6 @@ import Honey from "./Components/Honey/ProductHoney/Honey"
 import FetchDates from "./Components/Dates/FetchDates"
 import Img from "./Components/Img_Section/Img"
 import FetchCooking from "./Components/Cooking/FetchCooking"
-import Fetch_You from "./Components/For_You/Fetch_You"
-import FetchOr from "./Components/Organic/FetchOr"
 import Customer from "./Components/customer_review/Customer"
 import Footer from "./Components/Footer/Footer"
 import apiClient from "./api/apiClient"
@@ -24,16 +22,36 @@ function App() {
     const [addCart,setAddCart] = useState([])
 
     const handleCart = (e) =>{
-        const newitem = [...addCart,e]
-        setAddCart(newitem)
-      toast.success("Add To Cart")
+        const existingItemIndex = addCart.findIndex(item => item.id === e.id);
+        if (existingItemIndex !== -1) {
+            const newCart = [...addCart];
+            newCart[existingItemIndex].quantity = (newCart[existingItemIndex].quantity || 1) + 1;
+            setAddCart(newCart);
+        } else {
+            setAddCart([...addCart, { ...e, quantity: 1 }]);
+        }
+        toast.success("Add To Cart")
+    }
 
+    const updateQuantity = (id, amount) => {
+        setAddCart(addCart.map(item => {
+            if (item.id === id) {
+                const newQuantity = Math.max(1, (item.quantity || 1) + amount);
+                return { ...item, quantity: newQuantity };
+            }
+            return item;
+        }));
     }
     
    const removeItem = (id) => {
     const remove = addCart.filter(p => p.id !== id)
     setAddCart(remove)
    toast.info("Remove item")
+   }
+
+   const clearCart = () => {
+    setAddCart([])
+    toast.info("Cart Cleared")
    }
 
     const handleBuyNow = (item) => {
@@ -44,7 +62,7 @@ function App() {
   return (
   <div>
     {/* Header */}
-    <Header cartItems={addCart} removeItem={removeItem} buyNow={handleBuyNow}></Header>
+    <Header cartItems={addCart} removeItem={removeItem} clearCart={clearCart} buyNow={handleBuyNow} updateQuantity={updateQuantity}></Header>
 
     
     {/* Navbar */}
@@ -71,12 +89,6 @@ function App() {
 
     {/* Cooking */}
     <FetchCooking handleCart={handleCart}> </FetchCooking>
-
-    {/* For you */}
-    <Fetch_You handleCart={handleCart}></Fetch_You>
-
-    {/* Organic */}
-    <FetchOr handleCart={handleCart}></FetchOr>
 
     {/* Customer */}
     <Customer></Customer>

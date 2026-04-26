@@ -8,8 +8,15 @@ import {
 import { useState } from "react";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { CiCircleRemove } from "react-icons/ci";
-
-const Header = ({ cartItems = [], removeItem, buyNow }) => {
+import { BsFillCartCheckFill } from "react-icons/bs";
+import { MdDeleteForever } from "react-icons/md";
+const Header = ({
+  cartItems = [],
+  removeItem,
+  clearCart,
+  buyNow,
+  updateQuantity,
+}) => {
   const [cartOpen, setCartOpen] = useState(false);
   return (
     <div className="w-11/12 md:w-10/12 mx-auto">
@@ -100,7 +107,7 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
       <div
         className={`fixed top-0 right-0 h-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${
           cartOpen ? "translate-x-0" : "translate-x-full"
-        } w-full sm:w-max sm:min-w-[384px] max-w-[100vw] md:max-w-[600px]`}
+        } w-full sm:w-[384px] max-w-[100vw] md:w-90`}
       >
         <div className="p-4 md:p-5 flex justify-between items-center border-b">
           <h2 className="text-lg md:text-xl font-bold">Your Cart</h2>
@@ -116,62 +123,128 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
           </button>
         </div>
 
-        <div
-          className="p-4 md:p-5 overflow-y-auto overflow-x-hidden"
-          style={{ maxHeight: "calc(100vh - 80px)" }}
-        >
+        <div className="p-4 md:p-5 overflow-y-auto overflow-x-hidden flex-1">
           {cartItems.length === 0 ? (
             <p className="text-center text-[#31714f]">No items in cart</p>
           ) : (
             cartItems.map((item, i) => (
               <div
                 key={i}
-                className="flex items-start justify-between gap-2 md:gap-3 border-b py-3"
+                className="flex flex-col gap-3 border-b py-4 relative"
               >
-                <div className="flex items-start gap-2 md:gap-3 flex-1">
+                <div className="flex items-start gap-3">
                   <img
                     src={item.img}
                     alt={item.name}
-                    className="w-12 h-12 md:w-16 md:h-16 object-cover rounded shrink-0"
+                    className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shrink-0"
                   />
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 pr-6">
                     <h3 className="font-bold text-sm md:text-base break-words whitespace-normal">
                       {item.name}
                     </h3>
-                    <p className="text-orange-500 text-sm font-semibold">
-                      {item.price}
+                    <p className="text-orange-500 text-md mt-1 font-semibold">
+                      {(() => {
+                        const priceStr = String(item.price);
+                        const cleanNumStr = priceStr
+                          .replace(/,/g, "")
+                          .match(/[0-9.]+/);
+                        if (!cleanNumStr) return priceStr;
+                        const num = Number(cleanNumStr[0]);
+                        const total = num * (item.quantity || 1);
+                        const formattedTotal =
+                          total % 1 === 0
+                            ? total.toLocaleString("en-US")
+                            : total.toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              });
+                        return priceStr.replace(/[0-9.,]+/, formattedTotal);
+                      })()}
                     </p>
                     {item.old_price && (
                       <p className="line-through text-gray-500 text-xs md:text-sm">
-                        {item.old_price}
+                        {(() => {
+                          const priceStr = String(item.old_price);
+                          const cleanNumStr = priceStr
+                            .replace(/,/g, "")
+                            .match(/[0-9.]+/);
+                          if (!cleanNumStr) return priceStr;
+                          const num = Number(cleanNumStr[0]);
+                          const total = num * (item.quantity || 1);
+                          const formattedTotal =
+                            total % 1 === 0
+                              ? total.toLocaleString("en-US")
+                              : total.toLocaleString("en-US", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                });
+                          return priceStr.replace(/[0-9.,]+/, formattedTotal);
+                        })()}
                       </p>
                     )}
-                  </div>
-                </div>
 
-                <div className="flex flex-col gap-2 items-center">
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-4 mt-2 bg-gray-100 w-fit px-2 py-1 rounded">
+                      <button
+                        onClick={() =>
+                          updateQuantity && updateQuantity(item.id, -1)
+                        }
+                        className="text-gray-600 hover:text-black font-bold px-2 cursor-pointer"
+                      >
+                        -
+                      </button>
+                      <span className="font-semibold">
+                        {item.quantity || 1}
+                      </span>
+                      <button
+                        onClick={() =>
+                          updateQuantity && updateQuantity(item.id, 1)
+                        }
+                        className="text-gray-600 hover:text-black font-bold px-2 cursor-pointer"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  {/* Keep a small X just in case they want to remove specific items */}
                   <button
                     onClick={() => removeItem(item.id)}
-                    className="font-bold cursor-pointer text-[#31714f] hover:text-blue-700 transition"
+                    className="absolute top-4 right-0 text-red-500 hover:text-red-700 transition"
                     aria-label="Remove item"
                   >
-                    <CiCircleRemove size={28} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      buyNow
-                        ? buyNow(item)
-                        : window.alert(`Buy now: ${item.name}`)
-                    }
-                    className="hover:text-[#31714f] font-bold cursor-pointer whitespace-nowrap md:text-xl mt-5"
-                  >
-                    Buy Now
+                    <CiCircleRemove size={24} />
                   </button>
                 </div>
               </div>
             ))
           )}
         </div>
+
+        {/* Global Footer Buttons */}
+        {cartItems.length > 0 && (
+          <div className="p-4 border-t flex justify-between items-center gap-2 bg-white shrink-0">
+            <button
+              onClick={() => {
+                if (clearCart) clearCart();
+              }}
+              className="flex flex-1 items-center justify-center gap-2 border px-4 py-3 bg-red-600 rounded-md hover:scale-105 transition-all text-white font-semibold cursor-pointer text-xs md:text-sm"
+            >
+              REMOVE ALL
+              <MdDeleteForever size={20} />
+            </button>
+            <button
+              onClick={() =>
+                buyNow
+                  ? buyNow(cartItems)
+                  : window.alert(`Buy now: ${cartItems.length} items`)
+              }
+              className="flex flex-1 items-center justify-center gap-2 border px-4 py-3 bg-[#31714f] rounded-md hover:scale-105 transition-all text-white font-semibold cursor-pointer text-xs md:text-sm"
+            >
+              BUY NOW
+              <BsFillCartCheckFill size={20} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Overlay for Cart */}
