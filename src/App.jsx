@@ -5,7 +5,6 @@ import CategoriesData from "./Components/CategoriesData/CategoriesData"
 import Header from "./Components/Header/Header"
 import Hero from "./Components/Hero_Section/Hero"
 import Navbar from "./Components/Navbar/Navbar"
-import Selling_json from "./Components/Selling_json/Selling_json"
 import Brands from "./Components/Brands/Brands"
 import FetchHoney from "./Components/Honey/FetchHoney/FetchHoney"
 import LoadHoney from "./Components/Honey/LoadHoney/LoadHoney"
@@ -63,7 +62,6 @@ function App() {
     </Suspense>
 
     {/* Selling */}
-    <Selling_json handleCart={handleCart}></Selling_json>
 
     {/* Brands */}
     <Brands></Brands>

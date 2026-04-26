@@ -10,7 +10,7 @@ const FetchHoney = ({handleCart}) => {
     const promiseHoney = fetchHoney()
     return (
         <div>
-            <Suspense fallback={"Loading..."}>
+            <Suspense>
                 <LoadHoney handleCart={handleCart} promiseHoney={promiseHoney}></LoadHoney>
             </Suspense>
         </div>

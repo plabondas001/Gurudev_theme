@@ -14,89 +14,30 @@ const Navbar = () => {
 
   const navItems = [
     {
-      label: "Oil & Ghee",
-      href: "oil",
-      submenu: null,
+      label: "Home",
+      href: "/",
     },
     {
-      label: "Honey",
-      href: "honey",
-      submenu: [
-        { label: "Sundarban Honey", href:"sundarban_hony" },
-        { label: "Black Seed Honey", href: "black_hony" },
-        { label: "Lichu Flower Honey", href: "lichu" },
-        { label: "Sidr Honey", href: "sidr" },
-        { label: "Honeycomb", href: "honeycomb" },
-      ],
+      label: "Product",
+      href: "product",
     },
     {
-      label: "Dates",
-      href: "/dates",
-      submenu: [
-        { label: "Kalmi", href: "kalmi" },
-        { label: "Medjool", href: "medjool" },
-        { label: "Sukkari", href: "sukkari" },
-        { label: "Ajwa", href: "ajwa" },
-        { label: "Mabroom", href: "mabroom" },
-      ],
+      label: "About",
+      href: "about",
     },
     {
-      label: "Spices",
-      href: "/spices",
-      submenu: [
-        { label: "Whole Spices", href: "whole_spices" },
-        { label: "Basic Spices", href: "basic_spices" },
-        { label: "Mixed Spices", href: "mixed_spcies" },
-      ],
-    },
-    {
-      label: "Nuts & Seeds",
-      href: "/nuts",
-      submenu: [
-        { label: "Nuts", href: "nut" },
-        { label: "Seeds", href: "seeds" },
-      ],
-    },
-    {
-      label: "Beverage",
-      href: "/beverage",
-      submenu: [
-        { label: "Tea", href: "tea" },
-        { label: "Coffee", href: "coffee" },
-      ],
-    },
-    {
-      label: "Rice",
-      href: "/rice",
-      submenu: null,
-    },
-    {
-      label: "Flours & Lentils",
-      href: "/flours",
-      submenu: [
-        { label: "Flours", href: "flour" },
-        { label: "Lentils", href: "lentils" },
-      ],
-    },
-    {
-      label: "Certified",
-      href: "/certified",
-      submenu: null,
-    },
-    {
-      label: "Pickle",
-      href: "pickle",
-      submenu: null,
+      label: "Contact",
+      href: "contact",
     },
   ];
 
   return (
     <div>
-      <div className="mt-3 md:mt-5 bg-black text-white">
+      <div className="mt-3 md:mt-5 bg-[#31714f] text-white">
         <div className="flex items-center justify-between w-11/12 md:w-10/12 mx-auto py-2 md:py-3">
           {/* Hamburger Menu for Mobile */}
           <button
-            className="md:hidden text-white text-2xl"
+            className="md:hidden text-white text-2xl cursor-pointer"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -108,7 +49,7 @@ const Navbar = () => {
             {navItems.map((item, idx) =>
               item.submenu ? (
                 <div key={idx} className="relative group">
-                  <div className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:text-[#fc6313] transition">
+                  <div className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:text-black transition">
                     <NavLink to={item.href}>
                       <span className="text-sm lg:text-base">{item.label}</span>
                     </NavLink>
@@ -119,7 +60,7 @@ const Navbar = () => {
                       {item.submenu.map((subitem, subidx) => (
                         <li
                           key={subidx}
-                          className="hover:bg-[#fc6313] px-3 py-2 hover:text-white transition text-sm"
+                          className="hover:bg-[#31714f] px-3 py-2 hover:text-white transition text-sm"
                         >
                           <NavLink to={subitem.href}>{subitem.label}</NavLink>
                         </li>
@@ -128,17 +69,20 @@ const Navbar = () => {
                   </div>
                 </div>
               ) : (
-                <li key={idx} className="px-2 py-1 hover:text-[#fc6313] transition text-sm lg:text-base">
+                <li
+                  key={idx}
+                  className="px-2 py-1 transition text-sm lg:text-xl hover:underline underline-offset-4"
+                >
                   <NavLink to={item.href}>{item.label}</NavLink>
                 </li>
-              )
+              ),
             )}
           </ul>
         </div>
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden bg-black py-4">
+          <div className="md:hidden bg-[#31714f] py-4">
             <ul className="w-11/12 mx-auto flex flex-col gap-3">
               {navItems.map((item, idx) => (
                 <li key={idx} className="border-b border-gray-700 pb-3">
@@ -146,7 +90,7 @@ const Navbar = () => {
                     <div>
                       <button
                         onClick={() => toggleMobileSubmenu(idx)}
-                        className="flex items-center justify-between w-full text-white hover:text-[#fc6313] transition text-sm"
+                        className="flex items-center justify-between w-full text-white transition text-sm"
                       >
                         <span>{item.label}</span>
                         <IoMdArrowDropdown
@@ -162,7 +106,7 @@ const Navbar = () => {
                             <li key={subidx}>
                               <NavLink
                                 to={subitem.href}
-                                className="text-gray-300 hover:text-[#fc6313] transition text-xs"
+                                className="text-gray-300 transition text-xs"
                               >
                                 {subitem.label}
                               </NavLink>
@@ -174,7 +118,7 @@ const Navbar = () => {
                   ) : (
                     <NavLink
                       to={item.href}
-                      className="text-white hover:text-[#fc6313] transition text-sm"
+                      className="text-white hover:underline underline-offset-4 transition text-sm"
                     >
                       {item.label}
                     </NavLink>

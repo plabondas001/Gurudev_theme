@@ -10,7 +10,7 @@ import { MdEmail } from "react-icons/md";
 
 const Footer = () => {
   return (
-    <div className="mt-10 md:mt-20 text-white bg-[#fc6313]">
+    <div className="mt-10 md:mt-20 text-white bg-[#31714f]">
       <div className="w-11/12 md:w-10/12 mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 py-8">
           {/* Brand Section */}
@@ -18,8 +18,8 @@ const Footer = () => {
             <div className="py-4 md:py-8">
               <img
                 className="w-20 md:w-28 lg:w-30 h-10 md:h-12 lg:h-15 rounded-md bg-white p-2 object-contain"
-                src="/public/Img/brands/amar_bazar.jpg"
-                alt="Amar Bazar Logo"
+                src="/public/Img/logo/logo.png"
+                alt=""
               />
             </div>
             <p className="text-xs md:text-sm leading-5">
@@ -43,20 +43,20 @@ const Footer = () => {
             <div className="mt-6 md:mt-8 flex flex-wrap gap-3">
               <a href="#" aria-label="Facebook">
                 <FaFacebook
-                  className="bg-orange-300 text-black p-2 rounded-full hover:text-blue-600 transition delay-75 hover:scale-105"
-                  size={28}
+                  className=" p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                  size={38}
                 />
               </a>
               <a href="#" aria-label="Twitter">
                 <FaTwitter
-                  className="bg-orange-300 text-black p-2 rounded-full hover:text-blue-600 transition delay-75 hover:scale-105"
-                  size={28}
+                  className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                  size={38}
                 />
               </a>
               <a href="#" aria-label="Instagram">
                 <FaInstagram
-                  className="bg-orange-300 text-black p-2 rounded-full hover:text-red-500 transition delay-75 hover:scale-105"
-                  size={28}
+                  className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                  size={38}
                 />
               </a>
             </div>
@@ -188,8 +188,8 @@ const Footer = () => {
 
       {/* Copyright & Payment Methods */}
       <div className="w-11/12 md:w-10/12 mx-auto py-4 md:py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="font-semibold text-xs md:text-sm text-black order-2 md:order-1">
-          © 2026 AmarBazar. All rights reserved.
+        <p className="font-semibold opacity-60 text-xs md:text-sm text-black order-2 md:order-1">
+          © 2026 Gurudeb Enterprise. All rights reserved.
         </p>
         <img
           className="w-64 sm:w-96 md:w-full md:max-w-2xl h-auto order-1 md:order-2"
