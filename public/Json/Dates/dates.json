@@ -1,70 +1,62 @@
 [
   {
     "id": 101,
-    "img": "https://backoffice.ghorerbazar.com/productImages/MrMvb1767439554.jpg",
-    "name": "Black Seed Honey 1kg",
-    "price": "৳1,810",
-    "old_price": "৳2,000"
+    "img": "https://assets.gadgetandgear.com/upload/media/Redmi+Note+15+Pro%2B+5G+(8/256GB)/redmi-note-15-pro-plus-5g-8gb-256gb.jpeg",
+    "name": "Xiaomi Redmi Note 15 Pro 5G (512GB)",
+    "price": "TK. 40,000"
   },
   {
     "id": 102,
-    "img": "https://backoffice.ghorerbazar.com/productImages/YOL6J1767074338.jpg",
-    "name": "Egyptian Medjool Large 1kg",
-    "price": "৳1,980",
-    "old_price": "৳2,280"
+    "img": "https://assets.gadgetandgear.com/upload/media/oppo-reno15-f-5g986.jpeg",
+    "name": "Oppo Reno15 F 5G (8/256GB)",
+    "price": "TK. 54,990"
   },
   {
     "id": 103,
-    "img": "https://backoffice.ghorerbazar.com/productImages/IFxSL1767097262.jpg",
-    "name": "Ajwa Premium Dates Large 1kg",
-    "price": "৳1,440",
-    "old_price": "৳1,600"
+    "img": "https://assets.gadgetandgear.com/upload/media/realme-15-pro-5g-1.jpg-330.jpeg",
+    "name": "realme 15 Pro 5G (12/256GB)",
+    "price": "TK. 59,999"
   },
   {
     "id": 104,
-    "img": "https://backoffice.ghorerbazar.com/productImages/duWXl1767443187.jpg",
-    "name": "Sukkari Mufattal Malaki Dates 1kg",
-    "price": "৳1,340",
-    "old_price": "৳1,500"
+    "img": "https://www.startech.com.bd/image/cache/catalog/earbuds/oneplus/nord-buds-3r/nord-buds-3r-ash-black-500x500.webp",
+    "name": "OnePlus Nord Buds 3r",
+    "price": "TK. 2,720"
   },
   {
     "id": 105,
-    "img": "https://backoffice.ghorerbazar.com/productImages/ecZQt1767074219.jpg",
-    "name": "Egyptian Medjool Dates 1kg (Jumbo)",
-    "price": "৳2,240",
-    "old_price": "৳2,600"
+    "img": "https://assets.gadgetandgear.com/upload/media/oneplus-nord-5425.jpeg",
+    "name": "OnePlus Nord 5 5G (12/512GB)",
+    "price": "Tk. 53,999"
   },
   {
     "id": 106,
-    "img": "https://backoffice.ghorerbazar.com/productImages/e9KZy1767097703.jpg",
-    "name": "Safawi/kalmi Dates (A Grade) 1kg",
-    "price": "৳1,140",
-    "old_price": "৳1,300"
+    "img": "https://cdn-img.oraimo.com/fit-in/600x600/GH/product/2025/01/09/magpower-15-opb-7102w-1.png",
+    "name": "oraimo MagPower 15 10000mAh Wireless and Wired Power Bank",
+    "price": "TK. 2,820"
   },
   {
     "id": 107,
-    "img": "https://backoffice.ghorerbazar.com/productImages/Uek0c1770272989.jpg",
-    "name": "Egyptian Medjool Dates 1 kg (Super Jumbo)",
-    "price": "৳2,440",
-    "old_price": "৳2,700"
+    "img": "https://www.mobiledokan.com/media/xiaomi-redmi-note-14-pro-5g-lavender-purple-official-image.webp",
+    "name": "Xiaomi Redmi Note 14 Pro 5G",
+    "price": "TK. 31,000"
   },
   {
     "id": 108,
-    "img": "https://backoffice.ghorerbazar.com/productImages/3VEFg1771303741.webp",
-    "name": "Ajwa Premium Dates 500g (Large)",
-    "price": "৳1,100"
+    "img": "https://ruperhat.com/wp-content/uploads/2024/09/P9-Wireless-Bluetooth-Headp.jpg",
+    "name": "P9 Wireless Bluetooth Headphones",
+    "price": "৳690"
   },
   {
     "id": 109,
-    "img": "https://backoffice.ghorerbazar.com/productImages/GgBwT1775107212.webp",
-    "name": "Ajwa Premium Dates 1kg (Jumbo)",
-    "price": "৳2,250",
-    "old_price": "৳2,500"
+    "img": "https://www.startech.com.bd/image/cache/catalog/power-bank/baseus/ppxd2-20/ppxdt-20-500x500.webp",
+    "name": "Baseus PPXD2-20 20000mAh 22.5W Type-C Fast Charging Power Bank",
+    "price": "৳2,250"
   },
   {
     "id": 110,
-    "img": "https://backoffice.ghorerbazar.com/productImages/7Oe7x1771921145.webp",
-    "name": "Ajwa Premium Dates 500g (Jumbo)",
-    "price": "৳1,250"
+    "img": "https://www.mobiledokan.co/wp-content/uploads/2024/01/Realme-12-Pro-Plus-Submarine-Blue.webp",
+    "name": "Realme 12 Pro+",
+    "price": "TK. 38,000"
   }
 ]
