@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react"
+import { Suspense, useState, useMemo } from "react"
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import CategoriesData from "./Components/CategoriesData/CategoriesData"
@@ -16,15 +16,10 @@ import Fetch_You from "./Components/For_You/Fetch_You"
 import FetchOr from "./Components/Organic/FetchOr"
 import Customer from "./Components/customer_review/Customer"
 import Footer from "./Components/Footer/Footer"
-
-
-const categFetch = async () => {
-  const res = await fetch("/public/Categories/categories.json")
-  return res.json()
-}
+import apiClient from "./api/apiClient"
 
 function App() {
-  const promise = categFetch()
+  const promise = useMemo(() => apiClient.fetchCategories(), [])
 
     const [addCart,setAddCart] = useState([])
 
