@@ -17,7 +17,11 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
       <div className="hidden md:flex items-center justify-between mt-6 md:mt-8 gap-4">
         <div>
           <a href="/">
-            <img className="w-20 md:w-28 lg:w-45" src="/public/Img/logo/logo.png" alt="logo" />
+            <img
+              className="w-20 md:w-28 lg:w-45"
+              src="/public/Img/logo/logo.png"
+              alt="logo"
+            />
           </a>
         </div>
         <div className="flex-1">
@@ -56,7 +60,6 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
             <UserRoundKey size={20} />
             <p className="hidden lg:block">Sign In</p>
           </div>
-
         </div>
       </div>
 
@@ -87,17 +90,17 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
           </div>
         </button>
 
-         <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
-            <UserRoundKey size={20} />
-            <p className="hidden lg:block">Sign In</p>
-          </div>
+        <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
+          <UserRoundKey size={20} />
+          <p className="hidden lg:block">Sign In</p>
+        </div>
       </div>
 
       {/* Cart Sidebar */}
       <div
         className={`fixed top-0 right-0 h-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${
           cartOpen ? "translate-x-0" : "translate-x-full"
-        } w-full sm:w-96 md:w-90`}
+        } w-full sm:w-max sm:min-w-[384px] max-w-[100vw] md:max-w-[600px]`}
       >
         <div className="p-4 md:p-5 flex justify-between items-center border-b">
           <h2 className="text-lg md:text-xl font-bold">Your Cart</h2>
@@ -106,11 +109,17 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
             className="text-[#31714f] font-bold hover:text-[#31714f] transition"
             aria-label="Close cart"
           >
-            <RiCloseLargeLine className="cursor-pointer text-[#31714f]" size={25} />
+            <RiCloseLargeLine
+              className="cursor-pointer text-[#31714f]"
+              size={25}
+            />
           </button>
         </div>
 
-        <div className="p-4 md:p-5 overflow-y-auto" style={{ maxHeight: "calc(100vh - 80px)" }}>
+        <div
+          className="p-4 md:p-5 overflow-y-auto overflow-x-hidden"
+          style={{ maxHeight: "calc(100vh - 80px)" }}
+        >
           {cartItems.length === 0 ? (
             <p className="text-center text-[#31714f]">No items in cart</p>
           ) : (
@@ -123,11 +132,15 @@ const Header = ({ cartItems = [], removeItem, buyNow }) => {
                   <img
                     src={item.img}
                     alt={item.name}
-                    className="w-12 h-12 md:w-16 md:h-16 object-cover rounded"
+                    className="w-12 h-12 md:w-16 md:h-16 object-cover rounded shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm md:text-base truncate">{item.name}</h3>
-                    <p className="text-orange-500 text-sm font-semibold">{item.price}</p>
+                    <h3 className="font-bold text-sm md:text-base break-words whitespace-normal">
+                      {item.name}
+                    </h3>
+                    <p className="text-orange-500 text-sm font-semibold">
+                      {item.price}
+                    </p>
                     {item.old_price && (
                       <p className="line-through text-gray-500 text-xs md:text-sm">
                         {item.old_price}
