@@ -6,8 +6,8 @@ const CatData = ({ catdata }) => {
   return (
     <div className="text-center">
       <div>
-        <img className="rounded-2xl w-30 h-24 object-cover" src={img} alt="" />
-        <h1 className="font-semibold text-sm mt-2 whitespace-nowrap">{name}</h1>
+        <img className="rounded-2xl w-40 h-40" src={img} alt="" />
+        <h1 className="font-semibold text-xl mt-2 whitespace-nowrap">{name}</h1>
       </div>
     </div>
   );

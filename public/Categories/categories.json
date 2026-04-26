@@ -1,42 +1,42 @@
 [
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/Zf99g1774766372.png",
-        "name": "Oil & Ghee"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/wgCR01774766402.png",
-        "name": "Dates"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/hXyU71774766413.png",
-        "name": "Spices"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/5u39t1774766425.png",
-        "name": "Nuts & Seeds"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/AZG2N1774766442.png",
-        "name": "Beverage"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/Emr6I1774766667.png",
-        "name": "Rice"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/Lo11M1774766468.png",
-        "name": "Flours & Lentils"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/JxBh61774766494.png",
-        "name": "Functional Food"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/HJOrw1774766749.png",
-        "name": "Organic"
-    },
-    {
-        "img": "https://backoffice.ghorerbazar.com/category_images/KbWCe1774766391.png",
-        "name": "Honey"
-    }
+  {
+    "img": "https://assets.gadgetandgear.com/upload/media/Samsung%20Galaxy%20S26%20Ultra%20(12/256GB)/samsung-galaxy-s26-ultra-1772347558401.jpeg",
+    "name": "Smart Phone"
+  },
+  {
+    "img": "https://i5.walmartimages.com/seo/Lenovo-Tab-M11-2-in-1-11-Tablet-Android-128GB_fd38163d-e6ce-424a-8105-7d972638f8a2.90e29c96e8ff15842eaf0ce1db76096d.jpeg",
+    "name": "Tab"
+  },
+  {
+    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxDumohvLf6IPXs1uZb7jbJsClgczuJ3ttHg&s",
+    "name": "Charger"
+  },
+  {
+    "img": "https://assets.gadgetandgear.com/upload/media/1714448582231939.jpeg",
+    "name": "Adapter"
+  },
+  {
+    "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY4zNcLmDlf_aeqmTr5Xx3mZKta0i8yrjgLg&s",
+    "name": "Cable"
+  },
+  {
+    "img": "https://assets.gadgetandgear.com/upload/product/20230601_1685592954_854332.jpeg",
+    "name": "Wireless Headphone"
+  },
+  {
+    "img": "https://www.gadstyle.com/wp-content/uploads/2022/11/baseus-20w-magnetic-wireless-power-bank-10000mah-1.webp",
+    "name": "Power Bank"
+  },
+  {
+    "img": "https://img.drz.lazcdn.com/static/bd/p/b78cf3fd91c77db3652ce60fef5dd8c7.jpg_720x720q80.jpg",
+    "name": "Airpod"
+  },
+  {
+    "img": "https://gadgetstudiobd.com/wp-content/uploads/2026/01/awei-y887-20w-ipx5-bluetooth-speaker-1-430x430.webp",
+    "name": "Bluetooth Speaker"
+  },
+  {
+    "img": "https://m.media-amazon.com/images/I/51xJcril-7L.jpg",
+    "name": "Tripod Stand"
+  }
 ]
