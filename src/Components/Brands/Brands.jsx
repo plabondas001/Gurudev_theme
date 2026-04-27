@@ -16,14 +16,14 @@ const Brands = () => {
 
   return (
     <div className="w-11/12 md:w-10/12 mx-auto">
-      <div className="flex items-center justify-between border-b-1 border-b-gray-300 py-3 md:py-4 mt-20">
+      <div className="flex items-center justify-between border-b-1 border-b-gray-300 p-1 mt-3">
         <h1 className="font-bold text-xl md:text-2xl">Our Brands</h1>
         <button className="text-[#31714f] font-semibold text-xs md:text-sm cursor-pointer underline hover:text-black underline-offset-4 transition">
           SEE ALL
         </button>
       </div>
 
-      <div className="grid grid-cols-2 space-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6 mt-4 md:mt-5 mb-10 md:mb-20">
+      <div className="grid grid-cols-2 space-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6 mt-4 md:mt-5 mb-10 md:mb-1">
         {brands.map((brand, index) => (
           <div
             key={index}
