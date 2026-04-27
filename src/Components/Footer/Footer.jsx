@@ -23,8 +23,8 @@ const Footer = () => {
               />
             </div>
             <p className="text-xs md:text-sm leading-5">
-              Gurudev Enterprise is an e-commerce platform dedicated to providing safe
-              and reliable food to every home.
+              Gurudev Enterprise is an e-commerce platform dedicated to
+              delivering safe and reliable smart gadgets to every home.
             </p>
             <div className="flex items-center gap-2 mt-3 md:mt-4 text-xs md:text-sm">
               <FaLocationDot size={16} className="flex-shrink-0" />
@@ -36,7 +36,7 @@ const Footer = () => {
             </button>
             <button className="flex items-center gap-2 cursor-pointer mt-2 hover:text-black transition duration-700 hover:scale-105 text-xs md:text-sm">
               <MdEmail size={16} className="flex-shrink-0" />
-              <span>amarbazar@gmail.com</span>
+              <span>gurudeventerprise@gmail.com</span>
             </button>
 
             {/* Social Icons */}
@@ -60,124 +60,159 @@ const Footer = () => {
                 />
               </a>
             </div>
-
-            {/* App Download */}
-            <p className="font-semibold mt-6 md:mt-8 text-xs md:text-sm">
-              Download App:
-            </p>
-            <div className="flex items-center gap-2 mt-3">
-              <a href="#" aria-label="Google Play">
-                <img
-                  className="cursor-pointer h-8 md:h-10"
-                  src="/Img/customers/google-play.svg"
-                  alt="Google Play"
-                />
-              </a>
-              <a href="#" aria-label="App Store">
-                <img
-                  className="cursor-pointer h-8 md:h-10"
-                  src="/Img/customers/app-store.svg"
-                  alt="App Store"
-                />
-              </a>
-            </div>
           </div>
 
           {/* Information */}
           <div className="py-4 md:py-8 flex flex-col space-y-2">
-            <h1 className="font-bold text-sm md:text-base lg:text-lg">Information</h1>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <h1 className="font-bold text-sm md:text-base lg:text-lg">
+              Information
+            </h1>
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               About us
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Contact us
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Company Info
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Amar Stories
-            </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Terms & Conditions
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Privacy Policy
-            </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Careers
             </a>
           </div>
 
           {/* Shop By */}
           <div className="py-4 md:py-8 flex flex-col space-y-2">
-            <h1 className="font-bold text-sm md:text-base lg:text-lg">Shop By</h1>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Oil & Ghee
+            <h1 className="font-bold text-sm md:text-base lg:text-lg">
+              Shop By
+            </h1>
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Smart Phone
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Honey
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Charger
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Dates
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Smart Watch
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Spices
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Power Bank
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Nuts & Seeds
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Tab
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Beverage
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Earbuds
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Functional Foods
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Accessories
             </a>
           </div>
 
           {/* Support */}
           <div className="py-4 md:py-8 flex flex-col space-y-2">
-            <h1 className="font-bold text-sm md:text-base lg:text-lg">Support</h1>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <h1 className="font-bold text-sm md:text-base lg:text-lg">
+              Support
+            </h1>
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Support Center
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               How to order
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Order Tracking
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Payment
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Shipping
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               FAQ
             </a>
           </div>
 
           {/* Consumer Policy */}
           <div className="py-4 md:py-8 flex flex-col space-y-2">
-            <h1 className="font-bold text-sm md:text-base lg:text-lg">Consumer Policy</h1>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Happy Return
+            <h1 className="font-bold text-sm md:text-base lg:text-lg">
+              Consumer Policy
+            </h1>
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
+              Return Policy
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Refund Policy
-            </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Exchange
-            </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Cancellation
             </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
+            <a
+              className="text-xs md:text-sm hover:text-black transition delay-75"
+              href="#"
+            >
               Pre-Order
-            </a>
-            <a className="text-xs md:text-sm hover:text-black transition delay-75" href="#">
-              Extra Discount
             </a>
           </div>
         </div>
@@ -187,15 +222,10 @@ const Footer = () => {
       <div className="border-b border-black w-11/12 md:w-10/12 mx-auto mb-4 md:mb-5"></div>
 
       {/* Copyright & Payment Methods */}
-      <div className="w-11/12 md:w-10/12 mx-auto py-4 md:py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="font-semibold opacity-60 text-xs md:text-sm text-black order-2 md:order-1">
+      <div className="w-11/12 md:w-10/12 mx-auto py-4 md:py-6">
+        <p className="font-semibold opacity-60 text-xs md:text-sm text-black order-2 md:order-1 text-center">
           © 2026 Gurudeb Enterprise. All rights reserved.
         </p>
-        <img
-          className="w-64 sm:w-96 md:w-full md:max-w-2xl h-auto order-1 md:order-2"
-          src="/Img/customers/faysy1756641916.png"
-          alt="Payment methods"
-        />
       </div>
     </div>
   );
