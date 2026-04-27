@@ -19,7 +19,7 @@ const Hero = () => {
     const targetLeft = (currentSlide - 1) * container.offsetWidth;
     const startLeft = container.scrollLeft;
     const distance = targetLeft - startLeft;
-    const duration = 800; // Slower, smoother transition (800ms)
+    const duration = 250; // Faster transition so sidebar click feels instant
     let startTime = null;
 
     // Temporarily disable scroll-snap to prevent fighting with JS animation

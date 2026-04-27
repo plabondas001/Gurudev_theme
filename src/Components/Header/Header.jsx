@@ -2,22 +2,41 @@ import {
   Heart,
   List,
   MapPinned,
+  Search,
   ShoppingCart,
   UserRoundKey,
+  ChevronRight,
+  User,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RiCloseLargeLine } from "react-icons/ri";
+import apiClient from "../../api/apiClient";
 import { CiCircleRemove } from "react-icons/ci";
 import { BsFillCartCheckFill } from "react-icons/bs";
 import { MdDeleteForever } from "react-icons/md";
-const Header = ({
-  cartItems = [],
-  removeItem,
-  clearCart,
-  buyNow,
-  updateQuantity,
-}) => {
+import { RxHamburgerMenu } from "react-icons/rx";
+import { useCart } from "../../context/CartContext";
+
+const Header = () => {
+  const { cartItems, removeItem, clearCart, updateQuantity, handleBuyNow } =
+    useCart();
   const [cartOpen, setCartOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await apiClient.fetchCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to load categories", error);
+      }
+    };
+    loadCategories();
+  }, []);
+
   return (
     <div className="w-11/12 md:w-10/12 mx-auto">
       {/* Desktop Header */}
@@ -26,7 +45,7 @@ const Header = ({
           <a href="/">
             <img
               className="w-20 md:w-28 lg:w-45"
-              src="/Img/logo/logo.png"
+              src="/public/Img/logo/b_logo.png"
               alt="logo"
             />
           </a>
@@ -63,7 +82,7 @@ const Header = ({
             </button>
           </div>
 
-          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
+          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition cursor-pointer">
             <UserRoundKey size={20} />
             <p className="hidden lg:block">Sign In</p>
           </div>
@@ -72,36 +91,57 @@ const Header = ({
 
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between mt-3 gap-2">
-        <div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="cursor-pointer text-black p-2 hover:text-[#31714f] transition"
+            aria-label="Open menu"
+          >
+            <RxHamburgerMenu size={20} />
+          </button>
           <a href="/">
             <img className="w-22" src="/Img/logo/logo.png" alt="logo" />
           </a>
         </div>
-        <div className="flex-1">
-          <input
-            className="w-full h-10 bg-gray-200 text-black px-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-[#31714f]"
-            type="search"
-            placeholder="Search..."
-          />
-        </div>
-        <button
-          onClick={() => setCartOpen(true)}
-          className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-[#31714f] transition relative"
-          aria-label="Open cart"
-        >
-          <div className="flex items-center relative">
-            <ShoppingCart size={20} />
-            <p className="text-white absolute left-2 -top-1 bg-[#31714f] rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
-              {cartItems.length}
-            </p>
-          </div>
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            className="cursor-pointer text-black p-2 hover:text-[#31714f] transition"
+            aria-label="Search"
+          >
+            <Search size={20} />
+          </button>
+          <button
+            onClick={() => setCartOpen(true)}
+            className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-[#31714f] transition relative"
+            aria-label="Open cart"
+          >
+            <div className="flex items-center relative">
+              <ShoppingCart size={20} />
+              <p className="text-white absolute left-2 -top-1 bg-[#31714f] rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
+                {cartItems.length}
+              </p>
+            </div>
+          </button>
 
-        <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
-          <UserRoundKey size={20} />
-          <p className="hidden lg:block">Sign In</p>
+          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition cursor-pointer">
+            <UserRoundKey size={20} />
+            <p className="hidden lg:block">Sign In</p>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Search Bar (Toggleable) */}
+      {mobileSearchOpen && (
+        <div className="md:hidden mt-3 w-full transition-all duration-300">
+          <input
+            className="w-full h-10 bg-gray-200 text-black px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-[#31714f]"
+            type="search"
+            placeholder="Search in..."
+            autoFocus
+          />
+        </div>
+      )}
 
       {/* Cart Sidebar */}
       <div
@@ -134,7 +174,12 @@ const Header = ({
               >
                 <div className="flex items-start gap-3">
                   <img
-                    src={item.img}
+                    src={
+                      item.img ||
+                      item.image ||
+                      (item.images && item.images[0]?.image) ||
+                      "/Img/logo/logo.png"
+                    }
                     alt={item.name}
                     className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shrink-0"
                   />
@@ -234,8 +279,8 @@ const Header = ({
             </button>
             <button
               onClick={() =>
-                buyNow
-                  ? buyNow(cartItems)
+                handleBuyNow
+                  ? handleBuyNow(cartItems)
                   : window.alert(`Buy now: ${cartItems.length} items`)
               }
               className="flex flex-1 items-center justify-center gap-2 border px-4 py-3 bg-[#31714f] rounded-md hover:scale-105 transition-all text-white font-semibold cursor-pointer text-xs md:text-sm"
@@ -250,8 +295,77 @@ const Header = ({
       {/* Overlay for Cart */}
       {cartOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-opacity-50 z-40 md:hidden"
           onClick={() => setCartOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu Drawer */}
+      <div
+        className={`fixed top-0 left-0 h-full bg-[#f6f6f6] shadow-lg transform transition-transform duration-300 z-50 ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } w-[80%] max-w-[320px] md:hidden`}
+      >
+        <div className="p-4 flex flex-col gap-5 h-full overflow-y-auto">
+          {/* User Info Box */}
+          <div className="bg-[#31714f] rounded-xl p-4 flex items-center justify-between text-white">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#85b9e0] rounded-full w-12 h-12 flex items-center justify-center shrink-0">
+                <User className="text-white w-6 h-6" fill="white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-lg leading-tight">
+                  Hello there!
+                </span>
+                <span className="text-sm cursor-pointer">Signin</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white hover:text-gray-200 transition cursor-pointer"
+              aria-label="Close menu"
+            >
+              <RiCloseLargeLine size={24} />
+            </button>
+          </div>
+
+          {/* Menu List */}
+          <div className="bg-white rounded-xl flex flex-col text-sm text-gray-700 shadow-sm">
+            {categories.map((category, index) => (
+              <a
+                key={category.id || index}
+                href={`/category/${category.slug || category.id}`}
+                className={`flex justify-between items-center py-3 px-4 ${
+                  index !== categories.length - 1
+                    ? "border-b border-gray-100"
+                    : ""
+                } hover:bg-gray-50`}
+              >
+                <div className="flex items-center gap-3">
+                  {category.img && (
+                    <img
+                      src={category.img}
+                      alt={category.name}
+                      className="w-6 h-6 object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  )}
+                  <span>{category.name}</span>
+                </div>
+                <ChevronRight className="text-gray-400 w-4 h-4" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay for Mobile Menu */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-opacity-60 z-40 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
         />
       )}
     </div>

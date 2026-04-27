@@ -19,7 +19,10 @@ export const CartProvider = ({ children }) => {
             const existingItemIndex = prevItems.findIndex(i => i.id === item.id);
             if (existingItemIndex !== -1) {
                 const newItems = [...prevItems];
-                newItems[existingItemIndex].quantity = (newItems[existingItemIndex].quantity || 1) + 1;
+                newItems[existingItemIndex] = {
+                    ...newItems[existingItemIndex],
+                    quantity: (newItems[existingItemIndex].quantity || 1) + 1
+                };
                 return newItems;
             } else {
                 return [...prevItems, { ...item, quantity: 1 }];

@@ -7,8 +7,7 @@ const Reviews = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
         <div className="border rounded-lg md:rounded-xl border-gray-400 p-3 md:p-4 flex flex-col h-full">
           <h1>
-            Thanks Gurudev Enterprise for free Honeyraj. Of course, I got it for being
-            a regular customer.
+           I would like to thank Gurudeb Enterprise for delivering authentic products.
           </h1>
           <div className="flex items-center gap-2 md:gap-3 mt-3 md:mt-5">
             <img
@@ -24,7 +23,7 @@ const Reviews = () => {
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
-            The phone is very smooth and fast. The display is sharp, and the battery backup is good. The performance is absolutely satisfactory for the price
+            The phone is very smooth and fast. The display is sharp, and the battery backup is good. The performance is absolutely satisfactory for the price.
           </h1>
           <div className="flex items-center gap-3">
             <img
@@ -40,7 +39,7 @@ const Reviews = () => {
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
-            স্মার্টওয়াচের ডিজাইন স্টাইলিশ, হেলথ ট্র্যাকিং ফিচারগুলো একুরেট। ব্যাটারি ৪-৫ দিন সহজেই চলে যায়। Gurudev Enterprise থেকে পাওয়া এই ঘড়িটি সত্যিই ভরসাযোগ্য।
+            স্মার্টওয়াচের ডিজাইন স্টাইলিশ, হেলথ ট্র্যাকিং ফিচারগুলো একুরেট। ব্যাটারি ৪-৫ দিন সহজেই চলে যায়। Gurudeb Enterprise থেকে পাওয়া এই ঘড়িটি সত্যিই ভরসাযোগ্য।
           </h1>
           <div className="flex items-center gap-3">
             <img
@@ -70,7 +69,7 @@ const Reviews = () => {
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
-            ২য় বার Gurudev Enterprise থেকে অর্ডার করলাম। আগের মতো এবারও দারুণ কোয়ালিটি
+            ২য় বার Gurudeb Enterprise থেকে অর্ডার করলাম। আগের মতো এবারও দারুণ কোয়ালিটি
             আর দ্রুত ডেলিভারি পেয়েছি। একদম সন্তুষ্ট।
           </h1>
           <div className="flex items-center gap-3">

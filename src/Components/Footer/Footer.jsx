@@ -18,17 +18,17 @@ const Footer = () => {
             <div className="py-4 md:py-8">
               <img
                 className="w-20 md:w-28 lg:w-30 h-10 md:h-12 lg:h-15 rounded-md bg-white p-2 object-contain"
-                src="/Img/logo/logo.png"
+                src="/public/Img/logo/b_logo.png"
                 alt=""
               />
             </div>
             <p className="text-xs md:text-sm leading-5">
-              Gurudev Enterprise is an e-commerce platform dedicated to
+              Gurudeb Enterprise is an e-commerce platform dedicated to
               delivering safe and reliable smart gadgets to every home.
             </p>
             <div className="flex items-center gap-2 mt-3 md:mt-4 text-xs md:text-sm">
               <FaLocationDot size={16} className="flex-shrink-0" />
-              <span>Kishoreganj, Dhaka, Bangladesh</span>
+              <span>Dhaka, Bangladesh</span>
             </div>
             <button className="flex items-center gap-2 cursor-pointer mt-2 hover:text-black transition duration-700 hover:scale-105 text-xs md:text-sm">
               <IoMdCall size={16} className="flex-shrink-0" />
@@ -36,7 +36,7 @@ const Footer = () => {
             </button>
             <button className="flex items-center gap-2 cursor-pointer mt-2 hover:text-black transition duration-700 hover:scale-105 text-xs md:text-sm">
               <MdEmail size={16} className="flex-shrink-0" />
-              <span>gurudeventerprise@gmail.com</span>
+              <span>gurudebenterprise@gmail.com</span>
             </button>
 
             {/* Social Icons */}
