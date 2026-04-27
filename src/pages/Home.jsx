@@ -1,8 +1,8 @@
 import React, { Suspense, useMemo } from 'react';
-import Hero from '../components/HeroSection/Hero';
-import CategoriesData from '../components/CategoriesData/CategoriesData';
-import Brands from '../components/Brands/Brands';
-import Customer from '../components/CustomerReview/Customer';
+import Hero from '../components/hero/Hero';
+import CategoriesData from '../components/categories/CategoriesData';
+import Brands from '../components/brands/Brands';
+import Reviews from '../components/reviews/Reviews';
 import ProductSection from '../components/products/ProductSection';
 import apiClient from '../api/apiClient';
 
@@ -32,7 +32,7 @@ const Home = () => {
             {/* All Products */}
             <ProductSection title="All Products" params={{ page_size: 10 }} />
 
-            <Customer />
+            <Reviews />
         </div>
     );
 };
