@@ -26,7 +26,7 @@ const Header = ({
           <a href="/">
             <img
               className="w-20 md:w-28 lg:w-45"
-              src="/public/Img/logo/logo.png"
+              src="/Img/logo/logo.png"
               alt="logo"
             />
           </a>
@@ -74,7 +74,7 @@ const Header = ({
       <div className="md:hidden flex items-center justify-between mt-3 gap-2">
         <div>
           <a href="/">
-            <img className="w-22" src="/public/Img/logo/logo.png" alt="logo" />
+            <img className="w-22" src="/Img/logo/logo.png" alt="logo" />
           </a>
         </div>
         <div className="flex-1">

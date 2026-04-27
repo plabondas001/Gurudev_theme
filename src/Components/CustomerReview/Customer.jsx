@@ -13,7 +13,7 @@ const Customer = () => {
           <div className="flex items-center gap-2 md:gap-3 mt-3 md:mt-5">
             <img
               className="w-12 md:w-15 h-12 md:h-15 rounded-full object-cover"
-              src="/public/Img/customers/download.jpg"
+              src="/Img/customers/download.jpg"
               alt="Jeni"
             />
             <div>
@@ -30,7 +30,7 @@ const Customer = () => {
           <div className="flex items-center gap-3">
             <img
               className="w-15 h-15 mt-5 rounded-full"
-              src="/public/Img/customers/images.jpg"
+              src="/Img/customers/images.jpg"
               alt=""
             />
             <div>
@@ -48,7 +48,7 @@ const Customer = () => {
           <div className="flex items-center gap-3">
             <img
               className="w-15 h-15 mt-5 rounded-full"
-              src="/public/Img/customers/download (1).jpg"
+              src="/Img/customers/download (1).jpg"
               alt=""
             />
             <div>
@@ -62,7 +62,7 @@ const Customer = () => {
           <div className="flex items-center gap-3">
             <img
               className="w-15 h-15 mt-5 rounded-full"
-              src="/public/Img/customers/images (2).jpg"
+              src="/Img/customers/images (2).jpg"
               alt=""
             />
             <div>
@@ -79,7 +79,7 @@ const Customer = () => {
           <div className="flex items-center gap-3">
             <img
               className="w-15 h-15 mt-5 rounded-full"
-              src="/public/Img/customers/images (1).jpg"
+              src="/Img/customers/images (1).jpg"
               alt=""
             />
             <div>

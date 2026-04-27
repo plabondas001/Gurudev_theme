@@ -14,16 +14,16 @@ const CategoriesData = ({ promise }) => {
         <div className="mt-5 text-center categories-marquee">
           <div className="categories-track">
             <div className="categories-track__inner">
-              {cateData.map((catdata, i) => (
+              {cateData.map((category, i) => (
                 <div key={i} className="categories-item">
-                  <CatData catdata={catdata}></CatData>
+                  <CatData catdata={category}></CatData>
                 </div>
               ))}
             </div>
             <div aria-hidden className="categories-track__inner">
-              {cateData.map((catdata, i) => (
+              {cateData.map((category, i) => (
                 <div key={`dup-${i}`} className="categories-item">
-                  <CatData catdata={catdata}></CatData>
+                  <CatData catdata={category}></CatData>
                 </div>
               ))}
             </div>

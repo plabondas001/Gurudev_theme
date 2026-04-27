@@ -2,16 +2,16 @@ import React from "react";
 
 const Brands = () => {
   const brands = [
-    "/public/Img/brands/Samsung-emblem.png",
-    "/public/Img/brands/Realme_Brand.webp",
-    "/public/Img/brands/oppo-aas.png",
-    "/public/Img/brands/techno-aas.png",
-    "/public/Img/brands/vivo-brand-logo-phone-symbol-design-chinese-mobile-vector-46234545.avif",
-    "/public/Img/brands/XiaomiLogoNew2.avif",
-    "/public/Img/brands/onepng.webp",
-    "/public/Img/brands/infinix-brand-logo-phone-symbol-name-green-design-china-mobile-illustration-free-vector.jpg",
-    "/public/Img/brands/lenovo-300x300.png",
-    "/public/Img/brands/ora.png",
+    "/Img/brands/Samsung-emblem.png",
+    "/Img/brands/Realme_Brand.webp",
+    "/Img/brands/oppo-aas.png",
+    "/Img/brands/techno-aas.png",
+    "/Img/brands/vivo-brand-logo-phone-symbol-design-chinese-mobile-vector-46234545.avif",
+    "/Img/brands/XiaomiLogoNew2.avif",
+    "/Img/brands/onepng.webp",
+    "/Img/brands/infinix-brand-logo-phone-symbol-name-green-design-china-mobile-illustration-free-vector.jpg",
+    "/Img/brands/lenovo-300x300.png",
+    "/Img/brands/ora.png",
   ];
 
   return (

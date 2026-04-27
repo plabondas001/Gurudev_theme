@@ -18,7 +18,7 @@ const Footer = () => {
             <div className="py-4 md:py-8">
               <img
                 className="w-20 md:w-28 lg:w-30 h-10 md:h-12 lg:h-15 rounded-md bg-white p-2 object-contain"
-                src="/public/Img/logo/logo.png"
+                src="/Img/logo/logo.png"
                 alt=""
               />
             </div>
@@ -69,14 +69,14 @@ const Footer = () => {
               <a href="#" aria-label="Google Play">
                 <img
                   className="cursor-pointer h-8 md:h-10"
-                  src="/public/Img/customers/google-play.svg"
+                  src="/Img/customers/google-play.svg"
                   alt="Google Play"
                 />
               </a>
               <a href="#" aria-label="App Store">
                 <img
                   className="cursor-pointer h-8 md:h-10"
-                  src="/public/Img/customers/app-store.svg"
+                  src="/Img/customers/app-store.svg"
                   alt="App Store"
                 />
               </a>
@@ -193,7 +193,7 @@ const Footer = () => {
         </p>
         <img
           className="w-64 sm:w-96 md:w-full md:max-w-2xl h-auto order-1 md:order-2"
-          src="/public/Img/customers/faysy1756641916.png"
+          src="/Img/customers/faysy1756641916.png"
           alt="Payment methods"
         />
       </div>
