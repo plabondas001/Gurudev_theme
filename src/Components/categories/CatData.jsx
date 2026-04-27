@@ -19,11 +19,11 @@ const CatData = ({ catdata }) => {
                     }}
                     className="
             rounded-2xl 
-            w-[120px] h-[96px] 
+            w-[100px] h-[90px] 
             object-cover 
             mx-auto
             transition-transform duration-300
-            group-hover:scale-105
+            group-hover:scale-105 hover:shadow-2xl cursor-pointer
           "
                 />
 

@@ -6,7 +6,7 @@ const Reviews = () => {
         <h1 className="text-center mb-6 md:mb-8 font-bold text-xl md:text-2xl">Customer Review</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
         <div className="border rounded-lg md:rounded-xl border-gray-400 p-3 md:p-4 flex flex-col h-full">
-          <h1 className="text-xs md:text-sm leading-5 md:leading-6 flex-1">
+          <h1>
             Thanks Gurudev Enterprise for free Honeyraj. Of course, I got it for being
             a regular customer.
           </h1>
@@ -24,8 +24,7 @@ const Reviews = () => {
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
-            I don’t like ghee, but my father really loves it. So I bought some
-            ghee for him. He said this ghee is the best he has ever had
+            The phone is very smooth and fast. The display is sharp, and the battery backup is good. The performance is absolutely satisfactory for the price
           </h1>
           <div className="flex items-center gap-3">
             <img
@@ -41,9 +40,7 @@ const Reviews = () => {
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
           <h1>
-            আমি একজন ঘরের বাজারের নিয়মিত কাস্টমার। আমি শুধু ঘরের বাজার থেকে এই
-            যে প্রোডাক্ট আনি এমন নয়। আমি অনেক জায়গা থেকে এই প্রোডাক্ট এনেছি।
-            তবে আমার মতে এসব পেজ থেকে ঘরের বাজার সেরা।
+            স্মার্টওয়াচের ডিজাইন স্টাইলিশ, হেলথ ট্র্যাকিং ফিচারগুলো একুরেট। ব্যাটারি ৪-৫ দিন সহজেই চলে যায়। Gurudev Enterprise থেকে পাওয়া এই ঘড়িটি সত্যিই ভরসাযোগ্য।
           </h1>
           <div className="flex items-center gap-3">
             <img
@@ -58,7 +55,7 @@ const Reviews = () => {
           </div>
         </div>
         <div className="border rounded-xl border-gray-400 p-3">
-          <h1>এই অবিশ্বাসের জগতে আস্থাশীল একটি প্রতিষ্ঠান ঘরের বাজার।</h1>
+          <h1>এই অবিশ্বাসের জগতে আস্থাশীল একটি প্রতিষ্ঠান গুরুদেব এন্টারপ্রাইজ।</h1>
           <div className="flex items-center gap-3">
             <img
               className="w-15 h-15 mt-5 rounded-full"
