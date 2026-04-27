@@ -11,16 +11,18 @@ const CatData = ({ catdata }) => {
                     alt={name ? `${name} category image` : "Category image"}
                     loading="lazy"
                     decoding="async"
-                    width="120"
-                    height="96"
+                    width="140"
+                    height="120"
                     onError={(e) => {
                         e.currentTarget.src =
                             "https://via.placeholder.com/120x96?text=No+Image";
                     }}
                     className="
             rounded-2xl 
-            w-[100px] h-[90px] 
-            object-cover 
+            w-[120px] h-[105px]
+            md:w-[140px] md:h-[120px]
+            object-contain object-center
+            p-2 bg-white
             mx-auto
             transition-transform duration-300
             group-hover:scale-105 hover:shadow-2xl cursor-pointer

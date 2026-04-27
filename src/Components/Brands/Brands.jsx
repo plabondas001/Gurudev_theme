@@ -1,4 +1,5 @@
 import React from "react";
+import "./Brands.css";
 
 const Brands = () => {
   const brands = [
@@ -12,7 +13,12 @@ const Brands = () => {
     "/Img/brands/infinix-brand-logo-phone-symbol-name-green-design-china-mobile-illustration-free-vector.jpg",
     "/Img/brands/lenovo-300x300.png",
     "/Img/brands/ora.png",
+    "/public/Img/brands/haylou.jpg.webp",
+    "/public/Img/brands/kospet.png",
+    "/public/Img/brands/0x0.png",
   ];
+  const firstLine = brands.slice(0, Math.ceil(brands.length / 2));
+  const secondLine = brands.slice(Math.ceil(brands.length / 2));
 
   return (
     <div className="w-11/12 md:w-10/12 mx-auto">
@@ -23,19 +29,40 @@ const Brands = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 space-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6 mt-4 md:mt-5 mb-10 md:mb-1">
-        {brands.map((brand, index) => (
-          <div
-            key={index}
-            className="rounded-md h-16 md:h-20 cursor-pointer border-1 flex items-center justify-center transition duration-300 ease-in-out hover:scale-105 p-2"
-          >
-            <img
-              className="w-20 md:w-70 object-cover h-full "
-              src={brand}
-              alt={`brand-${index}`}
-            />
+      <div className="mt-4 md:mt-5 mb-10 md:mb-1 space-y-4">
+        <div className="overflow-hidden w-full brands-row">
+          <div className="brands-track brands-track-right">
+            {[...firstLine, ...firstLine].map((brand, index) => (
+              <div
+                key={`first-${index}`}
+                className="rounded-md h-16 md:h-20 min-w-[130px] md:min-w-[170px] cursor-pointer border-1 flex items-center justify-center transition duration-300 ease-in-out hover:scale-105 p-2"
+              >
+                <img
+                  className="w-20 md:w-70 object-cover h-full"
+                  src={brand}
+                  alt={`brand-first-${index}`}
+                />
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div className="overflow-hidden w-full brands-row">
+          <div className="brands-track brands-track-left">
+            {[...secondLine, ...secondLine].map((brand, index) => (
+              <div
+                key={`second-${index}`}
+                className="rounded-md h-16 md:h-20 min-w-[130px] md:min-w-[170px] cursor-pointer border-1 flex items-center justify-center transition duration-300 ease-in-out hover:scale-105 p-2"
+              >
+                <img
+                  className="w-20 md:w-70 object-cover h-full"
+                  src={brand}
+                  alt={`brand-second-${index}`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

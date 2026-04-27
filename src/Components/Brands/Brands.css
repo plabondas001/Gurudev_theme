@@ -1,0 +1,38 @@
+.brands-track {
+  display: flex;
+  gap: 0.75rem;
+  width: max-content;
+  align-items: center;
+  will-change: transform;
+}
+.brands-track-right {
+  animation: brandMarqueeRight 26s linear infinite;
+}
+.brands-track-left {
+  animation: brandMarqueeLeft 26s linear infinite;
+}
+
+.brands-row:active .brands-track {
+  animation-play-state: paused;
+}
+
+.brands-row:hover .brands-track {
+  animation-play-state: paused;
+}
+
+@keyframes brandMarqueeRight {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes brandMarqueeLeft {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
