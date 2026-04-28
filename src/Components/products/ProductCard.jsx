@@ -1,6 +1,7 @@
 import React from "react";
 import { useCart } from "../../context/CartContext";
 import { ShoppingCart } from "lucide-react";
+import { FaHeart } from "react-icons/fa";
 
 const ProductCard = ({ product }) => {
   const { handleCart } = useCart();
@@ -17,9 +18,12 @@ const ProductCard = ({ product }) => {
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden flex flex-col h-full group">
       <div className="relative aspect-square overflow-hidden bg-gray-50">
 
-       <div>
-        <div>
-          <h1></h1>
+       <div className="absolute w-full ">
+        <div className="p-2 flex items-center justify-between">
+          <p className="bg-red-600 text-white text-xs px-2 py-1  rounded-md">Top selling</p>
+          <button>
+            <FaHeart className=""/>
+          </button>
         </div>
        </div>
 
