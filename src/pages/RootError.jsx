@@ -1,8 +1,8 @@
 import React from 'react';
 import { useRouteError, Link } from 'react-router';
 import { AlertCircle, Home } from 'lucide-react';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
+import Header from '../components/header/Header';
+import Footer from '../components/footer/Footer';
 
 const RootError = () => {
     const error = useRouteError();
