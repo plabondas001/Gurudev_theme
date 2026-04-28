@@ -16,6 +16,13 @@ const ProductCard = ({ product }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden flex flex-col h-full group">
       <div className="relative aspect-square overflow-hidden bg-gray-50">
+
+       <div>
+        <div>
+          <h1></h1>
+        </div>
+       </div>
+
         <img
           src={image}
           alt={product.name}
@@ -28,11 +35,18 @@ const ProductCard = ({ product }) => {
         )}
       </div>
 
-      <div className="p-3 md:p-4 flex flex-col flex-grow">
-        <h3 className="font-semibold text-sm md:text-base line-clamp-2 mb-2 group-hover:text-[#31714f] transition-colors">
+      <div className="p-3 md: space-y-2 flex flex-col flex-grow mt-auto">
+        <h3 className="font-semibold text-xl md:tex line-clamp-2 mb-2 group-hover:text-[#31714f] transition-colors">
           {product.name}
         </h3>
-
+        <div className="flex items-center gap-2">
+          <h3 className="bg-[#31714f] text-white px-2 py-1 text-xs rounded-md">Brand : </h3>
+          <p className="font-semibold text-xs">{product.brand?.name}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <h3 className="bg-[#733394] text-white px-2  py-1 text-xs rounded-md">Category: </h3>
+          <p className="font-semibold text-xs">{product.category?.name}</p>
+        </div>
         <div className="mt-auto">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[#31714f] font-bold text-sm md:text-lg">

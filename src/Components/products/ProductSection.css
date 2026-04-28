@@ -1,0 +1,160 @@
+.products-track {
+  display: flex;
+  gap: 0.75rem;
+  width: max-content;
+  align-items: stretch;
+  will-change: transform;
+}
+
+.products-track-left {
+  animation: productsMarqueeLeft 40s linear infinite;
+}
+
+.products-track-right {
+  animation: productsMarqueeRight 40s linear infinite;
+}
+
+.products-track-featured-right {
+  animation: productsFeaturedFlowRight 24s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.products-track-featured-left {
+  animation: productsFeaturedFlowLeft 26s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.products-track-top-selling-right {
+  animation: productsTopSellingRight 50s ease-in-out infinite;
+}
+
+.products-track-top-selling-left {
+  animation: productsTopSellingLeft 50s ease-in-out infinite;
+}
+
+.products-row:active .products-track,
+.products-row:hover .products-track {
+  animation-play-state: paused;
+}
+
+.top-selling-products .products-track > div {
+  transform-origin: 50% 8%;
+  animation: clockHandTick 1.2s ease-in-out infinite;
+}
+
+.top-selling-products .products-track > div:nth-child(even) {
+  animation-delay: 0.5s;
+}
+
+.top-selling-products .products-track > div:nth-child(3n) {
+  animation-delay: 0.55s;
+}
+
+.top-selling-products .products-row:hover .products-track > div,
+.top-selling-products .products-row:active .products-track > div {
+  animation-play-state: paused;
+}
+
+@keyframes productsMarqueeLeft {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes productsMarqueeRight {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes productsFeaturedFlowRight {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  45% {
+    transform: translate3d(-25%, 0, 0);
+  }
+  55% {
+    transform: translate3d(-25%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes productsFeaturedFlowLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  45% {
+    transform: translate3d(-25%, 0, 0);
+  }
+  55% {
+    transform: translate3d(-25%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes productsTopSellingRight {
+  0%,
+  10% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  22%,
+  32% {
+    transform: translate3d(-37.5%, 0, 0);
+  }
+  44%,
+  54% {
+    transform: translate3d(-25%, 0, 0);
+  }
+  66%,
+  76% {
+    transform: translate3d(-12.5%, 0, 0);
+  }
+  88%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes productsTopSellingLeft {
+  0%,
+  10% {
+    transform: translate3d(0, 0, 0);
+  }
+  22%,
+  32% {
+    transform: translate3d(-12.5%, 0, 0);
+  }
+  44%,
+  54% {
+    transform: translate3d(-25%, 0, 0);
+  }
+  66%,
+  76% {
+    transform: translate3d(-37.5%, 0, 0);
+  }
+  88%,
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes clockHandTick {
+  0% {
+    transform: rotate(-0.8deg);
+  }
+  50% {
+    transform: rotate(0.8deg);
+  }
+  100% {
+    transform: rotate(-0.8deg);
+  }
+}
