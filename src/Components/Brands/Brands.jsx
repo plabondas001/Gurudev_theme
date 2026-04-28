@@ -13,9 +13,9 @@ const Brands = () => {
     "/Img/brands/infinix-brand-logo-phone-symbol-name-green-design-china-mobile-illustration-free-vector.jpg",
     "/Img/brands/lenovo-300x300.png",
     "/Img/brands/ora.png",
-    "/public/Img/brands/haylou.jpg.webp",
-    "/public/Img/brands/kospet.png",
-    "/public/Img/brands/0x0.png",
+    "/Img/brands/haylou.jpg.webp",
+    "/Img/brands/kospet.png",
+    "/Img/brands/0x0.png",
   ];
   const firstLine = brands.slice(0, Math.ceil(brands.length / 2));
   const secondLine = brands.slice(Math.ceil(brands.length / 2));
