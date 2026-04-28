@@ -16,6 +16,7 @@ import { BsFillCartCheckFill } from "react-icons/bs";
 import { MdDeleteForever } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useCart } from "../../context/CartContext";
+import logo from "/public/Img/logo/ge_main_logo.png";
 
 const Header = () => {
   const { cartItems, removeItem, clearCart, updateQuantity, handleBuyNow } =
@@ -40,12 +41,12 @@ const Header = () => {
   return (
     <div className="w-11/12 md:w-10/12 mx-auto">
       {/* Desktop Header */}
-      <div className="hidden md:flex items-center justify-between mt-6 md:mt-8 gap-4">
+      <div className="hidden md:flex items-center justify-between mt-6 md:mt-2 gap-4">
         <div>
           <a href="/">
             <img
-              className="w-20 md:w-28 lg:w-45"
-              src="/public/Img/logo/b_logo.png"
+              className="w-20 md:w-18 lg:w-22"
+              src={logo}
               alt="logo"
             />
           </a>
@@ -100,7 +101,7 @@ const Header = () => {
             <RxHamburgerMenu size={20} />
           </button>
           <a href="/">
-            <img className="w-22" src="/Img/logo/logo.png" alt="logo" />
+            <img className="w-18 p-1" src={logo} alt="logo" />
           </a>
         </div>
         <div className="flex items-center gap-1">

@@ -7,6 +7,8 @@ import {
 } from "react-icons/fa6";
 import { IoMdCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
+import footer from "/public/Img/logo/ge_main_logo.png";
+
 
 const Footer = () => {
   return (
@@ -17,8 +19,8 @@ const Footer = () => {
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="py-4 md:py-8">
               <img
-                className="w-20 md:w-28 lg:w-30 h-10 md:h-12 lg:h-15 rounded-md bg-white p-2 object-contain"
-                src="/public/Img/logo/b_logo.png"
+                className="w-20 md:w-28 lg:w-18 h-10 md:h-12 lg:h-15 bg-white rounded-md p-2 object-contain"
+                src={footer}
                 alt=""
               />
             </div>

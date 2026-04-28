@@ -1,26 +1,28 @@
-.brands-track {
+.reviews-track {
   display: flex;
   gap: 0.75rem;
   width: max-content;
-  align-items: center;
+  align-items: stretch;
   will-change: transform;
 }
-.brands-track-right {
-  animation: brandMarqueeRight 45s linear infinite;
-}
-.brands-track-left {
-  animation: brandMarqueeLeft 45s linear infinite;
+
+.reviews-track-right {
+  animation: reviewMarqueeRight 55s linear infinite;
 }
 
-.brands-row:active .brands-track {
+.reviews-track-left {
+  animation: reviewMarqueeLeft 55s linear infinite;
+}
+
+.reviews-row:active .reviews-track {
   animation-play-state: paused;
 }
 
-.brands-row:hover .brands-track {
+.reviews-row:hover .reviews-track {
   animation-play-state: paused;
 }
 
-@keyframes brandMarqueeRight {
+@keyframes reviewMarqueeRight {
   from {
     transform: translate3d(-50%, 0, 0);
   }
@@ -28,7 +30,8 @@
     transform: translate3d(0, 0, 0);
   }
 }
-@keyframes brandMarqueeLeft {
+
+@keyframes reviewMarqueeLeft {
   from {
     transform: translate3d(0, 0, 0);
   }
