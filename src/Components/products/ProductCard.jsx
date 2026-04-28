@@ -2,6 +2,7 @@ import React from "react";
 import { useCart } from "../../context/CartContext";
 import { ShoppingCart } from "lucide-react";
 import { FaHeart } from "react-icons/fa";
+import { FiShoppingBag } from "react-icons/fi";
 
 const ProductCard = ({ product }) => {
   const { handleCart } = useCart();
@@ -17,15 +18,24 @@ const ProductCard = ({ product }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden flex flex-col h-full group">
       <div className="relative aspect-square overflow-hidden bg-gray-50">
-
-       <div className="absolute w-full ">
-        <div className="p-2 flex items-center justify-between">
-          <p className="bg-red-600 text-white text-xs px-2 py-1  rounded-md">Top selling</p>
-          <button>
-            <FaHeart className=""/>
-          </button>
+        <div className="absolute w-full z-10">
+          <div className="p-2 flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <p className="bg-red-600 text-white text-xs px-2 py-1  rounded-md">
+                Top selling
+              </p>
+              <button className="bg-gray-200 rounded-full p-1">
+                <FiShoppingBag
+                  size={20}
+                  className="text-green-800 cursor-pointer "
+                />
+              </button>
+            </div>
+            <button className="bg-gray-100 rounded-full cursor-pointer">
+              <FaHeart className="text-purple-800" size={25} />
+            </button>
+          </div>
         </div>
-       </div>
 
         <img
           src={image}
@@ -44,11 +54,15 @@ const ProductCard = ({ product }) => {
           {product.name}
         </h3>
         <div className="flex items-center gap-2">
-          <h3 className="bg-[#31714f] text-white px-2 py-1 text-xs rounded-md">Brand : </h3>
+          <h3 className="bg-[#31714f] text-white px-2 py-1 text-xs rounded-md">
+            Brand :{" "}
+          </h3>
           <p className="font-semibold text-xs">{product.brand?.name}</p>
         </div>
         <div className="flex items-center gap-2">
-          <h3 className="bg-[#733394] text-white px-2  py-1 text-xs rounded-md">Category: </h3>
+          <h3 className="bg-[#733394] text-white px-2  py-1 text-xs rounded-md">
+            Category:{" "}
+          </h3>
           <p className="font-semibold text-xs">{product.category?.name}</p>
         </div>
         <div className="mt-auto">

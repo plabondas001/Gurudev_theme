@@ -46,12 +46,17 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
   if (products.length === 0) return null;
 
   const shouldAnimateProducts =
-  title === "Featured Products" || title === "Top Selling Products";
+    title === "Featured Products" || title === "Top Selling Products";
   const isFeaturedProducts = title === "Featured Products";
   const isTopSellingProducts = title === "Top Selling Products";
   const displayProducts = products.slice(0, 10);
-  const firstLine = displayProducts.slice(0, Math.ceil(displayProducts.length / 2));
-  const secondLine = displayProducts.slice(Math.ceil(displayProducts.length / 2));
+  const firstLine = displayProducts.slice(
+    0,
+    Math.ceil(displayProducts.length / 2),
+  );
+  const secondLine = displayProducts.slice(
+    Math.ceil(displayProducts.length / 2),
+  );
   const fillLineForMarquee = (line, minimumItems = 12) => {
     if (line.length === 0) return [];
     const repeatCount = Math.ceil(minimumItems / line.length);
@@ -64,13 +69,13 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
   const firstTrackClass = isFeaturedProducts
     ? "products-track-featured-right"
     : isTopSellingProducts
-    ? "products-track-top-selling-right"
-    : "products-track-right";
+      ? "products-track-top-selling-right"
+      : "products-track-right";
   const secondTrackClass = isFeaturedProducts
     ? "products-track-featured-left"
     : isTopSellingProducts
-    ? "products-track-top-selling-left"
-    : "products-track-left";
+      ? "products-track-top-selling-left"
+      : "products-track-left";
 
   return (
     <div className="w-11/12 md:w-10/12 mx-auto py-8 md:py-5">
@@ -88,32 +93,36 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
         <div
           className={`space-y-3 md:space-y-5 ${
             isTopSellingProducts ? "top-selling-products" : ""
-          }`}
+          } ${isFeaturedProducts ? "featured-products" : ""}`}
         >
           <div className="overflow-hidden w-full products-row">
             <div className={`products-track ${firstTrackClass}`}>
-              {[...firstLineFilled, ...firstLineFilled].map((product, index) => (
-                <div
-                  key={`first-${product.id ?? "product"}-${index}`}
-                  className="w-[170px] sm:w-[200px] md:w-[230px] lg:w-[245px] shrink-0"
-                >
-                  <ProductCard product={product} />
-                </div>
-              ))}
+              {[...firstLineFilled, ...firstLineFilled].map(
+                (product, index) => (
+                  <div
+                    key={`first-${product.id ?? "product"}-${index}`}
+                    className="w-[170px] sm:w-[200px] md:w-[230px] lg:w-[245px] shrink-0"
+                  >
+                    <ProductCard product={product} />
+                  </div>
+                ),
+              )}
             </div>
           </div>
 
           {secondLine.length > 0 && (
             <div className="overflow-hidden w-full products-row">
               <div className={`products-track ${secondTrackClass}`}>
-                {[...secondLineFilled, ...secondLineFilled].map((product, index) => (
-                  <div
-                    key={`second-${product.id ?? "product"}-${index}`}
-                    className="w-[170px] sm:w-[200px] md:w-[230px] lg:w-[245px] shrink-0"
-                  >
-                    <ProductCard product={product} />
-                  </div>
-                ))}
+                {[...secondLineFilled, ...secondLineFilled].map(
+                  (product, index) => (
+                    <div
+                      key={`second-${product.id ?? "product"}-${index}`}
+                      className="w-[170px] sm:w-[200px] md:w-[230px] lg:w-[245px] shrink-0"
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           )}
