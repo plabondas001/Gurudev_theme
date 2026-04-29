@@ -53,21 +53,21 @@ const Header = () => {
                 </div>
                 <div className="flex-1">
                     <input
-                        className="w-full h-11 md:h-12 bg-gray-200 text-black px-3 font-bold rounded-xl focus:outline-none focus:ring-2 focus:ring-[#31714f]"
+                        className="w-full h-11 md:h-12 bg-gray-200 text-black px-3 font-bold rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
                         type="search"
                         placeholder="Search in..."
                     />
                 </div>
                 <div className="flex items-center text-black gap-4 lg:gap-9 cursor-pointer flex-wrap justify-end">
-                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
+                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
                         <MapPinned size={20} />
                         <p className="hidden lg:block">Track Order</p>
                     </div>
-                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
+                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
                         <Heart size={20} />
                         <p className="hidden lg:block">Wishlist</p>
                     </div>
-                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition">
+                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
                         <button
                             onClick={() => setCartOpen(true)}
                             className="cursor-pointer flex flex-col items-center"
@@ -75,7 +75,7 @@ const Header = () => {
                         >
                             <div className="flex items-center relative">
                                 <ShoppingCart size={20} />
-                                <p className="text-white absolute left-3 bottom-0 bg-[#31714f] rounded-full min-w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                <p className="text-white absolute left-3 bottom-0 bg-primary rounded-full min-w-5 h-5 flex items-center justify-center text-xs font-bold">
                                     {cartItems.length}
                                 </p>
                             </div>
@@ -83,7 +83,7 @@ const Header = () => {
                         </button>
                     </div>
 
-                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition cursor-pointer">
+                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer">
                         <UserRoundKey size={20} />
                         <p className="hidden lg:block">Sign In</p>
                     </div>
@@ -95,7 +95,7 @@ const Header = () => {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setMobileMenuOpen(true)}
-                        className="cursor-pointer text-black p-2 hover:text-[#31714f] transition"
+                        className="cursor-pointer text-black p-2 hover:text-primary transition"
                         aria-label="Open menu"
                     >
                         <RxHamburgerMenu size={20} />
@@ -107,25 +107,25 @@ const Header = () => {
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-                        className="cursor-pointer text-black p-2 hover:text-[#31714f] transition"
+                        className="cursor-pointer text-black p-2 hover:text-primary transition"
                         aria-label="Search"
                     >
                         <Search size={20} />
                     </button>
                     <button
                         onClick={() => setCartOpen(true)}
-                        className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-[#31714f] transition relative"
+                        className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-primary transition relative"
                         aria-label="Open cart"
                     >
                         <div className="flex items-center relative">
                             <ShoppingCart size={20} />
-                            <p className="text-white absolute left-2 -top-1 bg-[#31714f] rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
+                            <p className="text-white absolute left-2 -top-1 bg-primary rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
                                 {cartItems.length}
                             </p>
                         </div>
                     </button>
 
-                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-[#31714f] transition cursor-pointer">
+                    <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer">
                         <UserRoundKey size={20} />
                         <p className="hidden lg:block">Sign In</p>
                     </div>
@@ -136,7 +136,7 @@ const Header = () => {
             {mobileSearchOpen && (
                 <div className="md:hidden mt-3 w-full transition-all duration-300">
                     <input
-                        className="w-full h-10 bg-gray-200 text-black px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-[#31714f]"
+                        className="w-full h-10 bg-gray-200 text-black px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         type="search"
                         placeholder="Search in..."
                         autoFocus
@@ -153,11 +153,11 @@ const Header = () => {
                     <h2 className="text-lg md:text-xl font-bold">Your Cart</h2>
                     <button
                         onClick={() => setCartOpen(false)}
-                        className="text-[#31714f] font-bold hover:text-[#31714f] transition"
+                        className="text-primary font-bold hover:text-primary transition"
                         aria-label="Close cart"
                     >
                         <RiCloseLargeLine
-                            className="cursor-pointer text-[#31714f]"
+                            className="cursor-pointer text-primary"
                             size={25}
                         />
                     </button>
@@ -165,7 +165,7 @@ const Header = () => {
 
                 <div className="p-4 md:p-5 overflow-y-auto overflow-x-hidden flex-1">
                     {cartItems.length === 0 ? (
-                        <p className="text-center text-[#31714f]">No items in cart</p>
+                        <p className="text-center text-primary">No items in cart</p>
                     ) : (
                         cartItems.map((item, i) => (
                             <div
@@ -283,7 +283,7 @@ const Header = () => {
                                     ? handleBuyNow(cartItems)
                                     : window.alert(`Buy now: ${cartItems.length} items`)
                             }
-                            className="flex flex-1 items-center justify-center gap-2 border px-4 py-3 bg-[#31714f] rounded-md hover:scale-105 transition-all text-white font-semibold cursor-pointer text-xs md:text-sm"
+                            className="flex flex-1 items-center justify-center gap-2 border px-4 py-3 bg-primary rounded-md hover:scale-105 transition-all text-white font-semibold cursor-pointer text-xs md:text-sm"
                         >
                             BUY NOW
                             <BsFillCartCheckFill size={20} />
@@ -307,7 +307,7 @@ const Header = () => {
             >
                 <div className="p-4 flex flex-col gap-5 h-full overflow-y-auto">
                     {/* User Info Box */}
-                    <div className="bg-[#31714f] rounded-xl p-4 flex items-center justify-between text-white">
+                    <div className="bg-primary rounded-xl p-4 flex items-center justify-between text-white">
                         <div className="flex items-center gap-3">
                             <div className="bg-[#85b9e0] rounded-full w-12 h-12 flex items-center justify-center shrink-0">
                                 <User className="text-white w-6 h-6" fill="white" />

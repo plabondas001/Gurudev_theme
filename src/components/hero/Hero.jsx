@@ -62,13 +62,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <button
                 onClick={() => setCurrentSlide(4)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </button>
               <button
                 onClick={() => setCurrentSlide(2)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </button>
@@ -83,13 +83,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <button
                 onClick={() => setCurrentSlide(1)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </button>
               <button
                 onClick={() => setCurrentSlide(3)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </button>
@@ -104,13 +104,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <button
                 onClick={() => setCurrentSlide(2)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </button>
               <button
                 onClick={() => setCurrentSlide(4)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </button>
@@ -125,13 +125,13 @@ const Hero = () => {
             <div className="absolute left-2 right-2 sm:left-5 sm:right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <button
                 onClick={() => setCurrentSlide(3)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❮
               </button>
               <button
                 onClick={() => setCurrentSlide(1)}
-                className="btn btn-sm sm:btn-md hover:bg-[#31714f] border-none btn-circle text-xs sm:text-base"
+                className="btn btn-sm sm:btn-md hover:bg-primary border-none btn-circle text-xs sm:text-base"
               >
                 ❯
               </button>

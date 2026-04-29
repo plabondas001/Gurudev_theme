@@ -23,7 +23,7 @@ const RootError = () => {
                 </p>
                 <Link
                     to="/"
-                    className="flex items-center gap-2 bg-[#31714f] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#255c40] transition-all transform hover:scale-105"
+                    className="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all transform hover:scale-105"
                 >
                     <Home size={20} />
                     Back to Homepage

@@ -88,7 +88,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
         <h2 className="text-xl md:text-2xl font-bold text-gray-800">{title}</h2>
         <a
           href="/product"
-          className="text-[#31714f] font-semibold text-sm hover:underline"
+          className="text-primary font-semibold text-sm hover:underline"
         >
           View All
         </a>
