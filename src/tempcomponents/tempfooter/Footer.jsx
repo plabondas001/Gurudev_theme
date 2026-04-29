@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa6";
 import { IoMdCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
-import footer from "/public/Img/logo/ge_main_logo.png";
+import footer from "/Img/logo/ge_main_logo.png";
 
 
 const Footer = () => {
