@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
         <div className="absolute w-full z-10">
           <div className="p-2 flex items-center justify-between">
             <div className="flex items-center gap-5">
-              <p className="bg-red-600 text-white text-xs px-2 py-1  rounded-md">
+              <p className="bg-red-600 px-1 text-white text-xs lg:px-2 py-1  rounded-md">
                 Top selling
               </p>
               <button className="bg-gray-200 rounded-full p-1">
@@ -50,7 +50,7 @@ const ProductCard = ({ product }) => {
       </div>
 
       <div className="p-3 md: space-y-2 flex flex-col flex-grow mt-auto">
-        <h3 className="font-semibold text-xl md:tex line-clamp-2 mb-2 group-hover:text-[#31714f] transition-colors">
+        <h3 className="font-semibold text-sm lg:text-xl line-clamp-2 mb-2 group-hover:text-[#31714f] transition-colors">
           {product.name}
         </h3>
         <div className="flex items-center gap-2">

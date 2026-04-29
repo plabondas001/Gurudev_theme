@@ -36,25 +36,30 @@
 }
 
 .top-selling-products .products-track > div,
-.featured-products .products-track > div {
+.featured-products .products-track > div,
+.all-products .all-products-grid > div {
   transform-origin: 50% 8%;
   animation: clockHandTick 1.2s ease-in-out infinite;
 }
 
 .top-selling-products .products-track > div:nth-child(even),
-.featured-products .products-track > div:nth-child(even) {
+.featured-products .products-track > div:nth-child(even),
+.all-products .all-products-grid > div:nth-child(even) {
   animation-delay: 0.5s;
 }
 
 .top-selling-products .products-track > div:nth-child(3n),
-.featured-products .products-track > div:nth-child(3n) {
+.featured-products .products-track > div:nth-child(3n),
+.all-products .all-products-grid > div:nth-child(3n) {
   animation-delay: 0.55s;
 }
 
 .top-selling-products .products-row:hover .products-track > div,
 .top-selling-products .products-row:active .products-track > div,
 .featured-products .products-row:hover .products-track > div,
-.featured-products .products-row:active .products-track > div {
+.featured-products .products-row:active .products-track > div,
+.all-products .all-products-grid:hover > div,
+.all-products .all-products-grid:active > div {
   animation-play-state: paused;
 }
 

@@ -49,6 +49,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
     title === "Featured Products" || title === "Top Selling Products";
   const isFeaturedProducts = title === "Featured Products";
   const isTopSellingProducts = title === "Top Selling Products";
+  const isAllProducts = title === "All Products";
   const displayProducts = products.slice(0, 10);
   const firstLine = displayProducts.slice(
     0,
@@ -78,7 +79,11 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
       : "products-track-left";
 
   return (
-    <div className="w-11/12 md:w-10/12 mx-auto py-8 md:py-5">
+    <div
+      className={`w-11/12 md:w-10/12 mx-auto py-8 md:py-5 ${
+        isAllProducts ? "all-products" : ""
+      }`}
+    >
       <div className="flex items-center justify-between mb-6 md:mb-8 border-b pb-4">
         <h2 className="text-xl md:text-2xl font-bold text-gray-800">{title}</h2>
         <a
@@ -128,7 +133,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
+        <div className="all-products-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
           {displayProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
