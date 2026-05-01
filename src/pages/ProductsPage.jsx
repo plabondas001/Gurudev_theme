@@ -155,8 +155,8 @@ const ProductsPage = () => {
           <div className="mb-2">
             <h2 className="text-lg font-semibold text-gray-700">Products</h2>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <Products filters={filterValues} />
+          <div>
+            <Products filters={filterValues} isFilterLayout />
           </div>
         </div>
       </div>
