@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import ProductCard from "../components/products/ProductCard";
 import apiClient from "../api/apiClient";
+import "../components/products/ProductSection.css";
 
 const LIMIT = 20;
 
@@ -124,7 +125,7 @@ const Products = ({
     });
 
     return (
-        <div className="w-11/12 md:w-10/12 mx-auto py-8">
+        <div className="w-11/12 md:w-10/12 mx-auto py-8 all-products">
             {title && (
                 <div className="flex items-center justify-between mb-6 border-b pb-4">
                     <h2 className="text-xl md:text-2xl font-bold text-gray-800">
@@ -150,7 +151,7 @@ const Products = ({
                     {/* =========================
               PRODUCT GRID
           ========================= */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <div className="all-products-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {filteredProducts.map((product, index) => {
                             if (filteredProducts.length === index + 1) {
                                 return (

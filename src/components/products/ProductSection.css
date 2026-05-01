@@ -58,8 +58,8 @@
 .top-selling-products .products-row:active .products-track > div,
 .featured-products .products-row:hover .products-track > div,
 .featured-products .products-row:active .products-track > div,
-.all-products .all-products-grid:hover > div,
-.all-products .all-products-grid:active > div {
+.all-products .all-products-grid > div:hover,
+.all-products .all-products-grid > div:active {
   animation-play-state: paused;
 }
 
