@@ -8,7 +8,8 @@ import {
 import { IoMdCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
 import footer from "/Img/logo/ge_main_logo.png";
-
+import { Link } from "react-router-dom";
+import { NavLink } from "react-router";
 
 const Footer = () => {
   return (
@@ -18,11 +19,13 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="py-4 md:py-8">
-              <img
-                className="w-20 md:w-28 lg:w-18 h-10 md:h-12 lg:h-15 bg-white rounded-md p-2 object-contain"
-                src={footer}
-                alt=""
-              />
+              <a href="/">
+                <img
+                  className="w-20 md:w-28 lg:w-18 h-10 md:h-12 lg:h-15 bg-white rounded-md p-2 object-contain"
+                  src={footer}
+                  alt=""
+                />
+              </a>
             </div>
             <p className="text-xs md:text-sm leading-5">
               Gurudeb Enterprise is an e-commerce platform dedicated to
@@ -69,36 +72,36 @@ const Footer = () => {
             <h1 className="font-bold text-sm md:text-base lg:text-lg">
               Information
             </h1>
-            <a
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/about"
             >
               About us
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/contact"
             >
               Contact us
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Company Info
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Terms & Conditions
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Privacy Policy
-            </a>
+            </NavLink>
           </div>
 
           {/* Shop By */}
@@ -106,48 +109,48 @@ const Footer = () => {
             <h1 className="font-bold text-sm md:text-base lg:text-lg">
               Shop By
             </h1>
-            <a
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Smart Phone
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Charger
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Smart Watch
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Power Bank
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Tab
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Earbuds
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="/products"
             >
               Accessories
-            </a>
+            </NavLink>
           </div>
 
           {/* Support */}
@@ -155,42 +158,42 @@ const Footer = () => {
             <h1 className="font-bold text-sm md:text-base lg:text-lg">
               Support
             </h1>
-            <a
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Support Center
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               How to order
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Order Tracking
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Payment
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Shipping
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               FAQ
-            </a>
+            </NavLink>
           </div>
 
           {/* Consumer Policy */}
@@ -198,24 +201,24 @@ const Footer = () => {
             <h1 className="font-bold text-sm md:text-base lg:text-lg">
               Consumer Policy
             </h1>
-            <a
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Return Policy
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Cancellation
-            </a>
-            <a
+            </NavLink>
+            <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              href="#"
+              to="#"
             >
               Pre-Order
-            </a>
+            </NavLink>
           </div>
         </div>
       </div>
