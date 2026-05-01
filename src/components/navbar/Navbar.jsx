@@ -10,7 +10,7 @@ import { NavLink } from "react-router";
 const Navbar = () => {
   const navItems = [
     { label: "Home", href: "/" },
-    { label: "Product", href: "/product" },
+    { label: "Products", href: "/products" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
@@ -19,7 +19,7 @@ const Navbar = () => {
     { label: "Home", href: "/", icon: <IoHomeOutline size={20} /> },
     {
       label: "Products",
-      href: "/product",
+      href: "/products",
       icon: <IoBagHandleOutline size={20} />,
     },
     { label: "Contact", href: "/contact", icon: <IoCallOutline size={20} /> },

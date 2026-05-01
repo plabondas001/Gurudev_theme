@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import MainLayout from './layouts/MainLayout.jsx'
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
-import Products from './pages/Products.jsx'
+import ProductsPage from './pages/ProductsPage.jsx'
 import Contact from './pages/Contact.jsx'
 import RootError from './pages/RootError.jsx'
 import { CartProvider } from './context/CartContext.jsx'
@@ -25,8 +25,8 @@ const router = createBrowserRouter([
         element: <About />,
       },
       {
-        path: "product",
-        element: <Products />
+        path: "products",
+        element: <ProductsPage />
       },
       {
         path: "contact",
