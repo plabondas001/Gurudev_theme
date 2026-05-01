@@ -4,7 +4,17 @@ import apiClient from "../api/apiClient";
 
 const LIMIT = 20;
 
-const Products = ({ title, params = {}, initialProducts = null }) => {
+const Products = ({
+    title,
+    params = {},
+    initialProducts = null,
+    filters = {
+        categories: [],
+        brands: [],
+        minPrice: 0,
+        maxPrice: Number.MAX_SAFE_INTEGER,
+    },
+}) => {
     const [products, setProducts] = useState(initialProducts || []);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -96,6 +106,23 @@ const Products = ({ title, params = {}, initialProducts = null }) => {
         );
     }
 
+    const filteredProducts = products.filter((product) => {
+        const productCategoryId = product.category?.id;
+        const productBrandId = product.brand?.id;
+        const productPrice = Number(product.price || product.sale_price || 0);
+
+        const categoryMatch =
+            !filters.categories?.length ||
+            filters.categories.includes(productCategoryId);
+        const brandMatch =
+            !filters.brands?.length || filters.brands.includes(productBrandId);
+        const minPriceMatch = productPrice >= (filters.minPrice ?? 0);
+        const maxPriceMatch =
+            productPrice <= (filters.maxPrice ?? Number.MAX_SAFE_INTEGER);
+
+        return categoryMatch && brandMatch && minPriceMatch && maxPriceMatch;
+    });
+
     return (
         <div className="w-11/12 md:w-10/12 mx-auto py-8">
             {title && (
@@ -114,7 +141,7 @@ const Products = ({ title, params = {}, initialProducts = null }) => {
                     {[...Array(10)].map((_, i) => (
                         <div
                             key={i}
-                            className="animate-pulse bg-gray-100 rounded-xl aspect-[3/4]"
+                            className="animate-pulse bg-gray-100 rounded-xl aspect-3/4"
                         />
                     ))}
                 </div>
@@ -124,8 +151,8 @@ const Products = ({ title, params = {}, initialProducts = null }) => {
               PRODUCT GRID
           ========================= */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {products.map((product, index) => {
-                            if (products.length === index + 1) {
+                        {filteredProducts.map((product, index) => {
+                            if (filteredProducts.length === index + 1) {
                                 return (
                                     <div ref={lastProductRef} key={product.id}>
                                         <ProductCard product={product} />
@@ -138,6 +165,12 @@ const Products = ({ title, params = {}, initialProducts = null }) => {
                             );
                         })}
                     </div>
+
+                    {!loadingMore && filteredProducts.length === 0 && (
+                        <p className="text-center text-gray-500 mt-8">
+                            No products found for selected filters
+                        </p>
+                    )}
 
                     {/* =========================
               LOAD MORE SPINNER
