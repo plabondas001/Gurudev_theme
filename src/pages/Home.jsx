@@ -5,6 +5,7 @@ import Brands from '../components/brands/Brands';
 import Reviews from '../components/reviews/Reviews';
 import ProductSection from '../components/products/ProductSection';
 import apiClient from '../api/apiClient';
+import Products from './Products';
 
 import ErrorBoundary from '../components/common/ErrorBoundary';
 
@@ -30,7 +31,7 @@ const Home = () => {
             <Brands />
 
             {/* All Products */}
-            <ProductSection title="All Products" params={{ page_size: 10 }} />
+            <Products />
 
             <Reviews />
         </div>

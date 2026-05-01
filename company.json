@@ -1,0 +1,83 @@
+{
+    "__typename": "Company",
+    "capabilities": null,
+    "headingBrands": null,
+    "headings": [
+        {
+            "__typename": "CompanyHeading",
+            "headingId": "2250603",
+            "naturalName": "Automation Equipment"
+        },
+        {
+            "__typename": "CompanyHeading",
+            "headingId": "2310225",
+            "naturalName": "Automation Machines"
+        },
+        {
+            "__typename": "CompanyHeading",
+            "headingId": "2310258",
+            "naturalName": "Automation Systems"
+        }
+    ],
+    "pdm_text": "Manufacturer of automatic inspection systems for the aerospace, defense, and military industries. Case, bullet, cartridge, cup, and bullet sorting inspection systems available. \u003Cem\u003EAutomated\u003C/em\u003E reclamation and inspection systems for aerospace fasteners also offered. \u003Cem\u003EAutomated\u003C/em\u003E inspection systems with feeders and custom trays provided. Made in the USA.",
+    "tgramsId": "1067616",
+    "name": "General Inspection, LLC",
+    "xometryVerified": false,
+    "isAdvertiser": true,
+    "primaryPhone": "(888) 323-5616",
+    "description": "Manufacturer of high speed inspection systems for ammunition, aerospace/automotive fasteners, turned parts, bearings, battery cans, and other high volume parts. Sensors include laser, vision, eddy current, and other 3D inspection technologies. Standard products include the Gi-6v ammunition inspection system that exceeds Mil-Std-636 for dimensional inspection and visual defect detection for small caliber ammo, medium caliber ammo and ammo components. Products include visionlab that provide 3D, non-contact gauging system designed to streamline inspection processes such as, first part inspection, SPC sampling and final audits. Also perform complete part layouts in less than 5 s. Also offer  visiondome that provide high-speed inspection system for roller bearings. Multi-camera inspection system provides shadow free inspection to detect the smallest porosity, burn marks, chatter and cracks while measuring the annealling positions.",
+    "tier": "VERIFIED",
+    "type": "M",
+    "mainLocationTgramsId": null,
+    "mainLocationName": null,
+    "otherActivities": null,
+    "rank": "600400000000003000",
+    "distance": null,
+    "heading": {
+        "__typename": "CompanyHeading",
+        "headingId": "2250603",
+        "name": "Automation Equipment",
+        "naturalName": "Automation Equipment",
+        "description": "Manufacturer of automatic inspection systems for the aerospace, defense, and military industries. Case, bullet, cartridge, cup, and bullet sorting inspection systems available. Automated reclamation and inspection systems for aerospace fasteners also offered. Automated inspection systems with feeders and custom trays provided. Made in the USA.",
+        "url": "https://geninsp.com/"
+    },
+    "address": {
+        "__typename": "CompanyAddress",
+        "address1": "10585 Enterprise Drive",
+        "address2": null,
+        "address3": null,
+        "city": "Davisburg",
+        "state": "MI",
+        "stateName": "Michigan",
+        "zip": "48350",
+        "zip4": null,
+        "country": "USA",
+        "county": null,
+        "latitude": 42.74998333,
+        "longitude": -83.5361721
+    },
+    "products": null,
+    "catalogType": null,
+    "videos": [
+        {
+            "__typename": "CompanyVideo",
+            "id": "50p2czH5",
+            "title": "General Inspection, LLC Davidsburg MI Company Overview",
+            "description": "General Inspection LLC manufactures a complete line of gauging and 100% inspection systems. Ammunition: Bullets; Case Sorting; Cartridge Sorting; Cup & Primer Sorting; Shot-Gun Shells & Rimfire. Automotive: Fastener Inspection Systems; Deep Drawn Stamping; Sintered Metals/Powertrain Parts; Turned/Screw Machine Parts; Bearings; Thread Inspection. Aerospace: Automated Reclamation and Inspection Systems (ARIS); Aerospace Fastener Inspection Systems. Medical: Bone Screws; Dental Implants; Inhaler Cans; Pharmaceuticals. Sensors & Automation: Eddy Current; Visions & Sensor Systems; Automation Options. (888) 817-6314 | info@generalinspection.com | www.geninsp.com",
+            "duration": "PT00M48S",
+            "url": "https://cdn.jwplayer.com/videos/50p2czH5-ikzsokEw.mp4",
+            "image": "https://cdn.jwplayer.com/thumbs/50p2czH5-320.jpg",
+            "label": "Company Overview",
+            "text": null,
+            "player": null
+        }
+    ],
+    "annualSales": "$5 - 9.9 Mil",
+    "isMultiLocation": false,
+    "logoUrl": "https://d27w0ioz006ti0.cloudfront.net/company/1cc923bf-b549-4c17-ab94-84be5cb9e275/logos/290006/General Inspection.png",
+    "logoTitle": "General Inspection, LLC Company Logo",
+    "numberEmployees": "10-49",
+    "yearFounded": "1991",
+    "isClaimed": true,
+    "website": "https://geninsp.com/"
+}
