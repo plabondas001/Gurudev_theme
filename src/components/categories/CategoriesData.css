@@ -19,7 +19,7 @@
 
 .categories-track__inner {
   display: flex;
-  gap: 4rem; /* spacing between items */
+  gap: 1rem; /* spacing between items */
   align-items: center;
   padding: 0 1rem; /* extra breathing space */
 }
