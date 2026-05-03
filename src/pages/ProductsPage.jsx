@@ -258,15 +258,24 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      {isMobileFilterOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Close filter drawer"
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setIsMobileFilterOpen(false)}
-          />
-          <aside className="absolute right-0 top-0 h-full w-[86%] max-w-sm overflow-y-auto bg-white p-4 shadow-xl">
+      <div
+        className={`fixed inset-0 z-50 lg:hidden ${
+          isMobileFilterOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
+        <button
+          type="button"
+          aria-label="Close filter drawer"
+          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
+            isMobileFilterOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setIsMobileFilterOpen(false)}
+        />
+        <aside
+          className={`absolute right-0 top-0 h-full w-[60%] max-w-sm overflow-y-auto bg-white p-4 shadow-xl transform transition-transform duration-400 ease-out ${
+            isMobileFilterOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
             <div className="mb-4 flex items-center justify-between">
               <h1 className="text-2xl font-bold">Filter</h1>
               <button
@@ -449,9 +458,8 @@ const ProductsPage = () => {
                 Clear Filters
               </button>
             </div>
-          </aside>
-        </div>
-      )}
+        </aside>
+      </div>
     </div>
   );
 };
