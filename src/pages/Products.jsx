@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import ProductCard from "../components/products/ProductCard";
+import ProductSkeleton from "../components/products/ProductSkeleton";
 import apiClient from "../api/apiClient";
 import "../components/products/ProductSection.css";
 
 const LIMIT = 20;
 
 const Products = ({
-  title,
   params = {},
   initialProducts = null,
   isFilterLayout = false,
@@ -133,11 +133,15 @@ const Products = ({
 
   return (
     <div className={wrapperClasses}>
-      {title && (
+      {/* Heading - Hidden on Filter Page */}
+      {!isFilterLayout && (
         <div className="flex items-center justify-between mb-6 border-b pb-4">
           <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-            {title}
+            All Products
           </h2>
+          <a href="/products" className="text-primary text-sm font-semibold hover:underline">
+            View All
+          </a>
         </div>
       )}
 
@@ -145,12 +149,9 @@ const Products = ({
           INITIAL LOADING
       ========================= */}
       {loadingInitial ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0">
-          {[...Array(10)].map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-100 rounded-xl aspect-3/4"
-            />
+        <div className={gridClasses}>
+          {[...Array(LIMIT)].map((_, i) => (
+            <ProductSkeleton key={i} />
           ))}
         </div>
       ) : (

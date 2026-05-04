@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
+import ProductSkeleton from "./ProductSkeleton";
 import apiClient from "../../api/apiClient";
 import "./ProductSection.css";
 
@@ -32,10 +33,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
         <h2 className="text-xl md:text-2xl font-bold mb-6">{title}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-100 rounded-xl aspect-3/4"
-            ></div>
+            <ProductSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -50,7 +48,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
   const isFeaturedProducts = title === "Featured Products";
   const isTopSellingProducts = title === "Top Selling Products";
   const isAllProducts = title === "All Products";
-  const displayProducts = products.slice(0, 10);
+  const displayProducts = products.slice(0, 20);
   const firstLine = displayProducts.slice(
     0,
     Math.ceil(displayProducts.length / 2),
