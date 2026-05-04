@@ -7,6 +7,7 @@ import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import ProductsPage from './pages/ProductsPage.jsx'
 import Contact from './pages/Contact.jsx'
+import ProductDetails from './pages/ProductDetails.jsx'
 import RootError from './pages/RootError.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "contact",
         element: <Contact />
+      },
+      {
+        path: "product/:slug",
+        element: <ProductDetails />
       },
     ]
   },

@@ -1,11 +1,16 @@
 import React from "react";
 import { useCart } from "../../context/CartContext";
 import { ShoppingCart } from "lucide-react";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
+import { useNavigate } from "react-router";
 
 const ProductCard = ({ product }) => {
   const { handleCart } = useCart();
+  const navigate = useNavigate();
+
+  const rating = product.rating || 0;
+  const reviewCount = product.reviews_count || 0;
 
   const price = product.price || product.sale_price || 0;
   const oldPrice = product.old_price || product.regular_price;
@@ -16,7 +21,10 @@ const ProductCard = ({ product }) => {
     "/Img/logo/logo.png";
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden flex flex-col h-full group">
+    <div 
+      onClick={() => navigate(`/product/${product.slug}`)}
+      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full group cursor-pointer"
+    >
       <div className="relative aspect-square overflow-hidden bg-gray-50">
         <div className="absolute w-full z-10">
           <div className="p-2 flex items-center justify-between">
@@ -32,7 +40,7 @@ const ProductCard = ({ product }) => {
               </button>
             </div>
             <button className="bg-gray-100 rounded-full cursor-pointer">
-              <FaHeart className="text-secondary" size={25} />
+              <FaHeart className="text-primary" size={25} />
             </button>
           </div>
         </div>
@@ -50,20 +58,41 @@ const ProductCard = ({ product }) => {
       </div>
 
       <div className="p-3 md: space-y-2 flex flex-col flex-grow mt-auto">
-        <h3 className="font-semibold text-sm lg:text-xl line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+        <h3 className="font-semibold text-sm lg:text-xl text-primary line-clamp-2 mb-1 group-hover:text-primary/80 transition-colors">
           {product.name}
         </h3>
-        <div className="flex items-center gap-2">
-          <h3 className="bg-primary text-white px-2 py-1 text-xs rounded-md">
-            Brand :{" "}
-          </h3>
-          <p className="font-semibold text-xs">{product.brand?.name}</p>
+        
+        {/* Star Rating */}
+        <div className="flex items-center gap-1 mb-2">
+          <div className="flex text-primary">
+            {[...Array(5)].map((_, i) => (
+              <FaStar 
+                key={i} 
+                size={14} 
+                className={i < Math.floor(rating) ? "text-primary" : "text-gray-300"} 
+              />
+            ))}
+          </div>
+          <span className="text-[10px] text-gray-500">({reviewCount})</span>
         </div>
-        <div className="flex items-center gap-2">
-          <h3 className="bg-secondary text-white px-2  py-1 text-xs rounded-md">
-            Category:{" "}
-          </h3>
-          <p className="font-semibold text-xs">{product.category?.name}</p>
+
+        <div className="flex flex-col gap-1.5 mb-3">
+          {product.brand && (
+            <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md border border-primary/20 w-fit">
+              {product.brand.logo && (
+                <img src={product.brand.logo} alt="" className="w-3.5 h-3.5 object-contain rounded-full bg-white p-0.5" />
+              )}
+              <span className="text-gray-700 font-semibold text-[10px]">{product.brand.name}</span>
+            </div>
+          )}
+          {product.category && (
+            <div className="flex items-center gap-1.5 bg-secondary/10 px-2 py-1 rounded-md border border-secondary/20 w-fit">
+              {product.category.logo && (
+                <img src={product.category.logo} alt="" className="w-3.5 h-3.5 object-contain rounded-full bg-white p-0.5" />
+              )}
+              <span className="text-gray-700 font-semibold text-[10px]">{product.category.name}</span>
+            </div>
+          )}
         </div>
         <div className="mt-auto">
           <div className="flex items-center gap-2 mb-3">
@@ -78,8 +107,11 @@ const ProductCard = ({ product }) => {
           </div>
 
           <button
-            onClick={() => handleCart(product)}
-            className="w-full bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm font-medium hover:bg-primary/90 transition-all duration-300 hover:scale-105 delay-75 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCart(product);
+            }}
+            className="w-full bg-primary text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-md cursor-pointer"
           >
             <ShoppingCart size={16} />
             Add to Cart

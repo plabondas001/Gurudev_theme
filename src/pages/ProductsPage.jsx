@@ -66,7 +66,7 @@ const ProductsPage = () => {
   return (
     <div className="w-11/12 md:w-10/12 mx-auto my-8">
       <div className="flex flex-col lg:flex-row gap-6">
-        <aside className="hidden lg:block w-full lg:w-[280px] bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-6 h-fit">
+        <aside className="hidden lg:block w-full lg:w-[280px] bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-6 h-fit sticky top-24">
           <h1 className="text-2xl font-bold">Filter</h1>
 
           <div>

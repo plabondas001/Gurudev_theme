@@ -42,7 +42,7 @@ const Products = ({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // ⏳ TEST DELAY (REMOVE IN PRODUCTION)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const data = await apiClient.fetchProducts({
         ...params,

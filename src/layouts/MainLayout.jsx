@@ -8,7 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 const MainLayout = () => {
     return (
         <div className="min-h-screen flex flex-col">
-            <Header />
+            <div className="sticky top-0 z-50 bg-white shadow-sm">
+                <Header />
+            </div>
             <Navbar />
             <main className="flex-grow">
                 <Outlet />

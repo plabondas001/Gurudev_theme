@@ -41,6 +41,10 @@ export const apiClient = {
     return request(`/products/${id}/`);
   },
 
+  fetchProductBySlug: async (slug) => {
+    return request(`/products/${slug}/`);
+  },
+
   // =========================
   // CATEGORIES
   // =========================

@@ -41,7 +41,7 @@ const Header = () => {
     return (
         <div className="w-11/12 md:w-10/12 mx-auto">
             {/* Desktop Header */}
-            <div className="hidden md:flex items-center justify-between mt-6 md:mt-2 gap-4">
+            <div className="hidden md:flex items-center justify-between py-2 gap-4">
                 <div>
                     <a href="/">
                         <img

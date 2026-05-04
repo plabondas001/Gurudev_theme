@@ -32,7 +32,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <div className="hidden md:block mt-5 bg-primary text-white">
+      <div className="hidden md:block bg-primary text-white">
         <div className="w-11/12 md:w-10/12 mx-auto py-2 md:py-3">
           <ul className="flex items-center gap-2 lg:gap-6 flex-wrap">
             {navItems.map((item) => (
