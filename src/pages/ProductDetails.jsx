@@ -204,7 +204,7 @@ const ProductDetails = () => {
                 )}
               </div>
 
-              <div className="flex gap-4 overflow-x-hidden scroll-smooth snap-x snap-mandatory pb-2 scrollbar-hide p-5">
+              <div className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-4 overflow-visible sm:overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-2 p-2 sm:p-5">
                 {allImages.map((img, index) => (
                   <button
                     key={index}
@@ -212,7 +212,7 @@ const ProductDetails = () => {
                       setIsAnimating(true);
                       setActiveImage(index);
                     }}
-                    className={`relative w-24 h-24 shrink-0 snap-start rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${activeImage % allImages.length === index ? "border-primary shadow-md scale-105" : "border-transparent hover:border-gray-300"}`}
+                    className={`relative w-16 h-16 sm:w-24 sm:h-24 shrink-0 snap-start rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${activeImage % allImages.length === index ? "border-primary shadow-md scale-105" : "border-transparent hover:border-gray-300"}`}
                   >
                     <img
                       src={img}
