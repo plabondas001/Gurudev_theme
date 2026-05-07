@@ -14,6 +14,12 @@ import { apiClient } from "../api/apiClient";
 import Infographics from "../components/products/detail/Infographics";
 import Color from "../components/products/detail/Color";
 import Variant from "../components/products/detail/Variant";
+import Description from "../components/products/detail/Description";
+import Specification from "../components/products/detail/Specification";
+import Reviews from "../components/products/detail/Reviews";
+import UserReview from "../components/products/detail/UserReview";
+import Faq from "../components/products/detail/Faq";
+import SelectOption from "../components/products/detail/SelectOption";
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -328,10 +334,10 @@ const ProductDetails = () => {
               {product.category?.slug === "smart-phones" && <Infographics />}
 
               {/* Color */}
-              <Color></Color>
+              {product.category?.slug === "smart-phones" && <Color />}
 
               {/* Variants */}
-              <Variant></Variant>
+              {product.category?.slug === "smart-phones" && <Variant />}
 
               {/* Actions */}
               <div className="mt-auto space-y-6">
@@ -399,18 +405,23 @@ const ProductDetails = () => {
           </div>
         </div>
 
+        {/* Option */}
+        <SelectOption></SelectOption>
+
+        {/* Specification section */}
+        <Specification product={product}></Specification>
+
         {/* Full Description Section */}
-        {product.description && (
-          <div className="mt-12 bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b-2 border-primary w-fit">
-              Product Description
-            </h2>
-            <div
-              className="prose prose-lg max-w-none text-gray-600 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            />
-          </div>
-        )}
+        <Description product={product}></Description>
+
+        {/* Reviews */}
+        <Reviews product={product}></Reviews>
+
+        {/* Write Review */}
+        <UserReview></UserReview>
+
+        {/* FAQ */}
+        <Faq product={product}></Faq>
       </div>
     </div>
   );
