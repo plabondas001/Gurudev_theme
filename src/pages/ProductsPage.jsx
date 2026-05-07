@@ -71,7 +71,7 @@ const ProductsPage = () => {
 
           <div>
             <h2 className="font-semibold mb-3 text-lg">Categories</h2>
-            <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 p-4 rounded-lg">
+            <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
               {categories.map((category) => (
                 <label
                   key={category.id}
@@ -93,7 +93,7 @@ const ProductsPage = () => {
 
           <div>
             <h2 className="font-semibold mb-3 text-lg">Brands</h2>
-            <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 p-4 rounded-lg">
+            <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100  text-primary p-4 rounded-lg">
               {brands.map((brand) => (
                 <label
                   key={brand.id}
@@ -121,7 +121,7 @@ const ProductsPage = () => {
                 <input
                   type="range"
                   min="0"
-                  max={priceRange.max}
+                  max={MAX_PRICE_CEILING}
                   step="100"
                   value={priceRange.min}
                   onChange={(e) => {
@@ -135,7 +135,7 @@ const ProductsPage = () => {
                     }));
                     setMinPriceInput(String(nextMin));
                   }}
-                  className="w-full cursor-pointer"
+                  className="w-full cursor-pointer accent-primary"
                 />
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-sm text-gray-600 shrink-0">৳</span>
@@ -175,7 +175,7 @@ const ProductsPage = () => {
                 <p className="text-xs text-gray-500 mb-1">Max Price</p>
                 <input
                   type="range"
-                  min={priceRange.min}
+                  min="0"
                   max={MAX_PRICE_CEILING}
                   step="100"
                   value={priceRange.max}
@@ -190,7 +190,7 @@ const ProductsPage = () => {
                     }));
                     setMaxPriceInput(String(nextMax));
                   }}
-                  className="w-full cursor-pointer"
+                  className="w-full cursor-pointer accent-primary"
                 />
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-sm text-gray-600 shrink-0">৳</span>
@@ -237,7 +237,7 @@ const ProductsPage = () => {
             <button
               type="button"
               onClick={() => setIsMobileFilterOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm cursor-pointer"
+              className="lg:hidden inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white text-primary px-3 py-2 text-sm font-medium text-gray-700 shadow-sm cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -245,7 +245,7 @@ const ProductsPage = () => {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="h-4 w-4"
+                className="h-4 w-4 text-primary"
               >
                 <path d="M3 5h18M6 12h12M10 19h4" />
               </svg>
@@ -289,7 +289,7 @@ const ProductsPage = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="h-5 w-5"
+                  className="h-5 w-5 text-primary"
                 >
                   <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
@@ -299,7 +299,7 @@ const ProductsPage = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="font-semibold mb-3 text-lg">Categories</h2>
-                <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 p-4 rounded-lg">
+                <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
                   {categories.map((category) => (
                     <label
                       key={`mobile-category-${category.id}`}
@@ -321,7 +321,7 @@ const ProductsPage = () => {
 
               <div>
                 <h2 className="font-semibold mb-3 text-lg">Brands</h2>
-                <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 p-4 rounded-lg">
+                <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
                   {brands.map((brand) => (
                     <label
                       key={`mobile-brand-${brand.id}`}
@@ -349,7 +349,7 @@ const ProductsPage = () => {
                     <input
                       type="range"
                       min="0"
-                      max={priceRange.max}
+                      max={MAX_PRICE_CEILING}
                       step="100"
                       value={priceRange.min}
                       onChange={(e) => {
@@ -363,7 +363,7 @@ const ProductsPage = () => {
                         }));
                         setMinPriceInput(String(nextMin));
                       }}
-                      className="w-full cursor-pointer"
+                      className="w-full cursor-pointer accent-primary"
                     />
                     <div className="mt-2 flex items-center gap-2">
                       <span className="text-sm text-gray-600 shrink-0">৳</span>
@@ -403,7 +403,7 @@ const ProductsPage = () => {
                     <p className="text-xs text-gray-500 mb-1">Max Price</p>
                     <input
                       type="range"
-                      min={priceRange.min}
+                      min="0"
                       max={MAX_PRICE_CEILING}
                       step="100"
                       value={priceRange.max}
@@ -418,7 +418,7 @@ const ProductsPage = () => {
                         }));
                         setMaxPriceInput(String(nextMax));
                       }}
-                      className="w-full cursor-pointer"
+                      className="w-full cursor-pointer accent-primary"
                     />
                     <div className="mt-2 flex items-center gap-2">
                       <span className="text-sm text-gray-600 shrink-0">৳</span>

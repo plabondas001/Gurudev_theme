@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router';
 import Header from '../components/header/Header';
 import Navbar from '../components/navbar/Navbar';
@@ -6,6 +7,26 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MainLayout = () => {
+    useEffect(() => {
+        const handleMouseMove = (event) => {
+            const isNearRightEdge = window.innerWidth - event.clientX <= 24;
+            document.documentElement.classList.toggle('show-page-scrollbar', isNearRightEdge);
+        };
+
+        const handleMouseLeave = () => {
+            document.documentElement.classList.remove('show-page-scrollbar');
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseleave', handleMouseLeave);
+            document.documentElement.classList.remove('show-page-scrollbar');
+        };
+    }, []);
+
     return (
         <div className="min-h-screen flex flex-col">
             <div className="sticky top-0 z-50 bg-white shadow-sm">

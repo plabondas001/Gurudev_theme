@@ -40,7 +40,7 @@ const ProductCard = ({ product }) => {
               </button>
             </div>
             <button className="bg-gray-100 rounded-full cursor-pointer">
-              <FaHeart className="text-primary" size={25} />
+              <FaHeart className="text-gray-400" size={25} />
             </button>
           </div>
         </div>

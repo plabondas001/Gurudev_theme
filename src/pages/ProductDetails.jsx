@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   FaStar,
-  FaStarHalfAlt,
   FaHeart,
   FaShareAlt,
   FaMinus,
@@ -326,9 +325,7 @@ const ProductDetails = () => {
 
               {/* Infographics */}
 
-              {product.category.slug === "smart-phones" && (
-                <Infographics></Infographics>
-              )}
+              {product.category?.slug === "smart-phones" && <Infographics />}
 
               {/* Color */}
               <Color></Color>
