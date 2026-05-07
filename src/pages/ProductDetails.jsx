@@ -12,6 +12,7 @@ import {
 import { ShoppingCart, ArrowLeft, Zap } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { apiClient } from "../api/apiClient";
+import Infographics from "../components/products/productDetail/Infographics";
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -62,7 +63,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (allImages.length <= 1) return;
-    if (activeImage !== allImages.length) return;
+    if (activeImage < allImages.length) return;
 
     const timeout = setTimeout(() => {
       setIsAnimating(false);
@@ -100,13 +101,13 @@ const ProductDetails = () => {
       return;
     }
 
-    setActiveImage((prev) => prev - 1);
+    setActiveImage((prev) => Math.max(prev - 1, 0));
   };
 
   const handleNextImage = () => {
     if (allImages.length <= 1) return;
     setIsAnimating(true);
-    setActiveImage((prev) => prev + 1);
+    setActiveImage((prev) => Math.min(prev + 1, allImages.length));
   };
 
   const handleQuantityChange = (type) => {
@@ -203,7 +204,7 @@ const ProductDetails = () => {
                 )}
               </div>
 
-              <div className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 scrollbar-hide p-5">
+              <div className="flex gap-4 overflow-x-hidden scroll-smooth snap-x snap-mandatory pb-2 scrollbar-hide p-5">
                 {allImages.map((img, index) => (
                   <button
                     key={index}
@@ -299,7 +300,7 @@ const ProductDetails = () => {
                       ৳{price}
                     </span>
                   )}
-                  <span className="text-4xl font-black text-primary">
+                  <span className="text-3xl font-black text-primary">
                     ৳{hasDiscount ? discountPrice : price}
                   </span>
                 </div>
@@ -321,9 +322,15 @@ const ProductDetails = () => {
                 />
               )}
 
+              {/* Infographics */}
+
+              {product.category.slug === "smart-phones" && (
+                <Infographics></Infographics>
+              )}
+
               {/* Actions */}
               <div className="mt-auto space-y-6">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
                   {/* Quantity Selector */}
                   <div className="flex items-center bg-gray-100 p-1.5 rounded-xl border border-gray-200">
                     <button
@@ -348,8 +355,8 @@ const ProductDetails = () => {
                     onClick={() => handleCart({ ...product, quantity })}
                     className="w-full sm:w-auto bg-gray-100 text-gray-800 h-14 px-8 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-gray-200 transition-all active:scale-95 cursor-pointer group"
                   >
-                    <ShoppingCart className="group-hover:translate-x-1 transition-transform" />
-                    Cart
+                    <ShoppingCart className="group-hover:translate-x-1 transition-transform hover:bg-primary" />
+                    Add to Cart
                   </button>
 
                   {/* Buy Now Button */}
