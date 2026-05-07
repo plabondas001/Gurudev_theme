@@ -12,8 +12,9 @@ import {
 import { ShoppingCart, ArrowLeft, Zap } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { apiClient } from "../api/apiClient";
-import Infographics from "../components/products/productDetail/Infographics";
-import Color from "../components/products/productDetail/Color";
+import Infographics from "../components/products/detail/Infographics";
+import Color from "../components/products/detail/Color";
+import Variant from "../components/products/detail/Variant";
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -330,7 +331,10 @@ const ProductDetails = () => {
               )}
 
               {/* Color */}
-             <Color></Color>
+              <Color></Color>
+
+              {/* Variants */}
+              <Variant></Variant>
 
               {/* Actions */}
               <div className="mt-auto space-y-6">

@@ -4,7 +4,7 @@ const Color = () => {
   const [color, setColor] = useState("");
 
   return (
-    <div className="mb-5">
+    <div className="mb-3">
       <h1 className="font-semibold text-2xl">Color</h1>
       <div className="flex items-center gap-3 p-2 rounded-md w-fit bg-white">
         {/* Blue */}
