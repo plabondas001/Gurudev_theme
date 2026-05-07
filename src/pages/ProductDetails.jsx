@@ -338,32 +338,39 @@ const ProductDetails = () => {
 
               {/* Actions */}
               <div className="mt-auto space-y-6">
-                <div className="flex flex-col sm:flex-row items-center gap-2">
-                  {/* Quantity Selector */}
-                  <div className="flex items-center bg-gray-100 p-1.5 rounded-xl border border-gray-200">
-                    <button
-                      onClick={() => handleQuantityChange("minus")}
-                      className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"
-                    >
-                      <FaMinus size={12} />
-                    </button>
-                    <span className="w-12 text-center font-bold text-gray-900">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => handleQuantityChange("plus")}
-                      className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"
-                    >
-                      <FaPlus size={12} />
+                <div className="flex flex-col mt-5 sm:flex-row sm:items-center space-y-3 gap-2">
+                  <div className="flex w-full items-center gap-3 sm:contents">
+                    {/* Quantity Selector */}
+                    <div className="order-1 flex items-center bg-gray-100 p-1.5 rounded-xl border border-gray-200">
+                      <button
+                        onClick={() => handleQuantityChange("minus")}
+                        className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <FaMinus size={12} />
+                      </button>
+                      <span className="w-12 text-center font-bold text-gray-900">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() => handleQuantityChange("plus")}
+                        className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <FaPlus size={12} />
+                      </button>
+                    </div>
+
+                    {/* Favorite Button */}
+                    <button className="order-4 w-14 h-14 flex items-center justify-center border-2 border-gray-200 rounded-2xl text-gray-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all cursor-pointer">
+                      <FaHeart size={24} />
                     </button>
                   </div>
 
                   {/* Add to Cart Button */}
                   <button
                     onClick={() => handleCart({ ...product, quantity })}
-                    className="w-full sm:w-auto bg-gray-100 text-gray-800 h-14 px-8 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-gray-200 transition-all active:scale-95 cursor-pointer group"
+                    className="order-2 w-full sm:w-auto bg-gray-100 text-gray-800 h-14 px-8 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-primary hover:text-white transition-all duration-300 delay-100 hover:scale-103 active:scale-95 cursor-pointer group"
                   >
-                    <ShoppingCart className="group-hover:translate-x-1 transition-transform hover:bg-primary" />
+                    <ShoppingCart className="group-hover:translate-x-1 transition-transform" />
                     Add to Cart
                   </button>
 
@@ -373,15 +380,10 @@ const ProductDetails = () => {
                       handleCart({ ...product, quantity });
                       navigate("/cart"); // Assuming there is a cart page
                     }}
-                    className="grow w-full sm:w-auto bg-primary text-white h-14 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20 cursor-pointer group"
+                    className="order-3 grow w-full sm:w-auto bg-primary text-white h-14 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20 cursor-pointer group"
                   >
                     <Zap className="fill-white group-hover:scale-110 transition-transform" />
                     Buy Now
-                  </button>
-
-                  {/* Favorite Button */}
-                  <button className="w-14 h-14 flex items-center justify-center border-2 border-gray-200 rounded-2xl text-gray-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all cursor-pointer">
-                    <FaHeart size={24} />
                   </button>
                 </div>
 
