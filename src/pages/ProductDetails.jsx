@@ -409,19 +409,27 @@ const ProductDetails = () => {
         <SelectOption></SelectOption>
 
         {/* Specification section */}
-        <Specification product={product}></Specification>
+        <div id="specification">
+          <Specification product={product}></Specification>
+        </div>
 
         {/* Full Description Section */}
-        <Description product={product}></Description>
+        <div id="description">
+          <Description product={product}></Description>
+        </div>
 
         {/* Reviews */}
-        <Reviews product={product}></Reviews>
+        <div id="reviews">
+          <Reviews product={product}></Reviews>
+        </div>
 
         {/* Write Review */}
         <UserReview></UserReview>
 
         {/* FAQ */}
-        <Faq product={product}></Faq>
+        <div id="faq">
+          <Faq product={product}></Faq>
+        </div>
       </div>
     </div>
   );

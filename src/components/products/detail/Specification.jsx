@@ -21,14 +21,17 @@ const Specification = ({ product }) => {
           {specifications.map((item, index) => (
             <div
               key={`${item.key || "spec"}-${index}`}
-              className={`grid grid-cols-1 sm:grid-cols-[220px_1fr] ${
+              className={`flex items-start ${
                 index % 2 === 0 ? "bg-gray-100" : "bg-white"
-              }`}
+              } border-b border-gray-100 last:border-b-0`}
             >
-              <div className="border-b border-gray-100 px-5 py-3 font-semibold text-black sm:border-r">
+              {/* Key */}
+              <div className="w-[160px] min-w-[160px] sm:w-[220px] sm:min-w-[220px] px-4 py-3 font-semibold text-black border-r border-gray-200">
                 {item.key}
               </div>
-              <div className="border-b border-gray-100 px-5 py-3 text-black">
+
+              {/* Value */}
+              <div className="flex-1 px-4 py-3 text-black">
                 {item.value}
               </div>
             </div>
