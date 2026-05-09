@@ -1,5 +1,6 @@
 import React from "react";
 import { MdOutlineStarOutline } from "react-icons/md";
+import BasicRating from "./Rating";
 
 const UserReview = () => {
   return (
@@ -16,39 +17,7 @@ const UserReview = () => {
           <h1 className="font-bold text-2xl mt-8">Overall Rating</h1>
 
           {/* rating */}
-          <div className="rating">
-            <input
-              type="radio"
-              name="rating-2"
-              className="mask mask-star-2 bg-yellow-300"
-              aria-label="1 star"
-            />
-            <input
-              type="radio"
-              name="rating-2"
-              className="mask mask-star-2 bg-yellow-300"
-              aria-label="2 star"
-              defaultChecked
-            />
-            <input
-              type="radio"
-              name="rating-2"
-              className="mask mask-star-2 bg-yellow-300"
-              aria-label="3 star"
-            />
-            <input
-              type="radio"
-              name="rating-2"
-              className="mask mask-star-2 bg-yellow-300"
-              aria-label="4 star"
-            />
-            <input
-              type="radio"
-              name="rating-2"
-              className="mask mask-star-2 bg-yellow-300"
-              aria-label="5 star"
-            />
-          </div>
+          <BasicRating></BasicRating>
 
           <textarea
             id="product-review"
