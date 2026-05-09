@@ -364,7 +364,7 @@ const ProductDetails = () => {
                     </div>
 
                     {/* Favorite Button */}
-                    <button className="order-4 w-14 h-14 flex items-center justify-center border-2 border-gray-200 rounded-2xl text-gray-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all cursor-pointer">
+                    <button className="order-4 w-14 h-14 flex items-center justify-center border-2 border-gray-200 rounded-2xl text-gray-400 hover:text-primary hover:border-primary hover:bg-green-50 transition-all cursor-pointer">
                       <FaHeart size={24} />
                     </button>
                   </div>

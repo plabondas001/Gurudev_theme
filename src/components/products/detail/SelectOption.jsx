@@ -19,10 +19,8 @@ const SelectOption = () => {
         const el = document.getElementById(tab.id);
         if (!el) continue;
         const top = el.getBoundingClientRect().top;
-        
-        // Section টা viewport এর উপরে গেছে বা threshold এর মধ্যে আছে
+
         if (top <= 150) {
-          // যে section এর top সবচেয়ে বেশি (মানে সবচেয়ে কাছে viewport এর)
           if (top > closestDistance) {
             closestDistance = top;
             currentTab = tab.label;
@@ -34,7 +32,6 @@ const SelectOption = () => {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    // Initial check
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -50,13 +47,13 @@ const SelectOption = () => {
   };
 
   return (
-    <div className="sticky top-26 z-50 bg-white/40 backdrop-blur-md rounded-2xl w-fit mt-22">
-      <div className="flex items-center sm:gap-5 flex-wrap gap-3 px-4 py-3">
+    <div className="sticky top-21 lg:top-26 z-50 bg-white/40 backdrop-blur-md rounded-2xl w-fit mt-22">
+      <div className="flex items-center sm:gap-5 gap-2 px-3 py-3 sm:px-4 flex-nowrap">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => scrollTo(tab)}
-            className={`font-semibold px-3 py-1 lg:px-3 lg:py-2 border cursor-pointer rounded-md border-gray-200 transition-all
+            className={`font-semibold px-2 py-1 sm:px-3 lg:py-2 border cursor-pointer rounded-md border-gray-200 transition-all whitespace-nowrap text-sm sm:text-base flex-shrink-0
               ${
                 select === tab.label
                   ? "bg-primary text-white shadow-2xl shadow-primary"
