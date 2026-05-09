@@ -105,15 +105,19 @@ const Faq = ({ product }) => {
           })}
         </div>
 
-        <p className="mt-10 text-center text-base text-gray-600 sm:text-lg">
-          Still have questions?{" "}
-          <a
-            href="/contact"
-            className="font-bold text-gray-950 underline underline-offset-4 transition-colors hover:text-primary"
-          >
-            Contact Us
-          </a>
-        </p>
+        {/* Q&A */}
+        <h1 className="mt-5 lg:mt-12 font-semibold lg:font-bold text-2xl lg:text-2xl border-b-2 w-fit border-primary py-2">
+          Ask more questions to know about this product.
+        </h1>
+        <textarea
+          className="border border-gray-400 mt-5 w-full h-32 lg:h-52 p-3 text-semibo rounded-md"
+          placeholder="Ask more questions...."
+        ></textarea>
+        <input
+          className="mt-1 lg:mt-3 px-5 lg:px-8 py-2 bg-primary rounded-md text-white cursor-pointer"
+          type="submit"
+          value="Submit"
+        />
       </div>
     </section>
   );
