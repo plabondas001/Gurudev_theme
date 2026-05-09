@@ -7,7 +7,7 @@ const tabs = [
   { label: "FAQ", id: "faq" },
 ];
 
-const SelectOption = () => {
+const TabMenu = () => {
   const [select, setSelect] = useState("Specification");
 
   useEffect(() => {
@@ -68,4 +68,4 @@ const SelectOption = () => {
   );
 };
 
-export default SelectOption;
+export default TabMenu;

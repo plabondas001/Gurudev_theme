@@ -4,6 +4,7 @@ import { BsFillCartCheckFill } from "react-icons/bs";
 import { BsCartXFill } from "react-icons/bs";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { useNavigate } from "react-router";
+
 export default function CartSidebar({
   cartOpen,
   setCartOpen,
@@ -66,7 +67,7 @@ export default function CartSidebar({
           ${cartOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
           <div className="flex items-center gap-2.5">
             <h2 className="font-semibold text-primary text-2xl dark:text-zinc-100 tracking-tight">
               Your Cart
@@ -179,7 +180,7 @@ export default function CartSidebar({
 
         {/* ── Footer ── */}
         {cartItems.length > 0 && (
-          <div className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0">
+          <div className="px-5 pt-4 pb-[80px] sm:pb-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0">
             {/* Total Price */}
             <div className="flex items-center justify-between mb-3 px-1">
               <span className="text-lg text-primary font-medium">

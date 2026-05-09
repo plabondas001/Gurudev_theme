@@ -19,8 +19,8 @@ import Specification from "../components/products/detail/Specification";
 import Reviews from "../components/products/detail/Reviews";
 import UserReview from "../components/products/detail/UserReview";
 import Faq from "../components/products/detail/Faq";
-import SelectOption from "../components/products/detail/SelectOption";
 import RelatedProducts from "../components/products/detail/RelatedProducts";
+import TabMenu from "../components/products/detail/TabMenu";
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -407,7 +407,7 @@ const ProductDetails = () => {
         </div>
 
         {/* Option */}
-        <SelectOption></SelectOption>
+        <TabMenu></TabMenu>
 
         {/* Specification section */}
         <div id="specification">
