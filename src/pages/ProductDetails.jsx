@@ -20,6 +20,7 @@ import Reviews from "../components/products/detail/Reviews";
 import UserReview from "../components/products/detail/UserReview";
 import Faq from "../components/products/detail/Faq";
 import SelectOption from "../components/products/detail/SelectOption";
+import RelatedProducts from "../components/products/detail/RelatedProducts";
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -429,6 +430,11 @@ const ProductDetails = () => {
         {/* FAQ */}
         <div id="faq">
           <Faq product={product}></Faq>
+        </div>
+
+        {/* related product */}
+        <div className="mt-20">
+          <RelatedProducts product={product} />
         </div>
       </div>
     </div>

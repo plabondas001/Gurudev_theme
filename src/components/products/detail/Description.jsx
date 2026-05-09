@@ -2,7 +2,7 @@ import React from 'react'
 
 const Description = ({ product }) => {
   return (
-    <div cl>
+    <div>
        {product?.description && (
           <div className="mt-12 bg-white rounded-3xl p-8 shadow-lg border border-primary">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b-2 border-primary w-fit">
