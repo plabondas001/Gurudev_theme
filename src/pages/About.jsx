@@ -26,7 +26,7 @@ const About = () => {
       {/* Number */}
       <div className="w-11/12 md:w-7/12 mx-auto">
         <h1 className="border-b-2 text-2xl font-serif text-primary border-primary w-fit mt-2">
-          Our Number
+        Overview
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-center justify-center mt-5">
           <div className="border text-center h-30 flex justify-center items-center flex-col rounded-2xl shadow-lg hover:shadow-gray-400 bg-[#F0F7F4] py-6">
