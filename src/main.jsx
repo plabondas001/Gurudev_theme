@@ -10,6 +10,7 @@ import Contact from './pages/Contact.jsx'
 import ProductDetails from './pages/ProductDetails.jsx'
 import RootError from './pages/RootError.jsx'
 import { CartProvider } from './context/CartContext.jsx'
+import TrackOrder from './pages/TrackOrder.jsx'
 
 const router = createBrowserRouter([
   {
@@ -37,8 +38,12 @@ const router = createBrowserRouter([
         path: "product/:slug",
         element: <ProductDetails />
       },
+      {
+        path:"track",
+        element: <TrackOrder/>
+      }
     ]
-  },
+  }
 ])
 
 createRoot(document.getElementById('root')).render(

@@ -14,6 +14,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useCart } from "../../context/CartContext";
 import logo from "/Img/logo/ge_main_logo.png";
 import CartSidebar from "../products/CartSection";
+import { Link, NavLink } from "react-router";
 
 const Header = () => {
   const { cartItems, removeItem, clearCart, updateQuantity, handleBuyNow } =
@@ -52,10 +53,13 @@ const Header = () => {
           />
         </div>
         <div className="flex items-center text-black gap-4 lg:gap-9 cursor-pointer flex-wrap justify-end">
-          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
-            <MapPinned size={20} />
-            <p className="hidden lg:block">Track Order</p>
-          </div>
+          <Link to="/track">
+            <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
+              <MapPinned size={20} />
+              <p className="hidden lg:block">Track Order</p>
+            </div>
+          </Link>
+
           <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
             <Heart size={20} />
             <p className="hidden lg:block">Wishlist</p>
