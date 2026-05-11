@@ -4,7 +4,8 @@ import {
   IoCallOutline,
   IoHomeOutline,
 } from "react-icons/io5";
-import { RiLoginCircleLine } from "react-icons/ri";
+import { LuMapPinned } from "react-icons/lu";
+import { RiAccountCircleLine } from "react-icons/ri";
 import { NavLink } from "react-router";
 
 const Navbar = () => {
@@ -16,17 +17,23 @@ const Navbar = () => {
   ];
 
   const mobileBottomItems = [
-    { label: "Home", href: "/", icon: <IoHomeOutline size={20} /> },
+    { label: "Home", href: "/", icon: <IoHomeOutline size={25} /> },
     {
       label: "Products",
       href: "/products",
-      icon: <IoBagHandleOutline size={20} />,
+      icon: <IoBagHandleOutline size={25} />,
     },
-    { label: "Contact", href: "/contact", icon: <IoCallOutline size={20} /> },
+    {
+      label: "Track Order",
+      href: "/track",
+      icon: <LuMapPinned size={25} />,
+    },
+    { label: "Contact", href: "/contact", icon: <IoCallOutline size={25} /> },
     {
       label: "Sign In",
       href: "/signin",
-      icon: <RiLoginCircleLine size={20} />,
+      icon: <RiAccountCircleLine size={25}/>
+,
     },
   ];
 
@@ -48,15 +55,15 @@ const Navbar = () => {
       </div>
 
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-        <ul className="grid grid-cols-4">
+        <ul className="grid grid-cols-5">
           {mobileBottomItems.map((item) => (
             <li key={item.label}>
               <NavLink
                 to={item.href}
-                className={({ isActive }) => `flex flex-col items-center justify-center py-2 text-[11px] ${isActive ? "text-primary" : "text-gray-600"}`}
+                className={({ isActive }) => `flex flex-col items-center justify-center gap-0.5 py-2 px-0.5 text-[11px] ${isActive ? "text-primary" : "text-gray-600"}`}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span className="text-center leading-tight">{item.label}</span>
               </NavLink>
             </li>
           ))}

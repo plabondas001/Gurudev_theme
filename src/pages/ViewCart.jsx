@@ -173,8 +173,12 @@ const ViewCart = () => {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-zinc-600">
-                  <span>Shipping</span>
-                  <span className="font-semibold text-zinc-800">Free</span>
+                  <span>Delivery Charge</span>
+                  <span className="font-semibold text-zinc-800">0</span>
+                </div>
+                <div className="flex items-center justify-between text-zinc-600">
+                  <span>Discount</span>
+                  <span className="font-semibold text-zinc-800">0%</span>
                 </div>
                 <div className="border-t border-zinc-200 pt-3 flex items-center justify-between">
                   <span className="text-base font-semibold text-primary">

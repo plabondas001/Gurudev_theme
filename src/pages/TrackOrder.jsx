@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { Link } from "react-router";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaSearchLocation } from "react-icons/fa";
 import { GrDeliver } from "react-icons/gr";
@@ -23,6 +24,7 @@ const MOCK_ORDER_DB = {
     items: [
       {
         id: "p-1",
+        slug: "redmi-note-13",
         name: "Redmi Note 13",
         quantity: 1,
         price: 1199,
@@ -31,6 +33,7 @@ const MOCK_ORDER_DB = {
       },
       {
         id: "p-2",
+        slug: "wireless-earbuds",
         name: "Wireless Earbuds",
         quantity: 1,
         price: 299,
@@ -50,6 +53,7 @@ const MOCK_ORDER_DB = {
     items: [
       {
         id: "p-3",
+        slug: "samsung-galaxy-a55",
         name: "Samsung Galaxy A55",
         quantity: 1,
         price: 1499,
@@ -219,16 +223,33 @@ const TrackOrder = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-3 p-4 bg-[#F0F7F4] rounded-xl border border-primary">
-              {trackingData.items.map((item) => (
+              {trackingData.items.map((item) => {
+                const productPath = item.slug || item.id;
+                return (
                 <div key={item.id} className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#f0f7f4] flex-shrink-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
+                  {productPath ? (
+                    <Link
+                      to={`/product/${productPath}`}
+                      className="w-14 h-14 rounded-lg overflow-hidden bg-[#f0f7f4] flex-shrink-0 ring-2 ring-transparent hover:ring-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-shadow"
+                      title={`View ${item.name}`}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </Link>
+                  ) : (
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#f0f7f4] flex-shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
                   <div className="flex-1">
                     <p className="text-primary font-medium text-sm">
                       {item.name}
@@ -239,7 +260,8 @@ const TrackOrder = () => {
                     ৳{item.price * item.quantity}
                   </p>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

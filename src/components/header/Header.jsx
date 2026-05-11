@@ -106,10 +106,10 @@ const Header = () => {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className="cursor-pointer text-black p-2 hover:text-primary transition"
+            className="cursor-pointer text-black p-2 transition"
             aria-label="Search"
           >
-            <Search size={20} />
+            <Search size={25} />
           </button>
 
           {/* Mobile Cart Button */}
@@ -119,17 +119,12 @@ const Header = () => {
             aria-label="Open cart"
           >
             <div className="flex items-center relative">
-              <ShoppingCart size={20} />
-              <span className="text-white absolute left-2 -top-1 bg-primary rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
+              <ShoppingCart size={25} />
+              <span className="text-white absolute left-3 -top-1 bg-primary rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
                 {cartItems.length}
               </span>
             </div>
           </button>
-
-          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer">
-            <UserRoundKey size={20} />
-            <p className="hidden lg:block">Sign In</p>
-          </div>
         </div>
       </div>
 
