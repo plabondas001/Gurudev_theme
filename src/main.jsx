@@ -11,6 +11,7 @@ import ProductDetails from './pages/ProductDetails.jsx'
 import RootError from './pages/RootError.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import TrackOrder from './pages/TrackOrder.jsx'
+import ViewCart from './pages/ViewCart.jsx'
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path:"track",
         element: <TrackOrder/>
+      },
+      {
+        path:"cart",
+        element:<ViewCart/>
       }
     ]
   }

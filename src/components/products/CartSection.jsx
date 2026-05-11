@@ -1,10 +1,9 @@
 import { RiCloseLargeLine } from "react-icons/ri";
-import { MdDeleteForever } from "react-icons/md";
 import { BsFillCartCheckFill } from "react-icons/bs";
 import { BsCartXFill } from "react-icons/bs";
 import { MdOutlineDeleteForever } from "react-icons/md";
-import { useNavigate } from "react-router";
-
+import { Link, useNavigate } from "react-router";
+import { FaOpencart } from "react-icons/fa";
 export default function CartSidebar({
   cartOpen,
   setCartOpen,
@@ -209,13 +208,15 @@ export default function CartSidebar({
 
             {/* Buttons */}
             <div className="flex gap-3">
+             <Link to="/cart">
               <button
-                onClick={() => clearCart && clearCart()}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-red-500 dark:hover:text-red-400 transition-all text-sm font-semibold cursor-pointer flex-1"
+                onClick={() => setCartOpen(false)}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-zinc-200 text-primary hover:bg-zinc-50 transition-all text-sm font-semibold cursor-pointer flex-1"
               >
-                <MdDeleteForever size={18} />
-                Remove All
+                <FaOpencart size={20} />
+                ViewCart
               </button>
+             </Link>
               <button
                 onClick={() =>
                   handleBuyNow

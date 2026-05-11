@@ -41,9 +41,9 @@ const Header = () => {
       {/* Desktop Header */}
       <div className="hidden md:flex items-center justify-between py-2 gap-4">
         <div>
-          <a href="/">
+          <Link href="/">
             <img className="w-20 md:w-18 lg:w-22" src={logo} alt="logo" />
-          </a>
+          </Link>
         </div>
         <div className="flex-1">
           <input
