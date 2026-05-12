@@ -30,7 +30,7 @@ const ProductDetails = () => {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +46,6 @@ const ProductDetails = () => {
         const data = await apiClient.fetchProductBySlug(slug);
         setProduct(data);
         setActiveImage(0);
-        setIsAnimating(true);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching product:", err);
@@ -62,66 +61,30 @@ const ProductDetails = () => {
 
   const galleryImages = product?.gallery_images?.map((img) => img.image) || [];
   const allImages = [product?.image, ...galleryImages].filter(Boolean);
-  const loopImages =
-    allImages.length > 1 ? [...allImages, allImages[0]] : allImages;
 
   useEffect(() => {
     if (allImages.length <= 1) return;
 
     const interval = setInterval(() => {
-      setActiveImage((prev) => prev + 1);
+      setActiveImage((prev) => (prev + 1) % allImages.length);
     }, 5000);
 
     return () => clearInterval(interval);
   }, [allImages.length]);
 
-  useEffect(() => {
-    if (allImages.length <= 1) return;
-    if (activeImage < allImages.length) return;
-
-    const timeout = setTimeout(() => {
-      setIsAnimating(false);
-      setActiveImage(0);
-    }, 700);
-
-    return () => clearTimeout(timeout);
-  }, [activeImage, allImages.length]);
-
-  useEffect(() => {
-    if (isAnimating) return;
-
-    const frame = requestAnimationFrame(() => {
-      setIsAnimating(true);
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [isAnimating]);
-
   const handlePrevImage = () => {
     if (allImages.length <= 1) return;
-
-    setIsAnimating(true);
-
-    if (activeImage === 0) {
-      setIsAnimating(false);
-      setActiveImage(allImages.length);
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsAnimating(true);
-          setActiveImage(allImages.length - 1);
-        });
-      });
-      return;
-    }
-
-    setActiveImage((prev) => Math.max(prev - 1, 0));
+    setActiveImage((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
   const handleNextImage = () => {
     if (allImages.length <= 1) return;
-    setIsAnimating(true);
-    setActiveImage((prev) => Math.min(prev + 1, allImages.length));
+    setActiveImage((prev) => (prev + 1) % allImages.length);
+  };
+
+  const openPreview = (index) => {
+    setActiveImage(index);
+    setIsPreviewOpen(true);
   };
 
   const handleQuantityChange = (type) => {
@@ -206,14 +169,15 @@ const ProductDetails = () => {
             <div className="lg:w-1/2 p-6 md:p-10 bg-gray-50/50">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-inner bg-white mb-6">
                 <div
-                  className={`flex h-full ${isAnimating ? "transition-transform duration-700 ease-in-out" : ""}`}
+                  className="flex h-full transition-transform duration-700 ease-in-out"
                   style={{ transform: `translateX(-${activeImage * 100}%)` }}
                 >
-                  {loopImages.map((img, index) => (
+                  {allImages.map((img, index) => (
                     <img
                       key={index}
                       src={img}
                       alt={product.name}
+                      onClick={() => openPreview(index)}
                       className="w-full h-full shrink-0 object-contain p-4 cursor-zoom-in"
                     />
                   ))}
@@ -248,10 +212,9 @@ const ProductDetails = () => {
                   <button
                     key={index}
                     onClick={() => {
-                      setIsAnimating(true);
-                      setActiveImage(index);
+                      openPreview(index);
                     }}
-                    className={`relative w-16 h-16 sm:w-24 sm:h-24 shrink-0 snap-start rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${activeImage % allImages.length === index ? "border-primary shadow-md scale-105" : "border-transparent hover:border-gray-300"}`}
+                    className={`relative w-16 h-16 sm:w-24 sm:h-24 shrink-0 snap-start rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${activeImage === index ? "border-primary shadow-md scale-105" : "border-transparent hover:border-gray-300"}`}
                   >
                     <img
                       src={img}
@@ -485,6 +448,29 @@ const ProductDetails = () => {
           <RelatedProducts product={product} />
         </div>
       </div>
+
+      {isPreviewOpen && (
+        <div
+          className="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setIsPreviewOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setIsPreviewOpen(false)}
+            className="absolute top-5 right-5 text-white text-4xl leading-none cursor-pointer"
+            aria-label="Close image preview"
+          >
+            &times;
+          </button>
+
+          <img
+            src={allImages[activeImage]}
+            alt={product.name}
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-[92vw] max-h-[85vh] object-contain bg-white"
+          />
+        </div>
+      )}
     </div>
   );
 };
