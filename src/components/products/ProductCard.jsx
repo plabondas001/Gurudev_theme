@@ -1,12 +1,14 @@
 import React from "react";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 import { ShoppingCart } from "lucide-react";
-import { FaHeart, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { FaHeart, FaStar } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
 import { useNavigate } from "react-router";
 
 const ProductCard = ({ product }) => {
   const { handleCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
 
   const rating = product.rating || 0;
@@ -14,11 +16,44 @@ const ProductCard = ({ product }) => {
 
   const price = product.price || product.sale_price || 0;
   const oldPrice = product.old_price || product.regular_price;
+  const onSale = oldPrice && Number(oldPrice) > Number(price);
+  const discountPct =
+    product.discount ||
+    (onSale
+      ? Math.round(
+          ((Number(oldPrice) - Number(price)) / Number(oldPrice)) * 100,
+        )
+      : null);
+
   const image =
     product.img ||
     product.image ||
     (product.images && product.images[0]?.image) ||
     "/Img/logo/logo.png";
+
+  const saved = isInWishlist(product.id);
+
+  const wishlistPayload = {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    price: `৳${price}`,
+    image,
+    rating: product.rating || 0,
+    brand: product.brand,
+    category: product.category,
+    brandName: product.brand?.name,
+    categoryName: product.category?.name,
+    originalPrice: onSale ? oldPrice : null,
+    discountPrice: onSale ? price : null,
+    discountPercent: discountPct,
+    attributesText: [
+      product.brand?.name && `Brand: ${product.brand.name}`,
+      product.category?.name && `Category: ${product.category.name}`,
+    ]
+      .filter(Boolean)
+      .join(", "),
+  };
 
   return (
     <div 
@@ -29,18 +64,38 @@ const ProductCard = ({ product }) => {
         <div className="absolute w-full z-10">
           <div className="p-2 flex items-center justify-between">
             <div className="flex items-center gap-5">
-              <p className="bg-red-600 px-1 text-white text-xs lg:px-2 py-1  rounded-md">
+              <p className="bg-primary px-1 text-white text-xs lg:px-2 py-1 rounded-md">
                 Top selling
               </p>
-              <button className="bg-gray-200 rounded-full p-1">
+              <button
+                type="button"
+                className="bg-gray-200 rounded-full p-1"
+                onClick={(e) => e.stopPropagation()}
+                aria-hidden
+              >
                 <FiShoppingBag
                   size={20}
                   className="text-green-800 cursor-pointer "
                 />
               </button>
             </div>
-            <button className="bg-gray-100 rounded-full cursor-pointer">
-              <FaHeart className="text-gray-400" size={25} />
+            <button
+              type="button"
+              className={`rounded-full cursor-pointer p-1.5 transition-colors ${
+                saved
+                  ? "bg-primary/15 text-primary"
+                  : "bg-gray-100 text-gray-400 hover:text-primary hover:bg-primary/10"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleWishlist(wishlistPayload);
+              }}
+              aria-pressed={saved}
+              aria-label={
+                saved ? "Remove from wishlist" : "Add to wishlist"
+              }
+            >
+              <FaHeart className={saved ? "fill-current" : ""} size={22} />
             </button>
           </div>
         </div>
@@ -50,9 +105,9 @@ const ProductCard = ({ product }) => {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 cursor-pointer"
         />
-        {product.discount && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
-            -{product.discount}%
+        {(product.discount || (onSale && discountPct)) && (
+          <div className="absolute top-2 left-2 bg-primary text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
+            -{product.discount || discountPct}%
           </div>
         )}
       </div>

@@ -10,8 +10,10 @@ import Contact from './pages/Contact.jsx'
 import ProductDetails from './pages/ProductDetails.jsx'
 import RootError from './pages/RootError.jsx'
 import { CartProvider } from './context/CartContext.jsx'
+import { WishlistProvider } from './context/WishlistContext.jsx'
 import TrackOrder from './pages/TrackOrder.jsx'
 import ViewCart from './pages/ViewCart.jsx'
+import WishList from './pages/WishList.jsx'
 
 const router = createBrowserRouter([
   {
@@ -46,15 +48,21 @@ const router = createBrowserRouter([
       {
         path:"cart",
         element:<ViewCart/>
-      }
+      },
+      {
+        path: "wishlist",
+        element: <WishList />,
+      },
     ]
   }
 ])
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <CartProvider>
-      <RouterProvider router={router} />
-    </CartProvider>
+    <WishlistProvider>
+      <CartProvider>
+        <RouterProvider router={router} />
+      </CartProvider>
+    </WishlistProvider>
   </StrictMode>,
 )

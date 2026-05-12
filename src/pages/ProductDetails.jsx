@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { ShoppingCart, ArrowLeft, Zap } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { apiClient } from "../api/apiClient";
 import Infographics from "../components/products/detail/Infographics";
 import Color from "../components/products/detail/Color";
@@ -26,6 +27,7 @@ const ProductDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { handleCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
@@ -153,6 +155,31 @@ const ProductDetails = () => {
   const price = product.price || 0;
   const discountPrice = product.discount_price;
   const hasDiscount = discountPrice && discountPrice < price;
+  const savedToWishlist = isInWishlist(product.id);
+
+  const wishlistPayload = {
+    id: product.id,
+    slug: product.slug || slug,
+    name: product.name,
+    price: hasDiscount ? `৳${discountPrice}` : `৳${price}`,
+    image: product.image,
+    rating: product.rating || 0,
+    brand: product.brand,
+    category: product.category,
+    brandName: product.brand?.name,
+    categoryName: product.category?.name,
+    originalPrice: hasDiscount ? price : null,
+    discountPrice: hasDiscount ? discountPrice : null,
+    discountPercent: hasDiscount
+      ? Math.round(((price - discountPrice) / price) * 100)
+      : product.discount,
+    attributesText: [
+      product.brand?.name && `Brand: ${product.brand.name}`,
+      product.category?.name && `Category: ${product.category.name}`,
+    ]
+      .filter(Boolean)
+      .join(", "),
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
@@ -188,7 +215,7 @@ const ProductDetails = () => {
                   ))}
                 </div>
                 {hasDiscount && (
-                  <div className="absolute top-4 left-4 bg-red-500 text-white font-bold px-3 py-1 rounded-full text-sm shadow-lg">
+                  <div className="absolute top-4 left-4 bg-primary text-white font-bold px-3 py-1 rounded-full text-sm shadow-lg">
                     -{Math.round(((price - discountPrice) / price) * 100)}% OFF
                   </div>
                 )}
@@ -364,8 +391,25 @@ const ProductDetails = () => {
                     </div>
 
                     {/* Favorite Button */}
-                    <button className="order-4 w-14 h-14 flex items-center justify-center border-2 border-gray-200 rounded-2xl text-gray-400 hover:text-primary hover:border-primary hover:bg-green-50 transition-all cursor-pointer">
-                      <FaHeart size={24} />
+                    <button
+                      type="button"
+                      onClick={() => toggleWishlist(wishlistPayload)}
+                      aria-pressed={savedToWishlist}
+                      aria-label={
+                        savedToWishlist
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
+                      className={`order-4 w-14 h-14 flex shrink-0 items-center justify-center border-2 rounded-2xl transition-all cursor-pointer ${
+                        savedToWishlist
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-gray-200 text-gray-400 hover:text-primary hover:border-primary hover:bg-primary/5"
+                      }`}
+                    >
+                      <FaHeart
+                        size={24}
+                        className={savedToWishlist ? "fill-current" : ""}
+                      />
                     </button>
                   </div>
 

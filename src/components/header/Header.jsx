@@ -12,6 +12,7 @@ import { RiCloseLargeLine } from "react-icons/ri";
 import apiClient from "../../api/apiClient";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 import logo from "/Img/logo/ge_main_logo.png";
 import CartSidebar from "../products/CartSection";
 import { Link, NavLink } from "react-router";
@@ -19,6 +20,7 @@ import { Link, NavLink } from "react-router";
 const Header = () => {
   const { cartItems, removeItem, clearCart, updateQuantity, handleBuyNow } =
     useCart();
+  const { wishlistItems } = useWishlist();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,10 +62,19 @@ const Header = () => {
             </div>
           </Link>
 
-          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
-            <Heart size={20} />
-            <p className="hidden lg:block">Wishlist</p>
-          </div>
+          <Link to="/wishlist">
+            <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition relative">
+              <div className="flex items-center relative">
+                <Heart size={20} />
+                {wishlistItems.length > 0 && (
+                  <span className="text-white absolute -right-1 -top-1 bg-primary rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[10px] font-bold leading-none">
+                    {wishlistItems.length > 9 ? "9+" : wishlistItems.length}
+                  </span>
+                )}
+              </div>
+              <p className="hidden lg:block">Wishlist</p>
+            </div>
+          </Link>
 
           {/* Cart Button */}
           <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
@@ -111,6 +122,19 @@ const Header = () => {
           >
             <Search size={25} />
           </button>
+
+          <Link
+            to="/wishlist"
+            className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-primary transition relative"
+            aria-label="Wishlist"
+          >
+            <Heart size={22} />
+            {wishlistItems.length > 0 && (
+              <span className="text-white absolute right-0 top-1 bg-primary rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[10px] font-bold">
+                {wishlistItems.length > 9 ? "9+" : wishlistItems.length}
+              </span>
+            )}
+          </Link>
 
           {/* Mobile Cart Button */}
           <button
