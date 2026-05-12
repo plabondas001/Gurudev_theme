@@ -36,6 +36,10 @@ const ProductDetails = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [slug]);
+
+  useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
