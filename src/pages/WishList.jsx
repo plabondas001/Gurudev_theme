@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { Heart, ShoppingCart, Trash2, Plus } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
@@ -38,6 +38,10 @@ const groupLabel = (item) =>
 const WishList = () => {
   const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
   const { handleCart } = useCart();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
 
   const currencySymbol = getCurrencySymbol(wishlistItems[0]?.price || "");
 

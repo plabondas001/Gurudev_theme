@@ -8,12 +8,11 @@ import {
 import { IoMdCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
 import footer from "/Img/logo/ge_main_logo.png";
-import { Link } from "react-router-dom";
 import { NavLink } from "react-router";
 
 const Footer = () => {
   return (
-    <div className="mt-10 md:mt-20 text-white bg-primary">
+    <div className="mt-10 md:mt-20 text-white bg-primary pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <div className="w-11/12 md:w-10/12 mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 py-8">
           {/* Brand Section */}
@@ -223,11 +222,14 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-b border-black w-11/12 md:w-10/12 mx-auto mb-4 md:mb-5"></div>
+      {/* Divider — explicit 1px bar so it isn’t clipped next to the mobile bottom nav */}
+      <div
+        className="h-px bg-black w-11/12 md:w-10/12 mx-auto mb-1 md:mb-5 shrink-0"
+        aria-hidden
+      />
 
       {/* Copyright & Payment Methods */}
-      <div className="w-11/12 md:w-10/12 mx-auto py-4 md:py-6">
+      <div className="w-11/12 md:w-10/12 mx-auto py-3 md:py-6">
         <p className="font-semibold opacity-60 text-xs md:text-sm text-black order-2 md:order-1 text-center">
           © 2026 Gurudeb Enterprise. All rights reserved.
         </p>
