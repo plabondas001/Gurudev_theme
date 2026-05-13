@@ -3,10 +3,10 @@ import {
   MapPinned,
   Search,
   ShoppingCart,
-  UserRoundKey,
   ChevronRight,
   User,
 } from "lucide-react";
+import { FaRegUserCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { RiCloseLargeLine } from "react-icons/ri";
 import apiClient from "../../api/apiClient";
@@ -14,13 +14,17 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import logo from "/Img/logo/ge_main_logo.png";
-import CartSidebar from "../products/CartSection";
-import { Link, NavLink } from "react-router";
+import CartSidebar from "../../pages/CartSection";
+import { Link } from "react-router";
+import { useAuth } from "../../context/AuthContext";
+import { usePlaceOrder } from "../../hooks/usePlaceOrder";
+import { getUserAvatarSrc } from "../../utils/avatarUrl";
 
 const Header = () => {
-  const { cartItems, removeItem, clearCart, updateQuantity, handleBuyNow } =
-    useCart();
+  const { cartItems, removeItem, clearCart, updateQuantity } = useCart();
   const { wishlistItems } = useWishlist();
+  const { user, isAuthenticated, logout } = useAuth();
+  const placeOrderFromCart = usePlaceOrder();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,7 +47,7 @@ const Header = () => {
       {/* Desktop Header */}
       <div className="hidden md:flex items-center justify-between py-2 gap-4">
         <div>
-          <Link href="/">
+          <Link to="/">
             <img className="w-20 md:w-18 lg:w-22" src={logo} alt="logo" />
           </Link>
         </div>
@@ -93,10 +97,28 @@ const Header = () => {
             </button>
           </div>
 
-          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer">
-            <UserRoundKey size={20} />
-            <p className="hidden lg:block">Sign In</p>
-          </div>
+          {isAuthenticated ? (
+            <Link
+              to="/profile"
+              className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition"
+              title="My account"
+            >
+              <img
+                src={getUserAvatarSrc(user)}
+                alt=""
+                className="w-9 h-9 lg:w-10 lg:h-10 rounded-full object-cover border-2 border-primary/25 shrink-0"
+              />
+              <p className="hidden lg:block mt-0.5 max-w-[100px] truncate">{user?.name || "Account"}</p>
+            </Link>
+          ) : (
+            <Link
+              to="/signin"
+              className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer"
+            >
+              <FaRegUserCircle size={20} />
+              <p className="hidden lg:block">Sign In</p>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -149,6 +171,27 @@ const Header = () => {
               </span>
             </div>
           </button>
+
+          {isAuthenticated ? (
+            <Link
+              to="/profile"
+              className="p-1.5 rounded-full border-2 border-primary/20 hover:border-primary/40 transition"
+              aria-label="My account"
+            >
+              <img
+                src={getUserAvatarSrc(user)}
+                alt=""
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            </Link>
+          ) : (
+            <Link
+              to="/signin"
+              className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-primary transition"
+            >
+              <FaRegUserCircle size={22} />
+            </Link>
+          )}
         </div>
       </div>
 
@@ -172,7 +215,9 @@ const Header = () => {
         removeItem={removeItem}
         clearCart={clearCart}
         updateQuantity={updateQuantity}
-        handleBuyNow={handleBuyNow}
+        handleBuyNow={(items) => {
+          if (placeOrderFromCart(items)) setCartOpen(false);
+        }}
       />
 
       {/* Mobile Menu Drawer */}
@@ -184,17 +229,31 @@ const Header = () => {
         <div className="p-4 flex flex-col gap-5 h-full overflow-y-auto">
           {/* User Info Box */}
           <div className="bg-primary rounded-xl p-4 flex items-center justify-between text-white">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#85b9e0] rounded-full w-12 h-12 flex items-center justify-center shrink-0">
-                <User className="text-white w-6 h-6" fill="white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg leading-tight">
-                  Hello there!
+            <Link
+              to={isAuthenticated ? "/profile" : "/signin"}
+              className="flex items-center gap-3 min-w-0 flex-1"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {isAuthenticated ? (
+                <img
+                  src={getUserAvatarSrc(user)}
+                  alt=""
+                  className="rounded-full w-12 h-12 object-cover border-2 border-white/40 shrink-0"
+                />
+              ) : (
+                <div className="bg-[#85b9e0] rounded-full w-12 h-12 flex items-center justify-center shrink-0">
+                  <User className="text-white w-6 h-6" fill="white" />
+                </div>
+              )}
+              <div className="flex flex-col min-w-0">
+                <span className="font-bold text-lg leading-tight truncate">
+                  {isAuthenticated ? `Hi, ${user?.name?.split(" ")[0] || "there"}!` : "Hello there!"}
                 </span>
-                <span className="text-sm cursor-pointer">Signin</span>
+                <span className="text-sm opacity-90">
+                  {isAuthenticated ? "My profile" : "Sign in"}
+                </span>
               </div>
-            </div>
+            </Link>
             <button
               onClick={() => setMobileMenuOpen(false)}
               className="text-white hover:text-gray-200 transition cursor-pointer"
@@ -233,6 +292,19 @@ const Header = () => {
               </a>
             ))}
           </div>
+
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full py-3 rounded-xl border border-zinc-200 bg-white text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
+            >
+              Sign out
+            </button>
+          )}
         </div>
       </div>
 

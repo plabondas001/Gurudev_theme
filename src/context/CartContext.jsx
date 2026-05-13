@@ -51,8 +51,8 @@ export const CartProvider = ({ children }) => {
         toast.info("Cart Cleared");
     };
 
-    const handleBuyNow = (item) => {
-        toast.info(`Buy Now: ${item.name || 'Item'}`);
+    const clearCartSilent = () => {
+        setCartItems([]);
     };
 
     const value = useMemo(() => ({
@@ -61,7 +61,7 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         removeItem,
         clearCart,
-        handleBuyNow
+        clearCartSilent,
     }), [cartItems]);
 
     return (

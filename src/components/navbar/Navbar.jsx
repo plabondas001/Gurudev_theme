@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   IoBagHandleOutline,
   IoCallOutline,
@@ -7,8 +7,11 @@ import {
 import { LuMapPinned } from "react-icons/lu";
 import { RiAccountCircleLine } from "react-icons/ri";
 import { NavLink } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
+  const { isAuthenticated } = useAuth();
+
   const navItems = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
@@ -16,26 +19,28 @@ const Navbar = () => {
     { label: "Contact", href: "/contact" },
   ];
 
-  const mobileBottomItems = [
-    { label: "Home", href: "/", icon: <IoHomeOutline size={25} /> },
-    {
-      label: "Products",
-      href: "/products",
-      icon: <IoBagHandleOutline size={25} />,
-    },
-    {
-      label: "Track Order",
-      href: "/track",
-      icon: <LuMapPinned size={25} />,
-    },
-    { label: "Contact", href: "/contact", icon: <IoCallOutline size={25} /> },
-    {
-      label: "Sign In",
-      href: "/signin",
-      icon: <RiAccountCircleLine size={25}/>
-,
-    },
-  ];
+  const mobileBottomItems = useMemo(
+    () => [
+      { label: "Home", href: "/", icon: <IoHomeOutline size={25} /> },
+      {
+        label: "Products",
+        href: "/products",
+        icon: <IoBagHandleOutline size={25} />,
+      },
+      {
+        label: "Track Order",
+        href: "/track",
+        icon: <LuMapPinned size={25} />,
+      },
+      { label: "Contact", href: "/contact", icon: <IoCallOutline size={25} /> },
+      {
+        label: isAuthenticated ? "Account" : "Sign In",
+        href: isAuthenticated ? "/profile" : "/signin",
+        icon: <RiAccountCircleLine size={25} />,
+      },
+    ],
+    [isAuthenticated]
+  );
 
   return (
     <div>

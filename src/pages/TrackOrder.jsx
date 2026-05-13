@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from "react";
-import { Link } from "react-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaSearchLocation } from "react-icons/fa";
 import { GrDeliver } from "react-icons/gr";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import { useUserData } from "../context/UserDataContext";
+import { parsePrice } from "../utils/orderUtils";
 
 const TRACKING_STEPS = [
   "Order Placed",
@@ -14,71 +16,116 @@ const TRACKING_STEPS = [
   "Delivered",
 ];
 
-const MOCK_ORDER_DB = {
-  ORD12345: {
-    orderId: "ORD12345",
-    currentStep: 3,
-    eta: "20-30 minutes",
-    location: "Near Mirpur-10",
-    rider: "Rakib (01711-000000)",
-    items: [
-      {
-        id: "p-1",
-        slug: "redmi-note-13",
-        name: "Redmi Note 13",
-        quantity: 1,
-        price: 1199,
-        image:
-          "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
-      },
-      {
-        id: "p-2",
-        slug: "wireless-earbuds",
-        name: "Wireless Earbuds",
-        quantity: 1,
-        price: 299,
-        image:
-          "https://images.unsplash.com/photo-1606400082777-ef05f3c5cde2?w=500",
-      },
-    ],
-    deliveryCharge: 60,
-    lastUpdated: "2 min ago",
-  },
-  ORD67890: {
-    orderId: "ORD67890",
-    currentStep: 4,
-    eta: "Delivered",
-    location: "Delivered at Dhanmondi",
-    rider: "Mahin (01712-000000)",
-    items: [
-      {
-        id: "p-3",
-        slug: "samsung-galaxy-a55",
-        name: "Samsung Galaxy A55",
-        quantity: 1,
-        price: 1499,
-        image:
-          "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500",
-      },
-    ],
-    deliveryCharge: 0,
-    lastUpdated: "Just now",
-  },
+const ORDERS_KEY = "gurudev_orders";
+
+function loadStoredOrders() {
+  try {
+    const raw = localStorage.getItem(ORDERS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+const normalizeOrderId = (value) =>
+  value.trim().toUpperCase().replace(/^ORDER\s*#?/, "").replace(/^#/, "");
+
+const getOrderCode = (order) => order.id.slice(0, 6).toUpperCase();
+
+const getTrackingStep = (status) => {
+  const normalized = String(status || "").toLowerCase();
+  if (normalized.includes("deliver")) return 4;
+  if (normalized.includes("out")) return 3;
+  if (normalized.includes("ship")) return 2;
+  if (normalized.includes("pack")) return 1;
+  return 0;
 };
 
-const normalizeOrderId = (value) => value.trim().toUpperCase();
+const formatLastUpdated = (iso) => {
+  try {
+    return new Date(iso).toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  } catch {
+    return "Just now";
+  }
+};
+
+const mapOrderToTracking = (order) => ({
+  orderId: order.id,
+  orderCode: getOrderCode(order),
+  currentStep: getTrackingStep(order.status),
+  eta: order.status === "Delivered" ? "Delivered" : "Processing",
+  location: "Your order is being prepared",
+  rider: "Assigned soon",
+  items: order.items.map((item) => ({
+    id: item.id,
+    slug: item.slug,
+    name: item.name,
+    quantity: item.quantity || 1,
+    price: item.price,
+    image: item.img || item.image || "/Img/logo/logo.png",
+  })),
+  deliveryCharge: 0,
+  total: order.total,
+  totalLabel: order.totalLabel,
+  lastUpdated: formatLastUpdated(order.createdAt),
+});
 
 const TrackOrder = () => {
+  const { orders } = useUserData();
+  const [searchParams] = useSearchParams();
   const [orderIdInput, setOrderIdInput] = useState("");
   const [trackingData, setTrackingData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const trackableOrders = useMemo(() => {
+    const byId = new Map();
+    [...orders, ...loadStoredOrders()].forEach((order) => {
+      if (order?.id) byId.set(order.id, order);
+    });
+    return Array.from(byId.values());
+  }, [orders]);
+
+  const findOrderById = (value) => {
+    const normalizedOrderId = normalizeOrderId(value);
+    return trackableOrders.find((order) => {
+      const fullId = order.id.toUpperCase();
+      const shortCode = getOrderCode(order);
+      return (
+        fullId === normalizedOrderId ||
+        shortCode === normalizedOrderId ||
+        fullId.startsWith(normalizedOrderId)
+      );
+    });
+  };
+
+  const showOrder = (order) => {
+    setTrackingData(mapOrderToTracking(order));
+    setError("");
+  };
+
+  useEffect(() => {
+    const orderFromUrl = searchParams.get("order");
+    if (!orderFromUrl) return;
+
+    setOrderIdInput(getOrderCode({ id: orderFromUrl }));
+    const foundOrder = findOrderById(orderFromUrl);
+    if (foundOrder) {
+      showOrder(foundOrder);
+    } else {
+      setTrackingData(null);
+      setError("Order not found. Please check your order ID and try again.");
+    }
+  }, [trackableOrders, searchParams]);
+
   const totals = useMemo(() => {
     if (!trackingData) return null;
 
     const subtotal = trackingData.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + parsePrice(item.price) * item.quantity,
       0,
     );
     const total = subtotal + trackingData.deliveryCharge;
@@ -99,9 +146,9 @@ const TrackOrder = () => {
     setError("");
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const foundOrder = MOCK_ORDER_DB[normalizedOrderId];
+    const foundOrder = findOrderById(normalizedOrderId);
     if (!foundOrder) {
       setError("Order not found. Please check your order ID and try again.");
       setTrackingData(null);
@@ -109,7 +156,7 @@ const TrackOrder = () => {
       return;
     }
 
-    setTrackingData(foundOrder);
+    showOrder(foundOrder);
     setIsLoading(false);
   };
 
@@ -140,7 +187,7 @@ const TrackOrder = () => {
               onChange={(event) => setOrderIdInput(event.target.value)}
               className="flex-1 border border-primary/30 rounded-md px-4 py-3 font-semibold text-lg text-primary bg-white outline-none transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:border-primary"
               type="text"
-              placeholder="Example: ORD12345"
+              placeholder="Example: A1B2C3 or full order ID"
               autoComplete="off"
               aria-invalid={Boolean(error)}
             />
@@ -159,8 +206,7 @@ const TrackOrder = () => {
           )}
           {!error && !trackingData && (
             <p className="text-center text-primary/70 mt-3 text-sm">
-              Try demo IDs: <span className="font-semibold">ORD12345</span> or{" "}
-              <span className="font-semibold">ORD67890</span>
+              Use the order ID from your My Orders section.
             </p>
           )}
         </div>
@@ -174,7 +220,7 @@ const TrackOrder = () => {
                 <p className="text-primary text-sm">
                   Order ID:{" "}
                   <span className="text-primary font-semibold">
-                    {trackingData.orderId}
+                    {trackingData.orderCode}
                   </span>
                 </p>
                 <p className="text-primary text-sm">
@@ -257,7 +303,7 @@ const TrackOrder = () => {
                     <p className="text-primary text-xs">Qty: {item.quantity}</p>
                   </div>
                   <p className="text-primary font-semibold">
-                    ৳{item.price * item.quantity}
+                    {item.price}
                   </p>
                 </div>
                 );
@@ -290,15 +336,17 @@ const TrackOrder = () => {
               </h2>
               <div className="flex justify-between text-sm text-primary">
                 <span>Subtotal</span>
-                <span>৳{totals.subtotal}</span>
+                <span>{trackingData.totalLabel || totals.subtotal.toLocaleString("en-US")}</span>
               </div>
               <div className="flex justify-between text-sm text-primary">
                 <span>Delivery Charge</span>
-                <span>৳{trackingData.deliveryCharge}</span>
+                <span>{trackingData.deliveryCharge}</span>
               </div>
               <div className="border-t border-primary pt-2 flex justify-between font-bold text-primary">
                 <span>Total</span>
-                <span className="text-primary">৳{totals.total}</span>
+                <span className="text-primary">
+                  {trackingData.totalLabel || totals.total.toLocaleString("en-US")}
+                </span>
               </div>
             </div>
           </div>
