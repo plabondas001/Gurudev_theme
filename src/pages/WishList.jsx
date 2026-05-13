@@ -1,13 +1,17 @@
-import { Link } from "react-router";
-import { useMemo, useEffect } from "react";
-import { Heart, ShoppingCart, Trash2, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { Heart, ShoppingCart } from "lucide-react";
+import { FaHeart, FaStar } from "react-icons/fa";
+import { FiShoppingBag } from "react-icons/fi";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 
 const parsePrice = (value) => {
   if (value == null || value === "") return null;
   if (typeof value === "number" && !Number.isNaN(value)) return value;
-  const clean = String(value).replace(/,/g, "").match(/[0-9.]+/);
+  const clean = String(value)
+    .replace(/,/g, "")
+    .match(/[0-9.]+/);
   return clean ? Number(clean[0]) : null;
 };
 
@@ -30,30 +34,205 @@ const formatMoney = (amount, symbol) => {
   return `${sym} ${formatted}`;
 };
 
-const groupLabel = (item) =>
-  (item.brandName && String(item.brandName).trim()) ||
-  (item.categoryName && String(item.categoryName).trim()) ||
-  "Saved items";
+/** Card layout aligned with ProductCard; heart removes via toggleWishlist. */
+const WishlistItemCard = ({ item, currencySymbol }) => {
+  const navigate = useNavigate();
+  const { handleCart } = useCart();
+  const { toggleWishlist } = useWishlist();
+
+  const imageSrc = item.image || item.img || "/Img/logo/logo.png";
+
+  const orig = parsePrice(item.originalPrice) ?? parsePrice(item.old_price);
+  let current =
+    parsePrice(item.discountPrice) ??
+    parsePrice(item.discount_price) ??
+    parsePrice(item.price);
+  if (current == null || Number.isNaN(current)) current = 0;
+
+  const hasDeal = orig != null && orig > current;
+  let pct = item.discountPercent;
+  if (hasDeal && (pct == null || pct <= 0)) {
+    pct = Math.round(((orig - current) / orig) * 100);
+  }
+
+  const rating =
+    typeof item.rating === "number"
+      ? item.rating
+      : parseFloat(item.rating) || 0;
+  const reviewCount = item.reviews_count ?? 0;
+  const sym = currencySymbol || "৳";
+
+  const wishlistPayload = {
+    id: item.id,
+    slug: item.slug,
+    name: item.name,
+    price: item.price ?? `৳${current}`,
+    image: imageSrc,
+    rating,
+    brand: item.brand,
+    category: item.category,
+    brandName: item.brandName,
+    categoryName: item.categoryName,
+    originalPrice: item.originalPrice,
+    discountPrice: item.discountPrice,
+    discountPercent: item.discountPercent,
+    attributesText: item.attributesText,
+  };
+
+  return (
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={() => navigate(`/product/${item.slug}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate(`/product/${item.slug}`);
+        }
+      }}
+      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full group cursor-pointer"
+    >
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
+        <div className="absolute w-full z-10">
+          <div className="p-2 flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <p className="bg-primary px-1.5 text-white text-[10px] sm:text-xs lg:px-2 py-1 rounded-md shrink-0">
+                Top selling
+              </p>
+              <span
+                className="bg-gray-200 rounded-full p-1 shrink-0"
+                aria-hidden
+              >
+                <FiShoppingBag
+                  size={18}
+                  className="text-green-800 sm:w-5 sm:h-5"
+                />
+              </span>
+            </div>
+            <button
+              type="button"
+              className="rounded-full cursor-pointer p-1.5 transition-colors bg-primary/15 text-primary hover:bg-primary/25 shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleWishlist(wishlistPayload);
+              }}
+              aria-pressed
+              aria-label={`Remove ${item.name} from wishlist`}
+            >
+              <FaHeart className="fill-current" size={20} />
+            </button>
+          </div>
+        </div>
+
+        <img
+          src={imageSrc}
+          alt=""
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            e.currentTarget.src = "/Img/logo/logo.png";
+          }}
+        />
+        {(item.discountPercent || (hasDeal && pct)) && (
+          <div className="absolute top-2 left-2 bg-primary text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
+            -{item.discountPercent || pct}%
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 md:p-3 space-y-2 flex flex-col flex-grow mt-auto">
+        <h3 className="font-semibold text-sm lg:text-base text-primary line-clamp-2 group-hover:text-primary/80 transition-colors">
+          {item.name}
+        </h3>
+
+        <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex text-primary">
+            {[...Array(5)].map((_, i) => (
+              <FaStar
+                key={i}
+                size={12}
+                className={
+                  i < Math.floor(rating) ? "text-primary" : "text-gray-300"
+                }
+              />
+            ))}
+          </div>
+          <span className="text-[10px] text-gray-500">({reviewCount})</span>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          {item.brandName && (
+            <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md border border-primary/20 w-fit max-w-full">
+              {item.brand?.logo && (
+                <img
+                  src={item.brand.logo}
+                  alt=""
+                  className="w-3.5 h-3.5 object-contain rounded-full bg-white p-0.5 shrink-0"
+                />
+              )}
+              <span className="text-gray-700 font-semibold text-[10px] truncate">
+                {item.brandName}
+              </span>
+            </div>
+          )}
+          {item.categoryName && (
+            <div className="flex items-center gap-1.5 bg-secondary/10 px-2 py-1 rounded-md border border-secondary/20 w-fit max-w-full">
+              {item.category?.logo && (
+                <img
+                  src={item.category.logo}
+                  alt=""
+                  className="w-3.5 h-3.5 object-contain rounded-full bg-white p-0.5 shrink-0"
+                />
+              )}
+              <span className="text-gray-700 font-semibold text-[10px] truncate">
+                {item.categoryName}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-auto pt-1">
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <span className="text-primary font-bold text-sm md:text-lg">
+              {formatMoney(current, sym)}
+            </span>
+            {hasDeal && (
+              <span className="text-gray-400 line-through text-xs">
+                {formatMoney(orig, sym)}
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCart({
+                id: item.id,
+                name: item.name,
+                price: item.price ?? `৳${current}`,
+                img: imageSrc,
+                slug: item.slug,
+              });
+            }}
+            className="w-full bg-primary text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-md cursor-pointer"
+          >
+            <ShoppingCart size={16} />
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const WishList = () => {
-  const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
-  const { handleCart } = useCart();
+  const { wishlistItems, clearWishlist } = useWishlist();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
   const currencySymbol = getCurrencySymbol(wishlistItems[0]?.price || "");
-
-  const grouped = useMemo(() => {
-    const map = new Map();
-    for (const item of wishlistItems) {
-      const key = groupLabel(item);
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(item);
-    }
-    return [...map.entries()];
-  }, [wishlistItems]);
 
   return (
     <section className="bg-zinc-50 min-h-[70vh] py-10 md:py-14">
@@ -67,8 +246,8 @@ const WishList = () => {
               Your wishlist
             </h1>
             <p className="text-zinc-500 mt-1 text-sm md:text-base max-w-xl">
-              Review saved products by store, then add to cart when you are
-              ready.
+              Tap the heart on a card to remove it from your wishlist. Add to
+              cart when you are ready.
             </p>
           </div>
           {wishlistItems.length > 0 && (
@@ -105,176 +284,14 @@ const WishList = () => {
             </Link>
           </div>
         ) : (
-          <div className="space-y-8">
-            {grouped.map(([sectionTitle, items]) => (
-              <div
-                key={sectionTitle}
-                className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden"
-              >
-                <div className="px-4 md:px-6 py-3 md:py-4 border-b border-zinc-200">
-                  <h2 className="text-sm md:text-base font-bold text-zinc-900 tracking-wide uppercase">
-                    {sectionTitle}
-                  </h2>
-                </div>
-                <ul className="divide-y divide-zinc-100">
-                  {items.map((item) => {
-                    const imageSrc =
-                      item.image ||
-                      item.img ||
-                      "/Img/logo/logo.png";
-
-                    const orig =
-                      parsePrice(item.originalPrice) ??
-                      parsePrice(item.old_price);
-                    let current =
-                      parsePrice(item.discountPrice) ??
-                      parsePrice(item.discount_price) ??
-                      parsePrice(item.price);
-                    if (current == null || Number.isNaN(current)) current = 0;
-
-                    const hasDeal = orig != null && orig > current;
-                    let pct = item.discountPercent;
-                    if (hasDeal && (pct == null || pct <= 0)) {
-                      pct = Math.round(((orig - current) / orig) * 100);
-                    }
-                    const rating =
-                      typeof item.rating === "number"
-                        ? item.rating
-                        : parseFloat(item.rating) || 0;
-                    const ratingLabel =
-                      rating > 0 ? rating.toFixed(1) : null;
-
-                    const attrLine =
-                      item.attributesText?.trim() ||
-                      [
-                        item.categoryName &&
-                          `Category: ${item.categoryName}`,
-                        item.brandName && `Brand: ${item.brandName}`,
-                      ]
-                        .filter(Boolean)
-                        .join(", ");
-
-                    const sym = currencySymbol || "৳";
-
-                    return (
-                      <li
-                        key={item.id}
-                        className="flex flex-col md:flex-row md:items-stretch gap-4 p-4 md:p-5 hover:bg-zinc-50/80 transition-colors"
-                      >
-                        <Link
-                          to={`/product/${item.slug}`}
-                          className="shrink-0 mx-auto md:mx-0"
-                        >
-                          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden">
-                            <img
-                              src={imageSrc}
-                              alt=""
-                              className="w-full h-full object-cover transition-all duration-300 delay-75 hover:scale-105"
-                              onError={(e) => {
-                                e.currentTarget.src = "/Img/logo/logo.png";
-                              }}
-                            />
-                          </div>
-                        </Link>
-
-                        <div className="flex-1 min-w-0 flex flex-col gap-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            {ratingLabel && (
-                              <span className="inline-flex items-center rounded-md bg-primary px-2 py-0.5 text-xs font-bold text-white">
-                                {ratingLabel}
-                              </span>
-                            )}
-                          </div>
-                          <Link
-                            to={`/product/${item.slug}`}
-                            className="font-semibold text-zinc-900 text-sm md:text-base leading-snug hover:text-primary transition-colors line-clamp-2"
-                          >
-                            {item.name}
-                          </Link>
-                          {attrLine && (
-                            <p className="text-xs md:text-sm text-zinc-500 leading-relaxed line-clamp-2">
-                              {attrLine}
-                            </p>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => removeFromWishlist(item.id)}
-                            className="self-start mt-1 p-1.5 text-zinc-400 hover:text-zinc-700 transition cursor-pointer rounded-lg hover:bg-zinc-200/60"
-                            aria-label={`Remove ${item.name} from wishlist`}
-                          >
-                            <Trash2 size={20} strokeWidth={1.5} />
-                          </button>
-                        </div>
-
-                        <div className="flex flex-row md:flex-col items-end md:items-end justify-between md:justify-center gap-3 md:min-w-[140px] shrink-0 border-t md:border-t-0 border-zinc-100 pt-3 md:pt-0">
-                          <div className="text-left md:text-right">
-                            <p className="text-lg md:text-xl font-bold text-primary">
-                              {formatMoney(current, sym)}
-                            </p>
-                            {hasDeal && (
-                              <>
-                                <p className="text-sm text-zinc-400 mt-0.5">
-                                  <span className="line-through">
-                                    {formatMoney(orig, sym)}
-                                  </span>
-                                  <span className="text-zinc-800 ml-2 font-medium">
-                                    -{pct}%
-                                  </span>
-                                </p>
-                                <p className="text-xs font-semibold text-emerald-600 mt-1">
-                                  Price dropped
-                                </p>
-                              </>
-                            )}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleCart({
-                                id: item.id,
-                                name: item.name,
-                                price: item.price ?? `৳${current}`,
-                                img: imageSrc,
-                                slug: item.slug,
-                              })
-                            }
-                            className="relative flex h-12 w-12 md:h-14 md:w-14 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-sm hover:bg-primary/90 transition cursor-pointer"
-                            aria-label={`Add ${item.name} to cart`}
-                          >
-                            <ShoppingCart
-                              className="w-6 h-6"
-                              strokeWidth={2}
-                              aria-hidden
-                            />
-                            <span className="absolute -right-0.5 -bottom-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-primary shadow">
-                              <Plus className="w-3 h-3" strokeWidth={3} />
-                            </span>
-                          </button>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+            {wishlistItems.map((item) => (
+              <WishlistItemCard
+                key={item.id}
+                item={item}
+                currencySymbol={currencySymbol}
+              />
             ))}
-          </div>
-        )}
-
-        {wishlistItems.length > 0 && (
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dashed border-zinc-300 bg-white/80 px-5 py-4">
-            <p className="text-sm text-zinc-600">
-              <span className="font-semibold text-zinc-800">
-                {wishlistItems.length}
-              </span>{" "}
-              {wishlistItems.length === 1 ? "item" : "items"} saved
-            </p>
-            <Link
-              to="/products"
-              className="text-sm font-semibold text-primary hover:text-primary/80 underline-offset-4 hover:underline"
-            >
-              Continue shopping
-            </Link>
           </div>
         )}
       </div>
