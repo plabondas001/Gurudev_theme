@@ -15,7 +15,7 @@ import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import logo from "/Img/logo/ge_main_logo.png";
 import CartSidebar from "../../pages/CartSection";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { usePlaceOrder } from "../../hooks/usePlaceOrder";
 import { getUserAvatarImgProps } from "../../utils/avatarUrl";
@@ -42,41 +42,68 @@ const Header = () => {
     loadCategories();
   }, []);
 
+  const desktopNavItems = [
+    { label: "Home", href: "/" },
+    { label: "Products", href: "/products" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ];
+
   return (
-    <div className="w-11/12 md:w-10/12 mx-auto">
+    <div className="w-11/12 mx-auto bg-white">
       {/* Desktop Header */}
-      <div className="hidden md:flex items-center justify-between py-2 gap-4">
-        <div>
+      <div className="hidden md:flex w-full items-center justify-between py-4 px-6 lg:px-20 xl:px-14 gap-8">
+        <div className="shrink-0">
           <Link to="/">
-            <img className="w-20 md:w-18 lg:w-22" src={logo} alt="logo" />
+            <img className="w-20 lg:w-28" src={logo} alt="logo" />
           </Link>
         </div>
-        <div className="flex-1">
+        <div className="relative flex-1 max-w-[800px]">
           <input
-            className="w-full h-11 md:h-12 bg-gray-200 text-black px-3 font-bold rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full h-13 rounded-full border-2 border-primary bg-white px-5 pr-12 text-lg text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-primary focus:shadow-2xl focus:shadow-green-100"
             type="search"
-            placeholder="Search in..."
+            placeholder="Search your product..."
           />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" size={22} />
         </div>
-        <div className="flex items-center text-black gap-4 lg:gap-9 cursor-pointer flex-wrap justify-end">
+
+        <nav className="flex items-center gap-5 lg:gap-12 text-base lg:text-xl font-semibold text-zinc-900">
+          {desktopNavItems.map((item) => (
+            <NavLink
+              key={item.label}
+              to={item.href}
+              className={({ isActive }) =>
+                `border-b-2 py-1 transition ${
+                  isActive
+                    ? "border-primary text-primary"
+                    : "border-transparent hover:border-primary hover:text-primary"
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="flex shrink-0 items-center text-black gap-4 lg:gap-9 cursor-pointer justify-end">
           <Link to="/track">
             <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
-              <MapPinned size={20} />
-              <p className="hidden lg:block">Track Order</p>
+              <MapPinned size={22} />
+              <p className="hidden lg:block text-lg">Track Order</p>
             </div>
           </Link>
 
           <Link to="/wishlist">
             <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition relative">
               <div className="flex items-center relative">
-                <Heart size={20} />
+                <Heart size={22} />
                 {wishlistItems.length > 0 && (
-                  <span className="text-white absolute -right-1 -top-1 bg-primary rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[10px] font-bold leading-none">
+                  <span className="text-white absolute -right-2 -top-2 bg-primary rounded-full min-w-5 h-5 px-1 flex items-center justify-center text-xs font-bold leading-none">
                     {wishlistItems.length > 9 ? "9+" : wishlistItems.length}
                   </span>
                 )}
               </div>
-              <p className="hidden lg:block">Wishlist</p>
+              <p className="hidden lg:block text-lg">Wishlist</p>
             </div>
           </Link>
 
@@ -88,12 +115,12 @@ const Header = () => {
               aria-label="Open cart"
             >
               <div className="flex items-center relative">
-                <ShoppingCart size={20} />
-                <span className="text-white absolute left-3 bottom-0 bg-primary rounded-full min-w-5 h-5 flex items-center justify-center text-xs font-bold">
+                <ShoppingCart size={24} />
+                <span className="text-white absolute -right-3 -top-2 bg-primary rounded-full min-w-5 h-5 flex items-center justify-center text-xs font-bold">
                   {cartItems.length}
                 </span>
               </div>
-              <p className="hidden lg:block">Cart</p>
+              <p className="hidden lg:block text-lg">Cart</p>
             </button>
           </div>
 
@@ -106,7 +133,7 @@ const Header = () => {
               <img
                 {...getUserAvatarImgProps(user)}
                 alt=""
-                className="w-9 h-9 lg:w-10 lg:h-10 rounded-full object-cover border-2 border-primary/25 shrink-0"
+                className="w-8 h-8 rounded-full object-cover border-2 border-primary/25 shrink-0"
               />
               <p className="hidden lg:block mt-0.5 max-w-[100px] truncate">{user?.name || "Account"}</p>
             </Link>
@@ -115,15 +142,15 @@ const Header = () => {
               to="/signin"
               className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer"
             >
-              <FaRegUserCircle size={20} />
-              <p className="hidden lg:block">Sign In</p>
+              <FaRegUserCircle size={22} />
+              <p className="hidden lg:block text-lg">Sign In</p>
             </Link>
           )}
         </div>
       </div>
 
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between mt-3 gap-2">
+      <div className="md:hidden w-11/12 mx-auto flex items-center justify-between py-3 gap-2">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileMenuOpen(true)}
@@ -176,13 +203,16 @@ const Header = () => {
 
       {/* Mobile Search Bar */}
       {mobileSearchOpen && (
-        <div className="md:hidden mt-3 w-full transition-all duration-300">
+        <div className="md:hidden -mt-1 w-11/12 mx-auto transition-all duration-300">
+          <div className="relative">
           <input
-            className="w-full h-10 bg-gray-200 text-black px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full h-11 rounded-full border-2 border-primary bg-white px-5 pr-12 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
             type="search"
-            placeholder="Search in..."
+            placeholder="Search the product"
             autoFocus
           />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" size={22} />
+          </div>
         </div>
       )}
 
