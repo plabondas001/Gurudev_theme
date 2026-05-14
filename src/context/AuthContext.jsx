@@ -37,13 +37,21 @@ function capitalizeName(name) {
 }
 
 function toPublicUser(record) {
+  const photoURL =
+    record.photoURL ||
+    record.photoUrl ||
+    record.picture ||
+    record.image ||
+    record.img ||
+    null;
+
   return {
     id: record.id,
     name: capitalizeName(record.name),
     email: record.email,
     phone: record.phone ?? "",
     avatarDataUrl: record.avatarDataUrl ?? null,
-    photoURL: record.photoURL ?? null,
+    photoURL,
     provider: record.provider ?? "password",
   };
 }
@@ -183,14 +191,20 @@ export const AuthProvider = ({ children }) => {
 
     let record;
     if (existingIndex >= 0) {
+      const existing = users[existingIndex];
       record = {
-        ...users[existingIndex],
-        name: users[existingIndex].name || name,
+        ...existing,
+        name: existing.name || name,
         email,
         googleSub,
-        provider: users[existingIndex].provider || "google",
+        provider: existing.provider || "google",
+        avatarDataUrl: existing.avatarDataUrl || null,
         photoURL:
-          googlePicture || users[existingIndex].photoURL || null,
+          googlePicture ||
+          existing.photoURL ||
+          existing.photoUrl ||
+          existing.picture ||
+          null,
       };
       users[existingIndex] = record;
       saveUsers(users);

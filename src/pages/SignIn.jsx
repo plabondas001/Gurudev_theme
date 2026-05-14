@@ -56,10 +56,6 @@ const GOOGLE_CLIENT_ID = GOOGLE_WEB_CLIENT_ID_RE.test(RAW_GOOGLE_CLIENT_ID)
 const googleClientIdEnvInvalid =
   RAW_GOOGLE_CLIENT_ID.length > 0 && !GOOGLE_CLIENT_ID;
 
-/** Tailwind `md` breakpoint — below this, GIS uses full-page redirect (avoids blank mobile popup). */
-const MOBILE_GOOGLE_MAX_PX = 767.98;
-const GOOGLE_SIGNIN_CALLBACK_PATH = "/google-signin-callback";
-
 function decodeJwtPayload(token) {
   const payload = token.split(".")[1];
   const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
@@ -195,19 +191,6 @@ const SignIn = () => {
   );
   const googleButtonRef = useRef(null);
 
-  const [useGoogleRedirect, setUseGoogleRedirect] = useState(() =>
-    typeof window !== "undefined"
-      ? window.matchMedia(`(max-width: ${MOBILE_GOOGLE_MAX_PX}px)`).matches
-      : false,
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${MOBILE_GOOGLE_MAX_PX}px)`);
-    const onChange = () => setUseGoogleRedirect(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-
   useEffect(() => {
     if (ready && isAuthenticated) navigate(from, { replace: true });
   }, [ready, isAuthenticated, navigate, from]);
@@ -276,34 +259,24 @@ const SignIn = () => {
       }
       el.innerHTML = "";
       try {
-        const loginUri = `${window.location.origin}${GOOGLE_SIGNIN_CALLBACK_PATH}`;
-
-        if (useGoogleRedirect) {
-          window.google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            ux_mode: "redirect",
-            login_uri: loginUri,
-            use_fedcm_for_button: false,
-          });
-        } else {
-          window.google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            use_fedcm_for_button: false,
-            callback: async (response) => {
-              if (!response?.credential) {
-                toast.error("Google sign-in did not return a credential.");
-                return;
-              }
-              try {
-                const profile = decodeJwtPayload(response.credential);
-                const result = await loginWithGoogle(profile, remember);
-                if (result?.ok) navigate(from, { replace: true });
-              } catch {
-                toast.error("Google sign-in failed. Please try again.");
-              }
-            },
-          });
-        }
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          ux_mode: "popup",
+          use_fedcm_for_button: false,
+          callback: async (response) => {
+            if (!response?.credential) {
+              toast.error("Google sign-in did not return a credential.");
+              return;
+            }
+            try {
+              const profile = decodeJwtPayload(response.credential);
+              const result = await loginWithGoogle(profile, remember);
+              if (result?.ok) navigate(from, { replace: true });
+            } catch {
+              toast.error("Google sign-in failed. Please try again.");
+            }
+          },
+        });
         window.google.accounts.id.renderButton(el, {
           theme: "outline",
           size: "large",
@@ -356,7 +329,7 @@ const SignIn = () => {
       cancelled = true;
       cancelAnimationFrame(rafId);
     };
-  }, [from, loginWithGoogle, navigate, remember, mode, useGoogleRedirect]);
+  }, [from, loginWithGoogle, navigate, remember, mode]);
 
   const resetSensitive = () => {
     setPassword("");
@@ -415,12 +388,6 @@ const SignIn = () => {
     if (googleClientIdEnvInvalid) {
       toast.warning(
         "Your VITE_GOOGLE_CLIENT_ID is not a valid Web client ID. It must look like 123456789012-abc.apps.googleusercontent.com. Replace the example text in .env with the real value from Google Cloud, save, and restart the dev server.",
-      );
-      return;
-    }
-    if (window.matchMedia(`(max-width: ${MOBILE_GOOGLE_MAX_PX}px)`).matches) {
-      toast.info(
-        "Use the “Continue with Google” button to sign in on this screen.",
       );
       return;
     }
