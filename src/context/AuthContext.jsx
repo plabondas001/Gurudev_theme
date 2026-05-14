@@ -43,6 +43,8 @@ function toPublicUser(record) {
     email: record.email,
     phone: record.phone ?? "",
     avatarDataUrl: record.avatarDataUrl ?? null,
+    photoURL: record.photoURL ?? null,
+    provider: record.provider ?? "password",
   };
 }
 
@@ -159,6 +161,61 @@ export const AuthProvider = ({ children }) => {
     []
   );
 
+  const loginWithGoogle = useCallback(async (profile, rememberMe) => {
+    const email = String(profile?.email || "").trim().toLowerCase();
+    const googleSub = String(profile?.sub || "").trim();
+    const name = capitalizeName(profile?.name || email.split("@")[0]);
+    const googlePicture = String(
+      profile?.picture || profile?.photo || "",
+    ).trim();
+
+    if (!email || !googleSub) {
+      toast.error("Google sign-in failed. Please try again.");
+      return { ok: false };
+    }
+
+    const users = loadUsers();
+    const existingIndex = users.findIndex(
+      (u) =>
+        u.email.toLowerCase() === email ||
+        (u.googleSub && u.googleSub === googleSub)
+    );
+
+    let record;
+    if (existingIndex >= 0) {
+      record = {
+        ...users[existingIndex],
+        name: users[existingIndex].name || name,
+        email,
+        googleSub,
+        provider: users[existingIndex].provider || "google",
+        photoURL:
+          googlePicture || users[existingIndex].photoURL || null,
+      };
+      users[existingIndex] = record;
+      saveUsers(users);
+    } else {
+      record = {
+        id: crypto.randomUUID(),
+        name,
+        email,
+        passwordHash: null,
+        phone: "",
+        avatarDataUrl: null,
+        photoURL: googlePicture || null,
+        googleSub,
+        provider: "google",
+      };
+      saveUsers([...users, record]);
+    }
+
+    const publicUser = toPublicUser(record);
+    setUser(publicUser);
+    writeSession(publicUser, rememberMe);
+    toast.success(`Welcome, ${publicUser.name.split(" ")[0]}!`);
+    return { ok: true };
+  }, []);
+
   const updateProfile = useCallback(
     async ({ name, phone, avatarDataUrl }) => {
       if (!user?.id) return { ok: false };
@@ -211,12 +268,22 @@ export const AuthProvider = ({ children }) => {
       ready,
       isAuthenticated: !!user,
       login,
+      loginWithGoogle,
       register,
       logout,
       updateProfile,
       changePassword,
     }),
-    [user, ready, login, register, logout, updateProfile, changePassword]
+    [
+      user,
+      ready,
+      login,
+      loginWithGoogle,
+      register,
+      logout,
+      updateProfile,
+      changePassword,
+    ]
   );
 
   return (

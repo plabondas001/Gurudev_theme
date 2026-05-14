@@ -12,7 +12,7 @@ import { NavLink } from "react-router";
 
 const Footer = () => {
   return (
-    <div className="mt-10 md:mt-20 text-white bg-primary pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <div className="mt-6 md:mt-20 text-white bg-primary pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <div className="w-11/12 md:w-10/12 mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 py-8">
           {/* Brand Section */}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaSearchLocation } from "react-icons/fa";
@@ -80,6 +80,10 @@ const TrackOrder = () => {
   const [trackingData, setTrackingData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [searchParams]);
 
   const trackableOrders = useMemo(() => {
     const byId = new Map();

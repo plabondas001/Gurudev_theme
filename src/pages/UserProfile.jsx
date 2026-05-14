@@ -13,7 +13,7 @@ import { Link, Navigate, useLocation, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { useUserData } from "../context/UserDataContext";
-import { getUserAvatarSrc } from "../utils/avatarUrl";
+import { getUserAvatarImgProps } from "../utils/avatarUrl";
 
 const MAX_AVATAR_BYTES = 380 * 1024;
 
@@ -149,7 +149,7 @@ const UserProfile = () => {
     }
   }, [user?.id, user?.name, user?.phone]);
 
-  const avatarSrc = useMemo(() => getUserAvatarSrc(user), [user]);
+  const avatarImgProps = useMemo(() => getUserAvatarImgProps(user), [user]);
 
   if (!ready) {
     return (
@@ -240,7 +240,7 @@ const UserProfile = () => {
   const activeTabMeta = tabs.find((t) => t.id === tab) || tabs[0];
 
   return (
-    <section className="w-11/12 md:w-10/12 mx-auto py-8 md:py-12 pb-28 md:pb-12">
+    <section className="w-11/12 md:w-10/12 mx-auto py-6 md:py-12 pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-12">
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link
           to="/"
@@ -253,12 +253,12 @@ const UserProfile = () => {
         <span className="text-foreground font-medium">Account</span>
       </nav>
 
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
+      <div className="flex flex-col lg:flex-row gap-5 md:gap-8 lg:gap-10">
         <aside className="lg:w-64 shrink-0">
           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
               <img
-                src={avatarSrc}
+                {...avatarImgProps}
                 alt=""
                 className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 bg-muted"
               />
@@ -331,7 +331,7 @@ const UserProfile = () => {
               </div>
 
               {orders.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-14 text-center">
+                <div className="rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-10 md:py-14 text-center">
                   <Package className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
                   <p className="font-medium text-foreground">No orders yet</p>
                   <p className="text-sm text-muted-foreground mt-1 mb-6">
@@ -582,7 +582,7 @@ const UserProfile = () => {
                 <h2 className="font-semibold text-lg">Profile details</h2>
                 <div className="flex items-center gap-4">
                   <img
-                    src={avatarSrc}
+                    {...avatarImgProps}
                     alt=""
                     className="w-20 h-20 rounded-2xl object-cover border border-border"
                   />

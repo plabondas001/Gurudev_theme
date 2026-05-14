@@ -18,7 +18,7 @@ import CartSidebar from "../../pages/CartSection";
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { usePlaceOrder } from "../../hooks/usePlaceOrder";
-import { getUserAvatarSrc } from "../../utils/avatarUrl";
+import { getUserAvatarImgProps } from "../../utils/avatarUrl";
 
 const Header = () => {
   const { cartItems, removeItem, clearCart, updateQuantity } = useCart();
@@ -104,7 +104,7 @@ const Header = () => {
               title="My account"
             >
               <img
-                src={getUserAvatarSrc(user)}
+                {...getUserAvatarImgProps(user)}
                 alt=""
                 className="w-9 h-9 lg:w-10 lg:h-10 rounded-full object-cover border-2 border-primary/25 shrink-0"
               />
@@ -171,27 +171,6 @@ const Header = () => {
               </span>
             </div>
           </button>
-
-          {isAuthenticated ? (
-            <Link
-              to="/profile"
-              className="p-1.5 rounded-full border-2 border-primary/20 hover:border-primary/40 transition"
-              aria-label="My account"
-            >
-              <img
-                src={getUserAvatarSrc(user)}
-                alt=""
-                className="w-8 h-8 rounded-full object-cover"
-              />
-            </Link>
-          ) : (
-            <Link
-              to="/signin"
-              className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-primary transition"
-            >
-              <FaRegUserCircle size={22} />
-            </Link>
-          )}
         </div>
       </div>
 
@@ -236,7 +215,7 @@ const Header = () => {
             >
               {isAuthenticated ? (
                 <img
-                  src={getUserAvatarSrc(user)}
+                  {...getUserAvatarImgProps(user)}
                   alt=""
                   className="rounded-full w-12 h-12 object-cover border-2 border-white/40 shrink-0"
                 />

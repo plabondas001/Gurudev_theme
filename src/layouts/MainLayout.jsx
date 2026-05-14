@@ -33,7 +33,7 @@ const MainLayout = () => {
                 <Header />
             </div>
             <Navbar />
-            <main className="flex-grow">
+            <main className="w-full">
                 <Outlet />
             </main>
             <Footer />

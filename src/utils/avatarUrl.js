@@ -10,3 +10,11 @@ export function getUserAvatarSrc(user) {
     "/Img/logo/ge_main_logo.png"
   );
 }
+
+/** Props for <img /> — Google avatars often 403 without no-referrer. */
+export function getUserAvatarImgProps(user) {
+  return {
+    src: getUserAvatarSrc(user),
+    referrerPolicy: "no-referrer",
+  };
+}
