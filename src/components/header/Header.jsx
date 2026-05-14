@@ -13,7 +13,7 @@ import apiClient from "../../api/apiClient";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import logo from "/Img/logo/ge_main_logo.png";
+import logo from "/Img/logo/gurudeb2.png";
 import CartSidebar from "../../pages/CartSection";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -55,7 +55,7 @@ const Header = () => {
       <div className="hidden md:flex w-full items-center justify-between py-4 px-6 lg:px-20 xl:px-14 gap-8">
         <div className="shrink-0">
           <Link to="/">
-            <img className="w-20 lg:w-28" src={logo} alt="logo" />
+            <img className="w-20 lg:w-40 h-20" src={logo} alt="logo" />
           </Link>
         </div>
         <div className="relative flex-1 max-w-[800px]">

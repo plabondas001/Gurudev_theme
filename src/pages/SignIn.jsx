@@ -18,7 +18,7 @@ import { useAuth } from "../context/AuthContext";
 import logo from "/Img/logo/ge_main_logo.png";
 
 const tabClass = (active) =>
-  `relative flex-1 py-2 md:py-3 text-sm font-semibold transition-colors rounded-lg ${
+  `relative flex-1 py-2 md:py-3 text-sm font-semibold transition-colors rounded-lg cursor-pointer ${
     active ? "text-primary" : "text-muted-foreground hover:text-foreground"
   }`;
 
@@ -616,7 +616,7 @@ const SignIn = () => {
                   />
                   <button
                     type="button"
-                    className="p-1 rounded-md text-muted-foreground hover:text-foreground"
+                    className="p-1 rounded-md text-muted-foreground hover:text-foreground cursor-pointer"
                     onClick={() => setShowPass((v) => !v)}
                     aria-label={showPass ? "Hide password" : "Show password"}
                   >
@@ -640,7 +640,7 @@ const SignIn = () => {
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
-                  className="rounded border-border text-primary focus:ring-primary"
+                  className="rounded border-border cursor-pointer text-primary focus:ring-primary"
                 />
                 Keep me signed in on this device
               </label>
@@ -748,7 +748,7 @@ const SignIn = () => {
                   />
                   <button
                     type="button"
-                    className="p-1 rounded-md text-muted-foreground hover:text-foreground"
+                    className="p-1 rounded-md text-muted-foreground hover:text-foreground cursor-pointer"
                     onClick={() => setShowPass((v) => !v)}
                     aria-label={showPass ? "Hide password" : "Show password"}
                   >
