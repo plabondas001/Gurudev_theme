@@ -79,7 +79,7 @@ const Header = () => {
                 `border-b-2 py-1 transition ${
                   isActive
                     ? "border-primary text-primary"
-                    : "border-transparent hover:border-primary hover:text-primary"
+                    : "border-transparent hover:border-primary hover:text-primary transition-all duration-75 hover:scale-105"
                 }`
               }
             >

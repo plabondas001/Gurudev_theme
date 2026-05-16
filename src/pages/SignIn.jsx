@@ -649,7 +649,7 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 transition disabled:opacity-60 disabled:pointer-events-none shadow-md"
+                className="w-full py-3.5 cursor-pointer rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 transition disabled:opacity-60 disabled:pointer-events-none shadow-md"
               >
                 {submitting ? "Signing in…" : "Sign in"}
               </button>
@@ -813,7 +813,7 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 transition disabled:opacity-60 disabled:pointer-events-none shadow-md"
+                className="w-full py-3.5 cursor-pointer rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 transition disabled:opacity-60 disabled:pointer-events-none shadow-md"
               >
                 {submitting ? "Creating account…" : "Create account"}
               </button>
