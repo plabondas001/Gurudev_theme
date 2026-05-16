@@ -13,7 +13,7 @@ import apiClient from "../../api/apiClient";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import logo from "/Img/logo/gurudeb2.png";
+import logo from "/Img/logo/ge_main_logo.png";
 import CartSidebar from "../../pages/CartSection";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -55,7 +55,7 @@ const Header = () => {
       <div className="hidden md:flex w-full items-center justify-between py-4 px-6 lg:px-20 xl:px-14 gap-8">
         <div className="shrink-0">
           <Link to="/">
-            <img className="w-20 lg:w-40 h-20" src={logo} alt="logo" />
+            <img className="w-20 lg:w-30 h-28 p-1" src={logo} alt="logo" />
           </Link>
         </div>
         <div className="relative flex-1 max-w-[800px]">
@@ -64,7 +64,10 @@ const Header = () => {
             type="search"
             placeholder="Search your product..."
           />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" size={22} />
+          <Search
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-primary"
+            size={22}
+          />
         </div>
 
         <nav className="flex items-center gap-5 lg:gap-12 text-base lg:text-xl font-semibold text-zinc-900">
@@ -135,7 +138,9 @@ const Header = () => {
                 alt=""
                 className="w-8 h-8 rounded-full object-cover border-2 border-primary/25 shrink-0"
               />
-              <p className="hidden lg:block mt-0.5 max-w-[100px] truncate">{user?.name || "Account"}</p>
+              <p className="hidden lg:block mt-0.5 max-w-[100px] truncate">
+                {user?.name || "Account"}
+              </p>
             </Link>
           ) : (
             <Link
@@ -205,13 +210,16 @@ const Header = () => {
       {mobileSearchOpen && (
         <div className="md:hidden -mt-1 w-11/12 mx-auto transition-all duration-300">
           <div className="relative">
-          <input
-            className="w-full h-11 rounded-full border-2 border-primary bg-white px-5 pr-12 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
-            type="search"
-            placeholder="Search the product"
-            autoFocus
-          />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-primary" size={22} />
+            <input
+              className="w-full h-11 rounded-full border-2 border-primary bg-white px-5 pr-12 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              type="search"
+              placeholder="Search the product"
+              autoFocus
+            />
+            <Search
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-primary"
+              size={22}
+            />
           </div>
         </div>
       )}
@@ -256,7 +264,9 @@ const Header = () => {
               )}
               <div className="flex flex-col min-w-0">
                 <span className="font-bold text-lg leading-tight truncate">
-                  {isAuthenticated ? `Hi, ${user?.name?.split(" ")[0] || "there"}!` : "Hello there!"}
+                  {isAuthenticated
+                    ? `Hi, ${user?.name?.split(" ")[0] || "there"}!`
+                    : "Hello there!"}
                 </span>
                 <span className="text-sm opacity-90">
                   {isAuthenticated ? "My profile" : "Sign in"}
