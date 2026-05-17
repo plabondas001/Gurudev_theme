@@ -1,4 +1,5 @@
 import React from "react";
+import { FaQuoteRight, FaStar } from "react-icons/fa6";
 import "./Reviews.css";
 
 const Reviews = () => {
@@ -42,67 +43,72 @@ const Reviews = () => {
   ];
 
   const firstLine = reviews;
-  const secondLine = reviews;
+  const secondLine = [...reviews].reverse(); // Reverse the second line for variety
+
+  const ReviewCard = ({ review }) => (
+    <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 w-[300px] md:w-[360px] lg:w-[420px] shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full mx-2">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex gap-1 text-primary">
+          {[...Array(5)].map((_, i) => (
+            <FaStar key={i} size={16} />
+          ))}
+        </div>
+        <FaQuoteRight className="text-gray-100/80" size={36} />
+      </div>
+      
+      <p className="text-gray-700 italic leading-relaxed text-sm md:text-base flex-1 mb-8">
+        "{review.text}"
+      </p>
+      
+      <div className="flex items-center gap-4 mt-auto">
+        <div className="relative">
+          <img
+            className="w-14 h-14 rounded-full object-cover ring-4 ring-primary/10"
+            src={review.img}
+            alt={review.name}
+          />
+          <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+        </div>
+        <div>
+          <h3 className="font-bold text-gray-900 text-base md:text-lg">
+            {review.name}
+          </h3>
+          <p className="text-xs font-bold text-primary uppercase tracking-widest mt-0.5">
+            {review.role}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="w-full px-4 md:px-8 mt-10 md:mt-22">
-      <h1 className="text-center mb-6 md:mb-8 font-bold text-xl md:text-2xl">
-        Customer Review
-      </h1>
+    <div className="w-full px-4 md:px-8 py-16 md:py-24 bg-gray-50/50 border-t border-gray-200/50 mt-10 md:mt-16">
+      <div className="max-w-6xl mx-auto mb-12 text-center">
+        <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-primary mb-4">
+          Testimonials
+        </span>
+        <h2 className="font-extrabold text-3xl md:text-4xl text-gray-900">
+          What Our Customers Say
+        </h2>
+      </div>
 
-      <div className="space-y-3 md:space-y-5">
+      <div className="space-y-6 md:space-y-8 relative">
+        {/* Gradient overlays to smooth out the edges of the marquee */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-gray-50/50 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-gray-50/50 to-transparent z-10 pointer-events-none"></div>
+
         <div className="overflow-hidden w-full reviews-row">
-          <div className="reviews-track reviews-track-left cursor-pointer">
+          <div className="reviews-track reviews-track-left cursor-pointer items-stretch">
             {[...firstLine, ...firstLine].map((review, index) => (
-              <div
-                key={`first-${index}`}
-                className="border rounded-xl border-gray-400 p-3 w-[260px] md:w-[320px] lg:w-[360px] shrink-0"
-              >
-                <h1>{review.text}</h1>
-                <div className="flex items-center gap-3 mt-3 md:mt-5">
-                  <img
-                    className="w-12 md:w-15 h-12 md:h-15 rounded-full object-cover"
-                    src={review.img}
-                    alt={review.name}
-                  />
-                  <div>
-                    <h1 className="font-semibold text-sm md:text-base">
-                      {review.name}
-                    </h1>
-                    <p className="text-xs md:text-sm text-gray-600">
-                      {review.role}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <ReviewCard key={`first-${index}`} review={review} />
             ))}
           </div>
         </div>
 
         <div className="overflow-hidden w-full reviews-row">
-          <div className="reviews-track reviews-track-right cursor-pointer">
+          <div className="reviews-track reviews-track-right cursor-pointer items-stretch">
             {[...secondLine, ...secondLine].map((review, index) => (
-              <div
-                key={`second-${index}`}
-                className="border rounded-xl border-gray-400 p-3 w-[260px] md:w-[320px] lg:w-[360px] shrink-0"
-              >
-                <h1>{review.text}</h1>
-                <div className="flex items-center gap-3 mt-3 md:mt-5">
-                  <img
-                    className="w-12 md:w-15 h-12 md:h-15 rounded-full object-cover"
-                    src={review.img}
-                    alt={review.name}
-                  />
-                  <div>
-                    <h1 className="font-semibold text-sm md:text-base">
-                      {review.name}
-                    </h1>
-                    <p className="text-xs md:text-sm text-gray-600">
-                      {review.role}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <ReviewCard key={`second-${index}`} review={review} />
             ))}
           </div>
         </div>
