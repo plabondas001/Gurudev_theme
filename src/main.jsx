@@ -18,6 +18,7 @@ import SignIn from './pages/SignIn.jsx'
 import UserProfile from './pages/UserProfile.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { UserDataProvider } from './context/UserDataContext.jsx'
+import TermsConditions from './pages/TermsConditions.jsx'
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
         path: "profile",
         element: <UserProfile />,
       },
+      {
+        path:"terms & conditions",
+        element:<TermsConditions/>
+      }
     ]
   }
 ])

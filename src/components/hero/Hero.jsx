@@ -49,7 +49,7 @@ const Hero = () => {
   }, [currentSlide]);
 
   return (
-    <div className="">
+    <div>
       <div className="w-11/12 md:w-10/12 mx-auto flex flex-col lg:flex-row gap-3 md:gap-6 lg:gap-8 mt-3 md:mt-5">
         {/* Carousel */}
         <div className="carousel w-full lg:w-2/3" ref={carouselRef}>
