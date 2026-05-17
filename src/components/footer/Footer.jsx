@@ -13,17 +13,25 @@ import { NavLink } from "react-router";
 const Footer = () => {
   return (
     <div className="mt-6 md:mt-20 text-white bg-primary pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
-      <div className="w-11/12 md:w-10/12 mx-auto">
+      <div className="w-full px-4 md:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 py-8">
           {/* Brand Section */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="py-4 md:py-8">
-              <a href="/">
+              <a href="/" className="inline-flex items-center gap-3">
                 <img
-                  className="w-20 md:w-28 lg:w-18 h-10 md:h-12 lg:h-15 bg-white rounded-md p-2 object-contain"
+                  className="h-12 w-auto object-contain"
                   src={footer}
-                  alt=""
+                  alt="Gurudeb Enterprise Logo"
                 />
+                <span className="text-left">
+                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#e0e0e0]">
+                    Gurudeb
+                  </span>
+                  <span className="block text-sm font-bold text-white leading-tight">
+                    Enterprise
+                  </span>
+                </span>
               </a>
             </div>
             <p className="text-xs md:text-sm leading-5">
@@ -224,12 +232,12 @@ const Footer = () => {
 
       {/* Divider — explicit 1px bar so it isn’t clipped next to the mobile bottom nav */}
       <div
-        className="h-px bg-black w-11/12 md:w-10/12 mx-auto mb-1 md:mb-5 shrink-0"
+        className="h-px bg-black/20 w-full mb-1 md:mb-5 shrink-0"
         aria-hidden
       />
 
       {/* Copyright & Payment Methods */}
-      <div className="w-11/12 md:w-10/12 mx-auto py-3 md:py-6">
+      <div className="w-full px-4 md:px-8 py-3 md:py-6">
         <p className="font-semibold opacity-60 text-xs md:text-sm text-black order-2 md:order-1 text-center">
           © 2026 Gurudeb Enterprise. All rights reserved.
         </p>

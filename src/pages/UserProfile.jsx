@@ -240,7 +240,7 @@ const UserProfile = () => {
   const activeTabMeta = tabs.find((t) => t.id === tab) || tabs[0];
 
   return (
-    <section className="w-11/12 md:w-10/12 mx-auto py-6 md:py-12 pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-12">
+    <section className="w-full px-4 md:px-8 py-6 md:py-12 pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-12">
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link
           to="/"

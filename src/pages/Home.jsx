@@ -30,8 +30,8 @@ const Home = () => {
 
             <Brands />
 
-            {/* All Products */}
-            <Products />
+            {/* New Arrivals */}
+            <Products isHomePage={true} />
 
             <Reviews />
         </div>

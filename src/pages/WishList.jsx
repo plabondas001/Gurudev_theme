@@ -236,7 +236,7 @@ const WishList = () => {
 
   return (
     <section className="bg-zinc-50 min-h-[70vh] py-10 md:py-14">
-      <div className="w-11/12 md:w-10/12 mx-auto">
+      <div className="w-full px-4 md:px-8">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">
@@ -284,7 +284,7 @@ const WishList = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
             {wishlistItems.map((item) => (
               <WishlistItemCard
                 key={item.id}

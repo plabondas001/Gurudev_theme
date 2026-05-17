@@ -6,7 +6,7 @@ const CategoriesData = ({ promise }) => {
   const cateData = use(promise);
 
   return (
-    <div className="w-11/12 md:w-10/12 mx-auto">
+    <div className="w-full px-4 md:px-8">
       <div className="mt-4 md:mt-15 text-black">
         <h1 className="text-center font-semibold text-xl md:text-3xl">
           Categories

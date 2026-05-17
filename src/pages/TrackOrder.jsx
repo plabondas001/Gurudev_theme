@@ -167,7 +167,7 @@ const TrackOrder = () => {
   return (
     <section className="bg-[#f8fbf9] pb-10">
       <div className="bg-[#f0f7f4] border-b border-primary/10">
-        <div className="w-11/12 md:w-10/12 mx-auto py-8">
+        <div className="w-full px-4 md:px-8 py-8">
           <div className="flex items-center justify-center gap-3">
             <TbTruckDelivery size={32} className="text-primary" />
             <h1 className="font-bold text-3xl md:text-4xl text-primary">
@@ -217,7 +217,7 @@ const TrackOrder = () => {
       </div>
 
       {trackingData && totals && (
-        <div className="w-11/12 md:w-10/12 mx-auto mt-8 grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="w-full px-4 md:px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2 space-y-5">
             <div className="bg-[#f0f7f4] rounded-xl border border-primary p-4 md:p-5">
               <div className="flex flex-wrap justify-between gap-2">

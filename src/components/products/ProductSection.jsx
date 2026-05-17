@@ -29,7 +29,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
 
   if (loading) {
     return (
-      <div className="w-11/12 md:w-10/12 mx-auto py-10">
+      <div className="w-full px-4 md:px-8 py-10">
         <h2 className="text-xl md:text-2xl font-bold mb-6">{title}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {[...Array(5)].map((_, i) => (
@@ -78,7 +78,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
 
   return (
     <div
-      className={`w-11/12 md:w-10/12 mx-auto py-8 md:py-5 ${
+      className={`w-full px-4 md:px-8 py-8 md:py-5 ${
         isAllProducts ? "all-products" : ""
       }`}
     >
@@ -131,7 +131,7 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
           )}
         </div>
       ) : (
-        <div className="all-products-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
+        <div className="all-products-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
           {displayProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import Header from '../components/header/Header';
 import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/footer/Footer';
@@ -7,6 +7,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MainLayout = () => {
+    const { pathname } = useLocation();
+
+    // Scroll to top on route change or refresh
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [pathname]);
+
     useEffect(() => {
         const handleMouseMove = (event) => {
             const isNearRightEdge = window.innerWidth - event.clientX <= 24;

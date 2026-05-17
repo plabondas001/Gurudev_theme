@@ -50,36 +50,40 @@ const Header = () => {
   ];
 
   return (
-    <div className="w-11/12 mx-auto bg-white">
+    <div className="w-full bg-white border-b border-gray-100 shadow-xs">
       {/* Desktop Header */}
-      <div className="hidden md:flex w-full items-center justify-between py-4 px-6 lg:px-20 xl:px-14 gap-8">
+      <div className="hidden md:flex w-full max-w-[1440px] mx-auto items-center justify-between py-2 px-6 lg:px-12 gap-6">
         <div className="shrink-0">
-          <Link to="/">
-            <img className="w-20 lg:w-30 h-28 p-1" src={logo} alt="logo" />
+          <Link to="/" className="flex items-center gap-2">
+            <img className="h-10 lg:h-12 w-auto object-contain p-0.5" src={logo} alt="logo" />
+            <div className="flex flex-col">
+              <span className="text-sm lg:text-base font-extrabold text-primary tracking-tight leading-none">Gurudeb</span>
+              <span className="text-[9px] lg:text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-0.5">Enterprise</span>
+            </div>
           </Link>
         </div>
-        <div className="relative flex-1 max-w-[800px]">
+        <div className="relative flex-1 max-w-[400px]">
           <input
-            className="w-full h-13 rounded-full border-2 border-primary bg-white px-5 pr-12 text-lg text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-primary focus:shadow-2xl focus:shadow-green-100"
+            className="w-full h-9 rounded-full border border-gray-200 bg-gray-50 px-4 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition-all duration-200"
             type="search"
-            placeholder="Search your product..."
+            placeholder="Search products..."
           />
           <Search
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-primary"
-            size={22}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors cursor-pointer"
+            size={15}
           />
         </div>
 
-        <nav className="flex items-center gap-5 lg:gap-12 text-base lg:text-xl font-semibold text-zinc-900">
+        <nav className="flex items-center gap-5 lg:gap-8 text-xs lg:text-sm font-medium text-zinc-700">
           {desktopNavItems.map((item) => (
             <NavLink
               key={item.label}
               to={item.href}
               className={({ isActive }) =>
-                `border-b-2 py-1 transition ${
+                `border-b-2 py-1 transition-all duration-200 ${
                   isActive
-                    ? "border-primary text-primary"
-                    : "border-transparent hover:border-primary hover:text-primary transition-all duration-75 hover:scale-105"
+                    ? "border-primary text-primary font-bold"
+                    : "border-transparent text-gray-600 hover:text-primary hover:border-primary"
                 }`
               }
             >
@@ -88,104 +92,110 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center text-black gap-4 lg:gap-9 cursor-pointer justify-end">
-          <Link to="/track">
-            <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
-              <MapPinned size={22} />
-              <p className="hidden lg:block text-lg">Track Order</p>
+        <div className="flex shrink-0 items-center text-zinc-700 gap-4 lg:gap-6 cursor-pointer justify-end">
+          <Link to="/track" className="hover:text-primary transition-colors duration-200">
+            <div className="flex flex-col items-center">
+              <MapPinned size={18} className="stroke-[1.5]" />
+              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Track Order</p>
             </div>
           </Link>
 
-          <Link to="/wishlist">
-            <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition relative">
+          <Link to="/wishlist" className="hover:text-primary transition-colors duration-200">
+            <div className="flex flex-col items-center relative">
               <div className="flex items-center relative">
-                <Heart size={22} />
+                <Heart size={18} className="stroke-[1.5]" />
                 {wishlistItems.length > 0 && (
-                  <span className="text-white absolute -right-2 -top-2 bg-primary rounded-full min-w-5 h-5 px-1 flex items-center justify-center text-xs font-bold leading-none">
-                    {wishlistItems.length > 9 ? "9+" : wishlistItems.length}
+                  <span className="text-white absolute -right-1.5 -top-1.5 bg-primary rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[9px] font-bold">
+                    {wishlistItems.length}
                   </span>
                 )}
               </div>
-              <p className="hidden lg:block text-lg">Wishlist</p>
+              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Wishlist</p>
             </div>
           </Link>
 
           {/* Cart Button */}
-          <div className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition">
+          <div className="flex flex-col items-center hover:text-primary transition-colors duration-200">
             <button
               onClick={() => setCartOpen(true)}
               className="cursor-pointer flex flex-col items-center"
               aria-label="Open cart"
             >
               <div className="flex items-center relative">
-                <ShoppingCart size={24} />
-                <span className="text-white absolute -right-3 -top-2 bg-primary rounded-full min-w-5 h-5 flex items-center justify-center text-xs font-bold">
-                  {cartItems.length}
-                </span>
+                <ShoppingCart size={18} className="stroke-[1.5]" />
+                {cartItems.length > 0 && (
+                  <span className="text-white absolute -right-2 -top-1.5 bg-primary rounded-full min-w-4 h-4 flex items-center justify-center text-[9px] font-bold">
+                    {cartItems.length}
+                  </span>
+                )}
               </div>
-              <p className="hidden lg:block text-lg">Cart</p>
+              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Cart</p>
             </button>
           </div>
 
           {isAuthenticated ? (
             <Link
               to="/profile"
-              className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition"
+              className="flex flex-col items-center hover:text-primary transition-colors duration-200"
               title="My account"
             >
               <img
                 {...getUserAvatarImgProps(user)}
                 alt=""
-                className="w-8 h-8 rounded-full object-cover border-2 border-primary/25 shrink-0"
+                className="w-6 h-6 rounded-full object-cover border border-primary/25 shrink-0"
               />
-              <p className="hidden lg:block mt-0.5 max-w-[100px] truncate">
+              <p className="hidden lg:block text-[10px] font-medium mt-0.5 max-w-[80px] truncate">
                 {user?.name || "Account"}
               </p>
             </Link>
           ) : (
             <Link
               to="/signin"
-              className="flex flex-col items-center text-xs lg:text-sm hover:text-primary transition cursor-pointer"
+              className="flex flex-col items-center hover:text-primary transition-colors duration-200"
             >
-              <FaRegUserCircle size={22} />
-              <p className="hidden lg:block text-lg">Sign In</p>
+              <FaRegUserCircle size={18} className="stroke-[1.5]" />
+              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Sign In</p>
             </Link>
           )}
         </div>
       </div>
 
       {/* Mobile Header */}
-      <div className="md:hidden w-11/12 mx-auto flex items-center justify-between py-3 gap-2">
-        <div className="flex items-center gap-2">
+      <div className="md:hidden w-full flex items-center justify-between py-1.5 px-4 gap-2 border-b border-gray-100">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="cursor-pointer text-black p-2 hover:text-primary transition"
+            className="cursor-pointer text-black p-1 hover:text-primary transition"
             aria-label="Open menu"
           >
-            <RxHamburgerMenu size={20} />
+            <RxHamburgerMenu size={18} />
           </button>
-          <a href="/">
-            <img className="w-18 p-1" src={logo} alt="logo" />
+          <a href="/" className="flex items-center gap-1.5">
+            <img className="h-7 w-auto object-contain p-0.5" src={logo} alt="logo" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-extrabold text-primary tracking-tight leading-none">Gurudeb</span>
+              <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-0.5">Enterprise</span>
+            </div>
           </a>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className="cursor-pointer text-black p-2 transition"
+            className="cursor-pointer text-black p-1 transition hover:text-primary"
             aria-label="Search"
           >
-            <Search size={25} />
+            <Search size={18} />
           </button>
 
           <Link
             to="/wishlist"
-            className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-primary transition relative"
+            className="cursor-pointer flex flex-col items-center text-black p-1 hover:text-primary transition relative"
             aria-label="Wishlist"
           >
-            <Heart size={22} />
+            <Heart size={18} />
             {wishlistItems.length > 0 && (
-              <span className="text-white absolute right-0 top-1 bg-primary rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[10px] font-bold">
-                {wishlistItems.length > 9 ? "9+" : wishlistItems.length}
+              <span className="text-white absolute right-0 top-0 bg-primary rounded-full min-w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold">
+                {wishlistItems.length}
               </span>
             )}
           </Link>
@@ -193,14 +203,16 @@ const Header = () => {
           {/* Mobile Cart Button */}
           <button
             onClick={() => setCartOpen(true)}
-            className="cursor-pointer flex flex-col items-center text-black p-2 hover:text-primary transition relative"
+            className="cursor-pointer flex flex-col items-center text-black p-1 hover:text-primary transition relative"
             aria-label="Open cart"
           >
             <div className="flex items-center relative">
-              <ShoppingCart size={25} />
-              <span className="text-white absolute left-3 -top-1 bg-primary rounded-full min-w-4 h-4 flex items-center justify-center text-xs font-bold">
-                {cartItems.length}
-              </span>
+              <ShoppingCart size={18} />
+              {cartItems.length > 0 && (
+                <span className="text-white absolute -right-1 -top-1 bg-primary rounded-full min-w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold">
+                  {cartItems.length}
+                </span>
+              )}
             </div>
           </button>
         </div>
@@ -208,17 +220,17 @@ const Header = () => {
 
       {/* Mobile Search Bar */}
       {mobileSearchOpen && (
-        <div className="md:hidden -mt-1 w-11/12 mx-auto transition-all duration-300">
+        <div className="md:hidden w-full px-4 py-1.5 bg-gray-50 border-b border-gray-150 transition-all duration-300">
           <div className="relative">
             <input
-              className="w-full h-11 rounded-full border-2 border-primary bg-white px-5 pr-12 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full h-8 rounded-full border border-gray-200 bg-white px-4 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-primary"
               type="search"
-              placeholder="Search the product"
+              placeholder="Search products..."
               autoFocus
             />
             <Search
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-primary"
-              size={22}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+              size={15}
             />
           </div>
         </div>

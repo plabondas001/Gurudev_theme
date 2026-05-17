@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import ProductCard from "../components/products/ProductCard";
 import ProductSkeleton from "../components/products/ProductSkeleton";
 import apiClient from "../api/apiClient";
@@ -10,6 +10,7 @@ const Products = ({
   params = {},
   initialProducts = null,
   isFilterLayout = false,
+  isHomePage = false,
   filters = {
     categories: [],
     brands: [],
@@ -25,8 +26,6 @@ const Products = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
 
-  const observer = useRef();
-
   // =========================
   // FETCH PRODUCTS
   // =========================
@@ -38,16 +37,18 @@ const Products = ({
         setLoadingMore(true);
       }
 
-      // 🔥 allow loader to render first
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Prototyping realistic API loading state transition
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // ⏳ TEST DELAY (REMOVE IN PRODUCTION)
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
+      // 30 products is the mathematical sweet spot:
+      // - Divides perfectly by 5 columns on laptop (6 rows)
+      // - Divides perfectly by 6 columns on desktop (5 rows)
+      // Leaving ZERO empty slots or incomplete lines!
+      const pageSize = isHomePage ? 30 : LIMIT;
       const data = await apiClient.fetchProducts({
         ...params,
         page: pageNumber,
-        page_size: LIMIT,
+        page_size: pageSize,
       });
 
       const newProducts = data.results || [];
@@ -56,7 +57,12 @@ const Products = ({
         pageNumber === 1 ? newProducts : [...prev, ...newProducts],
       );
 
-      setHasMore(newProducts.length === LIMIT);
+      // On Homepage, we cap it at exactly 30 products and never load more
+      if (isHomePage) {
+        setHasMore(false);
+      } else {
+        setHasMore(newProducts.length === LIMIT);
+      }
     } catch (err) {
       console.error("Error fetching products:", err);
       setError(err.message);
@@ -77,27 +83,6 @@ const Products = ({
   }, [JSON.stringify(params)]);
 
   // =========================
-  // INFINITE SCROLL
-  // =========================
-  const lastProductRef = useCallback(
-    (node) => {
-      if (loadingMore) return;
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          const nextPage = page + 1;
-          setPage(nextPage);
-          fetchProducts(nextPage);
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loadingMore, hasMore, page],
-  );
-
-  // =========================
   // ERROR STATE
   // =========================
   if (error) {
@@ -106,6 +91,7 @@ const Products = ({
     );
   }
 
+  // Filter products locally based on side bar options
   const filteredProducts = products.filter((product) => {
     const productCategoryId = product.category?.id;
     const productBrandId = product.brand?.id;
@@ -125,32 +111,35 @@ const Products = ({
 
   const wrapperClasses = isFilterLayout
     ? "w-full px-0 py-4 all-products"
-    : "w-11/12 md:w-10/12 mx-auto py-8 all-products";
+    : "w-full px-4 md:px-8 py-8 all-products";
 
+  // Grid styling layout
   const gridClasses = isFilterLayout
-    ? "all-products-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"
-    : "all-products-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4";
+    ? "all-products-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+    : "all-products-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4";
 
   return (
     <div className={wrapperClasses}>
-      {/* Heading - Hidden on Filter Page */}
+      {/* Heading - Renamed to 'New Arrivals' on Homepage, Hidden on Filter Page */}
       {!isFilterLayout && (
         <div className="flex items-center justify-between mb-6 border-b pb-4">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-            All Products
+          <h2 className="text-xl md:text-2xl font-extrabold text-gray-800">
+            {isHomePage ? "New Arrivals" : "All Products"}
           </h2>
-          <a href="/products" className="text-primary text-sm font-semibold hover:underline">
-            View All
-          </a>
+          {isHomePage && (
+            <a href="/products" className="text-primary text-sm font-bold hover:underline">
+              View All
+            </a>
+          )}
         </div>
       )}
 
       {/* =========================
-          INITIAL LOADING
+          INITIAL LOADING SKELETON
       ========================= */}
       {loadingInitial ? (
         <div className={gridClasses}>
-          {[...Array(LIMIT)].map((_, i) => (
+          {[...Array(isHomePage ? 30 : LIMIT)].map((_, i) => (
             <ProductSkeleton key={i} />
           ))}
         </div>
@@ -160,17 +149,14 @@ const Products = ({
               PRODUCT GRID
           ========================= */}
           <div className={gridClasses}>
-            {filteredProducts.map((product, index) => {
-              if (filteredProducts.length === index + 1) {
-                return (
-                  <div ref={lastProductRef} key={product.id}>
-                    <ProductCard product={product} />
-                  </div>
-                );
-              }
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
 
-              return <ProductCard key={product.id} product={product} />;
-            })}
+            {/* Premium Skeletons loaded inside grid on load more */}
+            {!isHomePage && loadingMore && [...Array(LIMIT)].map((_, i) => (
+              <ProductSkeleton key={`skeleton-more-${i}`} />
+            ))}
           </div>
 
           {!loadingMore && filteredProducts.length === 0 && (
@@ -180,19 +166,43 @@ const Products = ({
           )}
 
           {/* =========================
-              LOAD MORE SPINNER
+              LOAD MORE BUTTON (DEDICATED PRODUCTS PAGE)
           ========================= */}
-          {loadingMore && (
-            <div className="flex justify-center py-6">
-              <div className="w-6 h-6 border-4 border-gray-300 border-t-[#31714f] rounded-full animate-spin"></div>
+          {!isHomePage && hasMore && !loadingInitial && (
+            <div className="flex justify-center mt-12 pb-4">
+              <button
+                onClick={() => {
+                  const nextPage = page + 1;
+                  setPage(nextPage);
+                  fetchProducts(nextPage);
+                }}
+                disabled={loadingMore}
+                className="flex items-center cursor-pointer justify-center gap-2 rounded-xl border border-primary/20 bg-white px-8 py-3.5 text-sm font-bold text-primary shadow-sm shadow-primary/5 transition-all duration-200 hover:bg-primary/5 hover:border-primary active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed focus-visible:ring-4 focus-visible:ring-primary/10 outline-none"
+              >
+                Load More Products
+              </button>
+            </div>
+          )}
+
+          {/* =========================
+              ALL PRODUCTS BUTTON (HOMEPAGE)
+          ========================= */}
+          {isHomePage && (
+            <div className="flex justify-center mt-12">
+              <a
+                href="/products"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-[#25573c] hover:scale-[1.01] active:scale-[0.99] focus-visible:ring-4 focus-visible:ring-primary/30 outline-none cursor-pointer"
+              >
+                All Products →
+              </a>
             </div>
           )}
 
           {/* =========================
               END MESSAGE
           ========================= */}
-          {!hasMore && (
-            <p className="text-center text-gray-400 mt-10">
+          {!isHomePage && !hasMore && filteredProducts.length > 0 && (
+            <p className="text-center text-gray-400 mt-12">
               No more products to load
             </p>
           )}

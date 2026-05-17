@@ -101,7 +101,7 @@ const TermsConditions = () => {
   return (
     <section className="bg-[#F7FBF8] text-gray-800">
       <div className="bg-primary text-white">
-        <div className="w-11/12 md:w-10/12 mx-auto py-14 md:py-20">
+        <div className="w-full px-4 md:px-8 py-14 md:py-20">
           <div className="max-w-3xl">
             <span className="inline-flex rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white/80">
               Terms & Conditions
@@ -118,7 +118,7 @@ const TermsConditions = () => {
         </div>
       </div>
 
-      <div className="w-11/12 md:w-10/12 mx-auto -mt-8 pb-16 md:pb-24">
+      <div className="w-full px-4 md:px-8 -mt-8 pb-16 md:pb-24">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           {summaryCards.map((item) => (
             <div

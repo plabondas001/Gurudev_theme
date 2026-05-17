@@ -18,12 +18,14 @@ import { useAuth } from "../context/AuthContext";
 import logo from "/Img/logo/ge_main_logo.png";
 
 const tabClass = (active) =>
-  `relative flex-1 py-2 md:py-3 text-sm font-semibold transition-colors rounded-lg cursor-pointer ${
-    active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+  `relative flex-1 py-2.5 text-sm font-bold transition-all duration-300 rounded-lg cursor-pointer text-center ${
+    active
+      ? "bg-primary text-white shadow-md shadow-primary/10"
+      : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
   }`;
 
 const inputWrap =
-  "flex items-center gap-3 rounded-xl border border-border bg-muted/40 px-3 py-2.5 md:px-4 md:py-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary";
+  "flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-3 focus-within:bg-white focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-200";
 
 const GoogleIcon = () => (
   <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -400,7 +402,7 @@ const SignIn = () => {
     mode === "register" && confirm.length > 0 && password !== confirm;
 
   return (
-    <section className="w-11/12 md:w-10/12 mx-auto pt-2 pb-24 sm:pb-28 pt-8 md:pt-14 md:pb-14">
+    <section className="w-full px-4 md:px-8 pt-2 pb-24 sm:pb-28 pt-8 md:pt-14 md:pb-14">
       <div className="grid lg:grid-cols-[1fr_1.05fr] gap-4 md:gap-8 lg:gap-12 items-stretch max-w-6xl mx-auto">
         {/* ── Left panel ── */}
         <motion.aside
@@ -514,7 +516,7 @@ const SignIn = () => {
           className="rounded-2xl border border-border bg-card text-card-foreground shadow-xl p-4 sm:p-6 md:p-10"
         >
           {/* Tab switcher */}
-          <div className="flex p-1 rounded-xl bg-muted/60 mb-4 md:mb-8">
+          <div className="flex p-1 rounded-xl bg-gray-100 mb-6 md:mb-8 border border-gray-200/50">
             <button
               type="button"
               className={tabClass(mode === "signin")}
@@ -523,10 +525,7 @@ const SignIn = () => {
                 resetSensitive();
               }}
             >
-              Sign in
-              {mode === "signin" && (
-                <span className="absolute bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
-              )}
+              Sign In
             </button>
             <button
               type="button"
@@ -537,9 +536,6 @@ const SignIn = () => {
               }}
             >
               Register
-              {mode === "register" && (
-                <span className="absolute bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
-              )}
             </button>
           </div>
 
@@ -649,9 +645,9 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 cursor-pointer rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 transition disabled:opacity-60 disabled:pointer-events-none shadow-md"
+                className="w-full py-3.5 cursor-pointer rounded-xl bg-primary text-white font-bold text-sm hover:bg-[#25573c] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 shadow-md shadow-primary/20 disabled:opacity-60 disabled:pointer-events-none"
               >
-                {submitting ? "Signing in…" : "Sign in"}
+                {submitting ? "Signing in…" : "Sign In"}
               </button>
 
               {/* Google — below primary submit */}
@@ -813,9 +809,9 @@ const SignIn = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 cursor-pointer rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 transition disabled:opacity-60 disabled:pointer-events-none shadow-md"
+                className="w-full py-3.5 cursor-pointer rounded-xl bg-primary text-white font-bold text-sm hover:bg-[#25573c] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 shadow-md shadow-primary/20 disabled:opacity-60 disabled:pointer-events-none"
               >
-                {submitting ? "Creating account…" : "Create account"}
+                {submitting ? "Creating account…" : "Create Account"}
               </button>
 
               {/* Google — below primary submit */}

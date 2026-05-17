@@ -21,7 +21,7 @@ const Brands = () => {
   const secondLine = brands.slice(Math.ceil(brands.length / 2));
 
   return (
-    <div className="w-11/12 md:w-10/12 mx-auto">
+    <div className="w-full px-4 md:px-8">
       <div className="flex items-center justify-between border-b-1 border-b-gray-300 p-1 mt-3">
         <h1 className="font-bold text-xl md:text-2xl">Our Brands</h1>
         <button className="text-primary font-semibold text-xs md:text-sm cursor-pointer underline hover:text-black underline-offset-4 transition">

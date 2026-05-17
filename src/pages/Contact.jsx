@@ -32,16 +32,20 @@ const validate = (fields) => {
   if (!fields.name.trim()) errors.name = "Name is required.";
   else if (fields.name.trim().length < 2)
     errors.name = "Name must be at least 2 characters.";
+    
   if (!fields.email.trim()) errors.email = "Email is required.";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email))
     errors.email = "Enter a valid email address.";
+    
   if (!fields.phone.trim()) errors.phone = "Phone number is required.";
   else if (!/^[\d\s\-+()]{7,15}$/.test(fields.phone))
     errors.phone = "Enter a valid phone number.";
+    
   if (!fields.subject.trim()) errors.subject = "Please select a subject.";
   if (!fields.message.trim()) errors.message = "Message is required.";
   else if (fields.message.trim().length < 10)
     errors.message = "Message must be at least 10 characters.";
+    
   return errors;
 };
 
@@ -69,9 +73,9 @@ const Field = ({ label, error, required, children }) => (
 );
 
 const inputBase =
-  "w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:bg-white focus:ring-4";
-const inputNormal = `${inputBase} border-gray-200 focus:border-primary focus:ring-primary/10`;
-const inputError = `${inputBase} border-red-400 focus:border-red-500 focus:ring-red-100`;
+  "w-full rounded-xl border bg-gray-50/50 px-4 py-3 text-sm text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:bg-white focus:ring-4 focus:ring-primary/10 transition-all duration-200";
+const inputNormal = `${inputBase} border-gray-200 focus:border-primary`;
+const inputError = `${inputBase} border-red-300 focus:border-red-500 focus:ring-red-500/10`;
 
 /* ─── Contact cards data ─────────────────────────────────────────────────── */
 const contactCards = [
@@ -175,6 +179,7 @@ const Contact = () => {
     setTouched(allTouched);
     const newErrors = validate(fields);
     setErrors(newErrors);
+    
     if (Object.keys(newErrors).length > 0) {
       showToast("Please fix the errors before submitting.", "error");
       return;
@@ -182,7 +187,7 @@ const Contact = () => {
 
     setStatus("sending");
     try {
-      // Replace with your real API call
+      // Prototyping realistic delay for premium interactive response
       await new Promise((res) => setTimeout(res, 1800));
       setStatus("success");
       setFields({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -226,32 +231,34 @@ const Contact = () => {
         }
         .card-hover:hover {
           transform: translateY(-4px);
-          box-shadow: 0 12px 32px rgba(0,0,0,.08);
+          box-shadow: 0 12px 32px rgba(0,0,0,.06);
         }
       `}</style>
 
-      <section className="bg-[#F7FBF8] min-h-screen">
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <div className="bg-primary text-white">
-          <div className="w-11/12 md:w-10/12 mx-auto py-14 md:py-20">
+      <section className="bg-gray-50/30 min-h-screen">
+        {/* ── Hero Banner ── */}
+        <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] text-white py-16 md:py-24 relative overflow-hidden">
+          {/* Decorative subtle abstract elements or glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl" />
+          
+          <div className="w-full px-4 md:px-8 max-w-6xl mx-auto relative z-10">
             <div className="max-w-3xl fade-in-up">
-              <span className="inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-white/80">
-                Contact Us
+              <span className="inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] mb-4">
+                Get In Touch
               </span>
-              <h1 className="mt-4 text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
-                We&apos;re ready to help you choose better gadgets.
+              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
+                Let's Connect & <span className="text-[#FBBC05]">Grow Together</span>
               </h1>
-              <p className="mt-5 text-base md:text-lg leading-8 text-white/80 max-w-xl">
-                Need product details, order support, warranty help, or delivery
-                info? Drop us a message — our team will get back to you fast.
+              <p className="mt-5 text-base md:text-lg leading-8 text-gray-200/90 max-w-2xl">
+                Whether you have inquiries about high-end smartphones, stock updates, warranty claims, or custom deliveries, our dedicated team is standing by to assist you.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="w-11/12 md:w-10/12 mx-auto -mt-8 pb-16 md:pb-24">
-          {/* ── Contact Cards ─────────────────────────────────── */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="w-full px-4 md:px-8 -mt-8 pb-16 md:pb-24 max-w-6xl mx-auto">
+          {/* ── Contact Cards ── */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {contactCards.map((item, i) => (
               <a
                 key={item.title}
@@ -259,37 +266,37 @@ const Contact = () => {
                 target={item.external ? "_blank" : undefined}
                 rel={item.external ? "noopener noreferrer" : undefined}
                 aria-label={item.ariaLabel}
-                className={`group rounded-2xl border border-primary/10 bg-white p-5 shadow-sm card-hover fade-in-up delay-${i + 1}`}
+                className={`group rounded-2xl border border-gray-100 bg-white p-6 shadow-md card-hover fade-in-up delay-${i + 1}`}
               >
                 <div className="flex items-start gap-4">
                   <span
                     aria-hidden
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-white"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-white"
                   >
                     {item.icon}
                   </span>
-                  <span>
+                  <div>
                     <span className="block text-xs font-bold uppercase tracking-widest text-gray-400">
                       {item.title}
                     </span>
-                    <span className="mt-1 block break-words text-base font-bold text-gray-900">
+                    <span className="mt-1 block break-words text-base font-bold text-gray-900 group-hover:text-primary transition-colors">
                       {item.value}
                     </span>
                     <span className="mt-1 block text-xs text-gray-500">
                       {item.note}
                     </span>
-                  </span>
+                  </div>
                 </div>
               </a>
             ))}
           </div>
 
-          {/* ── Main Grid ─────────────────────────────────────── */}
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
-            {/* ── Contact Form ──────────────────────────────── */}
-            <div className="rounded-2xl border border-primary/10 bg-white p-6 md:p-10 shadow-sm">
+          {/* ── Main Form & Info Grid ── */}
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8">
+            {/* ── Contact Form ── */}
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-10 shadow-md">
               <p className="text-xs font-bold uppercase tracking-widest text-primary">
-                Send Message
+                Send a Message
               </p>
               <h2 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900">
                 Tell us what you need
@@ -302,6 +309,7 @@ const Contact = () => {
                 className="mt-8 space-y-5"
                 aria-label="Contact form"
               >
+                {/* Row 1: Name and Email */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <Field label="Full Name" error={visibleErrors.name} required>
                     <input
@@ -312,18 +320,11 @@ const Contact = () => {
                       placeholder="Your full name"
                       autoComplete="name"
                       aria-invalid={!!visibleErrors.name}
-                      aria-describedby={
-                        visibleErrors.name ? "name-error" : undefined
-                      }
                       className={visibleErrors.name ? inputError : inputNormal}
                     />
                   </Field>
 
-                  <Field
-                    label="Email Address"
-                    error={visibleErrors.email}
-                    required
-                  >
+                  <Field label="Email Address" error={visibleErrors.email} required>
                     <input
                       type="email"
                       name="email"
@@ -337,7 +338,39 @@ const Contact = () => {
                   </Field>
                 </div>
 
-                <Field label="Message" error={visibleErrors.message} required>
+                {/* Row 2: Phone and Subject (FIXED BUG: Rendered requested elements!) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <Field label="Phone Number" error={visibleErrors.phone} required>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={fields.phone}
+                      onChange={handleChange}
+                      placeholder="e.g. +880 1712 345678"
+                      autoComplete="tel"
+                      aria-invalid={!!visibleErrors.phone}
+                      className={visibleErrors.phone ? inputError : inputNormal}
+                    />
+                  </Field>
+
+                  <Field label="Inquiry Subject" error={visibleErrors.subject} required>
+                    <select
+                      name="subject"
+                      value={fields.subject}
+                      onChange={handleChange}
+                      aria-invalid={!!visibleErrors.subject}
+                      className={visibleErrors.subject ? inputError : inputNormal}
+                    >
+                      <option value="" disabled>Select a subject</option>
+                      {subjects.map((sub) => (
+                        <option key={sub} value={sub}>{sub}</option>
+                      ))}
+                    </select>
+                  </Field>
+                </div>
+
+                {/* Row 3: Message */}
+                <Field label="Message Details" error={visibleErrors.message} required>
                   <textarea
                     name="message"
                     value={fields.message}
@@ -347,16 +380,21 @@ const Contact = () => {
                     aria-invalid={!!visibleErrors.message}
                     className={`${visibleErrors.message ? inputError : inputNormal} resize-none`}
                   />
-                  <p className="self-end text-xs text-gray-400">
-                    {fields.message.length} characters
-                  </p>
+                  <div className="flex justify-between items-center mt-1">
+                    <p className="text-xs text-gray-400">
+                      Minimum 10 characters required.
+                    </p>
+                    <p className="text-xs text-gray-400 font-semibold">
+                      {fields.message.length} characters
+                    </p>
+                  </div>
                 </Field>
 
                 <button
                   type="submit"
                   disabled={isSending}
                   aria-busy={isSending}
-                  className="flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-green-600 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:ring-4 focus-visible:ring-primary/30 outline-none"
+                  className="flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-[#25573c] hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:ring-4 focus-visible:ring-primary/30 outline-none"
                 >
                   {isSending ? (
                     <>
@@ -364,7 +402,7 @@ const Contact = () => {
                         aria-hidden
                         className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
                       />
-                      Sending…
+                      Sending Message…
                     </>
                   ) : (
                     "Send Message →"
@@ -373,17 +411,17 @@ const Contact = () => {
               </form>
             </div>
 
-            {/* ── Right Column ──────────────────────────────── */}
+            {/* ── Right Column: Info & Map ── */}
             <div className="space-y-6">
               {/* Social Links */}
-              <div className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
                 <h2 className="text-xl font-extrabold text-gray-900">
                   Connect With Us
                 </h2>
                 <p className="mt-1 text-xs text-gray-500">
-                  Reach us on your favourite platform
+                  Reach out to us on social platforms
                 </p>
-                <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                <div className="mt-5 flex flex-col gap-3">
                   {socials.map(
                     ({
                       name,
@@ -399,8 +437,7 @@ const Contact = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Follow us on ${name}`}
-                        className={`group flex items-center gap-2 rounded-xl px-4 py-2.5 text-lg font-bold transition-all duration-200 ${colorClass}`}
-                        style={isInstagram ? {} : {}}
+                        className={`group flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 ${colorClass}`}
                         onMouseEnter={(e) => {
                           if (isInstagram) {
                             e.currentTarget.style.background =
@@ -416,16 +453,21 @@ const Contact = () => {
                           e.currentTarget.style.color = "";
                         }}
                       >
-                        <span className="text-xl">{icon}</span>
-                        {name}
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{icon}</span>
+                          <span>{name}</span>
+                        </div>
+                        <span className="text-xs opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                          Follow →
+                        </span>
                       </a>
                     ),
                   )}
                 </div>
               </div>
 
-              {/* Map */}
-              <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+              {/* Map Showroom */}
+              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md">
                 <iframe
                   title="Gurudeb Enterprise location on Google Maps"
                   src="https://www.google.com/maps?q=Dhaka%2C+Bangladesh&output=embed"
@@ -442,9 +484,8 @@ const Contact = () => {
                       Dhaka, Bangladesh
                     </p>
                   </div>
-                  <p className="mt-1 text-xs leading-6 text-gray-500">
-                    Visit our store or contact us first for stock confirmation
-                    before coming.
+                  <p className="mt-2 text-xs leading-6 text-gray-500">
+                    Visit our brand showroom or contact us beforehand for real-time stock confirmation.
                   </p>
                   <a
                     href="https://www.google.com/maps/search/?api=1&query=Dhaka%2C+Bangladesh"
@@ -461,7 +502,7 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* ── Toast Notification ──────────────────────────────────────── */}
+      {/* ── Toast Notification ── */}
       {toast && (
         <Toast
           message={toast.message}

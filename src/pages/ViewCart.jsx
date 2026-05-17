@@ -48,7 +48,7 @@ const ViewCart = () => {
 
   return (
     <section className="bg-zinc-50 min-h-[70vh] py-10 md:py-14">
-      <div className="w-11/12 md:w-10/12 mx-auto">
+      <div className="w-full px-4 md:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
