@@ -62,19 +62,19 @@ const Header = () => {
             </div>
           </Link>
         </div>
-        <div className="relative flex-1 max-w-[400px]">
+        <div className="relative flex-1 max-w-[700px]">
           <input
-            className="w-full h-9 rounded-full border border-gray-200 bg-gray-50 px-4 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition-all duration-200"
+            className="w-full h-10 rounded-full border border-gray-200 bg-gray-50 px-4 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition-all duration-200"
             type="search"
             placeholder="Search products..."
           />
           <Search
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors cursor-pointer"
-            size={15}
+            size={18}
           />
         </div>
 
-        <nav className="flex items-center gap-5 lg:gap-8 text-xs lg:text-sm font-medium text-zinc-700">
+        <nav className="flex items-center gap-5 lg:gap-8 text-xs lg:text-lg font-medium text-zinc-700">
           {desktopNavItems.map((item) => (
             <NavLink
               key={item.label}
@@ -95,22 +95,22 @@ const Header = () => {
         <div className="flex shrink-0 items-center text-zinc-700 gap-4 lg:gap-6 cursor-pointer justify-end">
           <Link to="/track" className="hover:text-primary transition-colors duration-200">
             <div className="flex flex-col items-center">
-              <MapPinned size={18} className="stroke-[1.5]" />
-              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Track Order</p>
+              <MapPinned size={20} className="stroke-[1.5]" />
+              <p className="hidden lg:block text-sm font-medium mt-0.5">Track Order</p>
             </div>
           </Link>
 
           <Link to="/wishlist" className="hover:text-primary transition-colors duration-200">
             <div className="flex flex-col items-center relative">
               <div className="flex items-center relative">
-                <Heart size={18} className="stroke-[1.5]" />
+                <Heart size={20} className="stroke-[1.5]" />
                 {wishlistItems.length > 0 && (
                   <span className="text-white absolute -right-1.5 -top-1.5 bg-primary rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[9px] font-bold">
                     {wishlistItems.length}
                   </span>
                 )}
               </div>
-              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Wishlist</p>
+              <p className="hidden lg:block text-sm font-medium mt-0.5">Wishlist</p>
             </div>
           </Link>
 
@@ -122,14 +122,14 @@ const Header = () => {
               aria-label="Open cart"
             >
               <div className="flex items-center relative">
-                <ShoppingCart size={18} className="stroke-[1.5]" />
+                <ShoppingCart size={20} className="stroke-[1.5]" />
                 {cartItems.length > 0 && (
                   <span className="text-white absolute -right-2 -top-1.5 bg-primary rounded-full min-w-4 h-4 flex items-center justify-center text-[9px] font-bold">
                     {cartItems.length}
                   </span>
                 )}
               </div>
-              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Cart</p>
+              <p className="hidden lg:block text-sm font-medium mt-0.5">Cart</p>
             </button>
           </div>
 
@@ -153,8 +153,8 @@ const Header = () => {
               to="/signin"
               className="flex flex-col items-center hover:text-primary transition-colors duration-200"
             >
-              <FaRegUserCircle size={18} className="stroke-[1.5]" />
-              <p className="hidden lg:block text-[10px] font-medium mt-0.5">Sign In</p>
+              <FaRegUserCircle size={20} className="stroke-[1.5]" />
+              <p className="hidden lg:block text-sm font-medium mt-0.5">Sign In</p>
             </Link>
           )}
         </div>
