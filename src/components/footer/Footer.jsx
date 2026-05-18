@@ -8,7 +8,7 @@ import {
 import { IoMdCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
 import footer from "/Img/logo/ge_main_logo.png";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 
 const Footer = () => {
   return (
@@ -18,7 +18,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="py-4 md:py-8">
-              <a href="/" className="inline-flex items-center gap-3">
+              <Link to="/" className="inline-flex items-center gap-3">
                 <img
                   className="h-12 w-auto object-contain"
                   src={footer}
@@ -32,7 +32,7 @@ const Footer = () => {
                     Enterprise
                   </span>
                 </span>
-              </a>
+              </Link>
             </div>
             <p className="text-xs md:text-sm leading-5">
               Gurudeb Enterprise is an e-commerce platform dedicated to
