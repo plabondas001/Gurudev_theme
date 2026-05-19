@@ -20,6 +20,7 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { UserDataProvider } from "./context/UserDataContext.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
 import Checkout from "./pages/Checkout.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
         path: "terms_conditions",
         element: <TermsConditions />,
       },
+      {
+        path: "privacy_policy",
+        element:<PrivacyPolicy/>
+      }
     ],
   },
 ]);

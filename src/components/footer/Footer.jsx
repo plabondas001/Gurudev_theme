@@ -105,7 +105,7 @@ const Footer = () => {
             </NavLink>
             <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              to="#"
+              to="/privacy_policy"
             >
               Privacy Policy
             </NavLink>
@@ -179,7 +179,7 @@ const Footer = () => {
             </NavLink>
             <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              to="#"
+              to="/track"
             >
               Order Tracking
             </NavLink>
@@ -191,15 +191,9 @@ const Footer = () => {
             </NavLink>
             <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              to="#"
+              to="/"
             >
               Shipping
-            </NavLink>
-            <NavLink
-              className="text-xs md:text-sm hover:text-black transition delay-75"
-              to="#"
-            >
-              FAQ
             </NavLink>
           </div>
 
