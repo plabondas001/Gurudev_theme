@@ -6,9 +6,8 @@ import {
   Package,
   Pencil,
   Trash2,
-  User,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { createElement, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLocation, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -24,7 +23,7 @@ const tabs = [
 ];
 
 const inputClass =
-  "w-full rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+  "w-full rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3 text-sm outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white";
 
 function formatOrderDate(iso) {
   try {
@@ -98,70 +97,14 @@ function downloadInvoice(order, user) {
   URL.revokeObjectURL(url);
 }
 
-const UserProfile = () => {
-  const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const {
-    user,
-    ready,
-    isAuthenticated,
-    updateProfile,
-    changePassword,
-    logout,
-  } = useAuth();
-  const { orders, addresses, addAddress, removeAddress, setDefaultAddress } =
-    useUserData();
-
-  const tab = searchParams.get("tab") || "orders";
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, []);
-
-  useEffect(() => {
-    const stateTab = location.state?.tab;
-    if (stateTab && tabs.some((t) => t.id === stateTab)) {
-      setSearchParams({ tab: stateTab }, { replace: true });
-    }
-  }, [location.state, setSearchParams]);
-
-  const setTab = (id) => setSearchParams({ tab: id });
-
-  const [editName, setEditName] = useState("");
-  const [editPhone, setEditPhone] = useState("");
+function ProfileSettings({ user, avatarImgProps, updateProfile, changePassword }) {
+  const [editName, setEditName] = useState(user.name || "");
+  const [editPhone, setEditPhone] = useState(user.phone || "");
   const [pwdCurrent, setPwdCurrent] = useState("");
   const [pwdNew, setPwdNew] = useState("");
   const [pwdConfirm, setPwdConfirm] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPwd, setSavingPwd] = useState(false);
-
-  const [addrLabel, setAddrLabel] = useState("Home");
-  const [addrName, setAddrName] = useState("");
-  const [addrPhone, setAddrPhone] = useState("");
-  const [addrLine, setAddrLine] = useState("");
-  const [addrCity, setAddrCity] = useState("");
-  const [addrDefault, setAddrDefault] = useState(true);
-
-  useEffect(() => {
-    if (user) {
-      setEditName(user.name || "");
-      setEditPhone(user.phone || "");
-    }
-  }, [user?.id, user?.name, user?.phone]);
-
-  const avatarImgProps = useMemo(() => getUserAvatarImgProps(user), [user]);
-
-  if (!ready) {
-    return (
-      <div className="min-h-[50vh] flex items-center justify-center text-muted-foreground">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/signin" state={{ from: location }} replace />;
-  }
 
   const onSaveProfile = async (e) => {
     e.preventDefault();
@@ -215,6 +158,193 @@ const UserProfile = () => {
     }
   };
 
+  return (
+    <div className="space-y-8 max-w-xl">
+      <form
+        onSubmit={onSaveProfile}
+        className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 card-hover"
+      >
+        <h2 className="font-semibold text-lg">Profile details</h2>
+        <div className="flex items-center gap-4">
+          <img
+            {...avatarImgProps}
+            alt=""
+            className="w-20 h-20 rounded-2xl object-cover border border-border"
+          />
+          <div className="flex flex-wrap gap-2">
+            <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-95">
+              Change photo
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onAvatarFile}
+              />
+            </label>
+            {user.avatarDataUrl && user.photoURL && (
+              <button
+                type="button"
+                onClick={onRemoveAvatar}
+                className="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted/60"
+              >
+                Use Google photo
+              </button>
+            )}
+          </div>
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            Name
+          </label>
+          <input
+            className={`${inputClass} mt-1`}
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            Phone
+          </label>
+          <input
+            className={`${inputClass} mt-1`}
+            value={editPhone}
+            onChange={(e) => setEditPhone(e.target.value)}
+            placeholder="01XXXXXXXXX"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            Email
+          </label>
+          <input
+            className={`${inputClass} mt-1 opacity-70 cursor-not-allowed`}
+            value={user.email}
+            readOnly
+            title="Email cannot be changed"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Email is your login and cannot be changed here.
+          </p>
+        </div>
+        <button
+          type="submit"
+          disabled={savingProfile}
+          className="py-3 px-6 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 disabled:opacity-60"
+        >
+          {savingProfile ? "Saving..." : "Save changes"}
+        </button>
+      </form>
+
+      <form
+        onSubmit={onChangePassword}
+        className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 card-hover"
+      >
+        <h2 className="font-semibold text-lg">Change password</h2>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            Current password
+          </label>
+          <input
+            type="password"
+            className={`${inputClass} mt-1`}
+            value={pwdCurrent}
+            onChange={(e) => setPwdCurrent(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            New password
+          </label>
+          <input
+            type="password"
+            className={`${inputClass} mt-1`}
+            value={pwdNew}
+            onChange={(e) => setPwdNew(e.target.value)}
+            autoComplete="new-password"
+            required
+            minLength={6}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            Confirm new password
+          </label>
+          <input
+            type="password"
+            className={`${inputClass} mt-1`}
+            value={pwdConfirm}
+            onChange={(e) => setPwdConfirm(e.target.value)}
+            autoComplete="new-password"
+            required
+            minLength={6}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={savingPwd}
+          className="py-3 px-6 rounded-xl border-2 border-primary text-primary font-semibold text-sm hover:bg-primary/5 disabled:opacity-60"
+        >
+          {savingPwd ? "Updating..." : "Update password"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+const UserProfile = () => {
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {
+    user,
+    ready,
+    isAuthenticated,
+    updateProfile,
+    changePassword,
+    logout,
+  } = useAuth();
+  const { orders, addresses, addAddress, removeAddress, setDefaultAddress } =
+    useUserData();
+
+  const tab = searchParams.get("tab") || "orders";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
+  useEffect(() => {
+    const stateTab = location.state?.tab;
+    if (stateTab && tabs.some((t) => t.id === stateTab)) {
+      setSearchParams({ tab: stateTab }, { replace: true });
+    }
+  }, [location.state, setSearchParams]);
+
+  const setTab = (id) => setSearchParams({ tab: id });
+
+  const [addrLabel, setAddrLabel] = useState("Home");
+  const [addrName, setAddrName] = useState("");
+  const [addrPhone, setAddrPhone] = useState("");
+  const [addrLine, setAddrLine] = useState("");
+  const [addrCity, setAddrCity] = useState("");
+  const [addrDefault, setAddrDefault] = useState(true);
+
+  const avatarImgProps = useMemo(() => getUserAvatarImgProps(user), [user]);
+
+  if (!ready) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center text-muted-foreground">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
+  }
+
   const onAddAddress = (e) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -238,35 +368,98 @@ const UserProfile = () => {
   };
 
   const activeTabMeta = tabs.find((t) => t.id === tab) || tabs[0];
+  const ActiveTabIcon = activeTabMeta.icon;
 
   return (
-    <section className="w-full px-4 md:px-8 py-6 md:py-12 pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-12">
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1 hover:text-primary"
-        >
-          <Home className="w-4 h-4" />
-          Home
-        </Link>
-        <ChevronRight className="w-4 h-4" />
-        <span className="text-foreground font-medium">Account</span>
-      </nav>
+    <>
+      <style>{`
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { animation: fade-in-up .6s ease-out both; }
+        .delay-1 { animation-delay: .1s; }
+        .delay-2 { animation-delay: .2s; }
+        .card-hover {
+          transition: transform .2s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+        .card-hover:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 32px rgba(0,0,0,.06);
+          border-color: rgba(49,113,79,.18);
+        }
+      `}</style>
 
-      <div className="flex flex-col lg:flex-row gap-5 md:gap-8 lg:gap-10">
-        <aside className="lg:w-64 shrink-0">
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
+      <section className="bg-gray-50/30 min-h-screen pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-16">
+        <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] text-white py-12 md:py-16 relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+
+          <div className="w-full px-4 md:px-8 max-w-6xl mx-auto relative z-10 fade-in-up">
+            <nav className="flex items-center gap-2 text-sm text-gray-200/85 mb-8">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1 hover:text-[#FBBC05]"
+              >
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
+              <ChevronRight className="w-4 h-4" />
+              <span className="font-semibold text-white">Account</span>
+            </nav>
+
+            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div>
+                <span className="inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] mb-4">
+                  Customer Dashboard
+                </span>
+                <h1 className="font-extrabold text-4xl md:text-5xl tracking-tight leading-tight">
+                  Welcome back,{" "}
+                  <span className="text-[#FBBC05]">{user.name}</span>
+                </h1>
+                <p className="font-medium text-base md:text-lg text-gray-200/90 leading-relaxed max-w-2xl mt-4">
+                  Manage orders, delivery addresses, and profile details from
+                  one trusted Gurudeb Enterprise account.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:min-w-72">
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                  <p className="text-3xl font-extrabold text-[#FBBC05]">
+                    {orders.length}
+                  </p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                    Orders
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                  <p className="text-3xl font-extrabold text-[#FBBC05]">
+                    {addresses.length}
+                  </p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                    Addresses
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full px-4 md:px-8 py-10 md:py-14">
+          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-5 md:gap-8 lg:gap-10">
+            <aside className="lg:w-72 shrink-0 fade-in-up delay-1">
+              <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-900/5 card-hover">
+            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100">
               <img
                 {...avatarImgProps}
                 alt=""
-                className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 bg-muted"
+                className="w-16 h-16 rounded-2xl object-cover border-2 border-primary/20 bg-gray-100"
               />
               <div className="min-w-0">
-                <p className="font-semibold text-foreground truncate">
+                <p className="font-bold text-gray-900 truncate">
                   {user.name}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-xs text-gray-500 truncate">
                   {user.email}
                 </p>
               </div>
@@ -279,11 +472,11 @@ const UserProfile = () => {
                   onClick={() => setTab(id)}
                   className={`flex items-center gap-2 w-full text-left cursor-pointer px-3 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition ${
                     tab === id
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-green-50"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-gray-600 hover:bg-primary/10 hover:text-primary"
                   }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0" />
+                  {createElement(Icon, { className: "w-4 h-4 shrink-0" })}
                   {label}
                 </button>
               ))}
@@ -291,37 +484,47 @@ const UserProfile = () => {
             <button
               type="button"
               onClick={logout}
-              className="mt-4 w-full py-2.5 text-sm font-medium text-destructive hover:bg-green-50 cursor-pointer rounded-xl transition"
+              className="mt-4 w-full py-2.5 text-sm font-semibold text-destructive hover:bg-red-50 cursor-pointer rounded-xl transition"
             >
               Sign out
             </button>
           </div>
         </aside>
 
-        <div className="flex-1 min-w-0">
-          <header className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-              {activeTabMeta.label}
-            </h1>
-            <p className="text-muted-foreground text-sm mt-1">
+            <div className="flex-1 min-w-0 fade-in-up delay-2">
+          <header className="mb-6 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <ActiveTabIcon className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+                  Account
+                </h2>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mt-1">
+                  {activeTabMeta.label}
+                </h1>
+                <p className="text-gray-600 text-sm mt-2 leading-relaxed">
               {tab === "orders" &&
                 "Orders you placed from this device while signed in."}
               {tab === "addresses" &&
                 "Save delivery addresses for faster checkout later."}
               {tab === "edit" &&
                 "Update your details. Email is fixed to your account."}
-            </p>
+                </p>
+              </div>
+            </div>
           </header>
 
           {tab === "orders" && (
-            <div className="rounded-2xl border border-slate-300 bg-white p-4 md:p-5 shadow-sm">
+            <div className="rounded-3xl border border-gray-100 bg-white p-4 md:p-6 shadow-sm card-hover">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div className="flex items-center gap-3">
                   <Package
                     className="w-6 h-6 text-slate-800"
                     fill="currentColor"
                   />
-                  <h2 className="text-2xl font-bold text-slate-950">
+                  <h2 className="text-2xl font-extrabold text-slate-950">
                     My Orders
                   </h2>
                 </div>
@@ -438,7 +641,7 @@ const UserProfile = () => {
             <div className="grid gap-8 lg:grid-cols-5">
               <form
                 onSubmit={onAddAddress}
-                className="lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4 h-fit"
+                className="lg:col-span-2 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 h-fit card-hover"
               >
                 <h2 className="font-semibold text-lg">Add address</h2>
                 <div>
@@ -525,7 +728,7 @@ const UserProfile = () => {
                   addresses.map((a) => (
                     <div
                       key={a.id}
-                      className="rounded-2xl border border-border bg-card p-5 shadow-sm flex flex-col sm:flex-row sm:items-start justify-between gap-4"
+                    className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm flex flex-col sm:flex-row sm:items-start justify-between gap-4 card-hover"
                     >
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -574,143 +777,18 @@ const UserProfile = () => {
           )}
 
           {tab === "edit" && (
-            <div className="space-y-8 max-w-xl">
-              <form
-                onSubmit={onSaveProfile}
-                className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4"
-              >
-                <h2 className="font-semibold text-lg">Profile details</h2>
-                <div className="flex items-center gap-4">
-                  <img
-                    {...avatarImgProps}
-                    alt=""
-                    className="w-20 h-20 rounded-2xl object-cover border border-border"
-                  />
-                  <div className="flex flex-wrap gap-2">
-                    <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-95">
-                      Change photo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={onAvatarFile}
-                      />
-                    </label>
-                    {user.avatarDataUrl && user.photoURL && (
-                      <button
-                        type="button"
-                        onClick={onRemoveAvatar}
-                        className="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted/60"
-                      >
-                        Use Google photo
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Name
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Phone
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={editPhone}
-                    onChange={(e) => setEditPhone(e.target.value)}
-                    placeholder="01XXXXXXXXX"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Email
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1 opacity-70 cursor-not-allowed`}
-                    value={user.email}
-                    readOnly
-                    title="Email cannot be changed"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Email is your login and cannot be changed here.
-                  </p>
-                </div>
-                <button
-                  type="submit"
-                  disabled={savingProfile}
-                  className="py-3 px-6 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 disabled:opacity-60"
-                >
-                  {savingProfile ? "Saving…" : "Save changes"}
-                </button>
-              </form>
-
-              <form
-                onSubmit={onChangePassword}
-                className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4"
-              >
-                <h2 className="font-semibold text-lg">Change password</h2>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Current password
-                  </label>
-                  <input
-                    type="password"
-                    className={`${inputClass} mt-1`}
-                    value={pwdCurrent}
-                    onChange={(e) => setPwdCurrent(e.target.value)}
-                    autoComplete="current-password"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    New password
-                  </label>
-                  <input
-                    type="password"
-                    className={`${inputClass} mt-1`}
-                    value={pwdNew}
-                    onChange={(e) => setPwdNew(e.target.value)}
-                    autoComplete="new-password"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Confirm new password
-                  </label>
-                  <input
-                    type="password"
-                    className={`${inputClass} mt-1`}
-                    value={pwdConfirm}
-                    onChange={(e) => setPwdConfirm(e.target.value)}
-                    autoComplete="new-password"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={savingPwd}
-                  className="py-3 px-6 rounded-xl border-2 border-primary text-primary font-semibold text-sm hover:bg-primary/5 disabled:opacity-60"
-                >
-                  {savingPwd ? "Updating…" : "Update password"}
-                </button>
-              </form>
-            </div>
+            <ProfileSettings
+              user={user}
+              avatarImgProps={avatarImgProps}
+              updateProfile={updateProfile}
+              changePassword={changePassword}
+            />
           )}
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
