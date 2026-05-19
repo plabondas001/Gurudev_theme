@@ -700,7 +700,7 @@ const StepBadge = ({ number, label, active, done }) => (
     </div>
     <span
       className={`hidden text-xs font-semibold sm:block ${
-        active ? "text-primary" : done ? "text-emerald-600" : "text-zinc-400"
+        active ? "text-[#FBBC05]" : done ? "text-[#FBBC05]" : "text-zinc-400"
       }`}
     >
       {label}
@@ -754,7 +754,6 @@ const Checkout = () => {
   const [voucherCode, setVoucherCode] = useState("");
   const [saveAddress, setSaveAddress] = useState(false);
   const [form, setForm] = useState(emptyForm);
-  const [activeStep] = useState(1);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -774,6 +773,21 @@ const Checkout = () => {
   const currencySymbol =
     getCurrencySymbol(cartItems[0]?.price || "") ||
     computeCartTotals(cartItems).currencySymbol;
+
+  const deliveryStepComplete = Boolean(
+    form.fullName.trim() &&
+    /^\d{8,15}$/.test(form.phone.trim()) &&
+    form.addressLine.trim() &&
+    (selectedAddressId || (form.division && form.district && form.subDistrict)),
+  );
+  const paymentStepComplete =
+    paymentMethod === "cod" ||
+    Boolean(
+      paymentDetails.paidFrom.trim() &&
+      paymentDetails.transactionId.trim() &&
+      paymentDetails.amount.trim(),
+    );
+  const activeStep = !deliveryStepComplete ? 1 : paymentStepComplete ? 3 : 2;
 
   const updateForm = (field, value) => {
     setSelectedAddressId("");
@@ -834,20 +848,20 @@ const Checkout = () => {
   /* ── empty cart ── */
   if (cartItems.length === 0) {
     return (
-      <section className="flex min-h-[72vh] items-center justify-center bg-gradient-to-br from-zinc-50 via-white to-primary/5 px-4">
-        <div className="text-center">
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10">
+      <section className="flex min-h-[72vh] items-center justify-center bg-gray-50/30 px-4">
+        <div className="rounded-3xl border border-gray-100 bg-white p-8 text-center shadow-xl">
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 text-primary">
             <PackageCheck className="h-12 w-12 text-primary" />
           </div>
-          <h2 className="text-3xl font-black tracking-tight text-zinc-900">
+          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
             Your cart is empty
           </h2>
-          <p className="mx-auto mt-3 max-w-sm text-zinc-500">
+          <p className="mx-auto mt-3 max-w-sm text-gray-600">
             Add some products first, then come back to checkout.
           </p>
           <Link
             to="/products"
-            className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-primary/30 transition hover:bg-primary/90 hover:shadow-primary/40"
+            className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-primary/30 transition hover:bg-primary/90"
           >
             <Sparkles className="h-4 w-4" />
             Explore products
@@ -858,74 +872,47 @@ const Checkout = () => {
   }
 
   return (
-    <section className="min-h-[72vh] bg-gradient-to-br from-zinc-50 via-white to-primary/5 py-8 md:py-14">
+    <section className="min-h-[72vh] bg-gray-50/30">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap');
-        .checkout-root { font-family: 'Sora', sans-serif; }
-        .glass-card {
-          background: rgba(255,255,255,0.85);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255,255,255,0.7);
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        .shimmer-line {
-          background: linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb,99,102,241),.06), transparent);
-          background-size: 200% 100%;
-          animation: shimmer 2.5s infinite;
-        }
-        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-        .card-hover { transition: box-shadow .2s, transform .2s; }
-        .card-hover:hover { box-shadow: 0 8px 32px -4px rgba(0,0,0,.10); transform: translateY(-1px); }
+        .fade-in-up { animation: fade-in-up .6s ease-out both; }
+        .delay-1 { animation-delay: .1s; }
+        .delay-2 { animation-delay: .2s; }
+        .card-hover { transition: transform .2s ease, box-shadow .15s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.06); }
         .step-connector { flex: 1; height: 1px; background: linear-gradient(90deg, currentColor, transparent); opacity: .18; }
       `}</style>
 
-      <div className="checkout-root mx-auto w-full max-w-7xl px-4 md:px-8">
-        {/* ── top header ── */}
-        <div className="mb-8">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#183f31] to-[#25573c] py-16 text-white md:py-24">
+        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 text-center md:px-8">
           <Link
             to="/cart"
-            className="group mb-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 transition hover:text-primary"
+            className="group mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] transition hover:bg-white/15"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
             Back to cart
           </Link>
-
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="mb-1 text-xs font-bold uppercase tracking-[.2em] text-primary/70">
-                Gurudev Enterprise
-              </p>
-              <h1 className="text-4xl font-black tracking-tight text-zinc-900 md:text-5xl">
-                Checkout
-              </h1>
-            </div>
-
-            {/* step indicator */}
-            <div className="flex items-center gap-3">
-              <StepBadge
-                number={1}
-                label="Delivery"
-                active={activeStep === 1}
-                done={activeStep > 1}
-              />
-              <div className="step-connector w-8 text-primary" />
-              <StepBadge
-                number={2}
-                label="Payment"
-                active={activeStep === 2}
-                done={activeStep > 2}
-              />
-              <div className="step-connector w-8 text-primary" />
-              <StepBadge
-                number={3}
-                label="Confirm"
-                active={activeStep === 3}
-                done={false}
-              />
-            </div>
+          <div className="fade-in-up">
+            <span className="mb-4 inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05]">
+              Gurudeb Enterprise
+            </span>
+            <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-extrabold leading-tight tracking-tight md:text-6xl">
+              Complete Your <span className="text-[#FBBC05]">Checkout</span>
+            </h1>
+            <p className="mx-auto max-w-3xl text-lg font-medium leading-relaxed text-gray-200/90 md:text-xl">
+              Confirm delivery details, choose payment, and place your order
+              with confidence.
+            </p>
           </div>
         </div>
+      </div>
 
+      <div className="mx-auto w-full max-w-7xl px-4 py-16 md:px-8">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 gap-6 lg:grid-cols-12"
@@ -933,16 +920,16 @@ const Checkout = () => {
           {/* ── LEFT column ── */}
           <div className="space-y-5 lg:col-span-7">
             {/* delivery section */}
-            <div className="glass-card card-hover overflow-hidden rounded-3xl shadow-sm">
+            <div className="card-hover overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm fade-in-up delay-1">
               {/* header stripe */}
-              <div className="shimmer-line flex items-center justify-between gap-4 border-b border-zinc-100 px-6 py-5">
+              <div className="flex items-center justify-between gap-4 border-b border-gray-100 bg-gray-50/60 px-6 py-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="font-black text-zinc-900">Delivery Info</h2>
-                    <p className="text-xs text-zinc-400">
+                    <h2 className="font-bold text-gray-900">Delivery Info</h2>
+                    <p className="text-xs text-gray-500">
                       Where should we ship?
                     </p>
                   </div>
@@ -1158,12 +1145,22 @@ const Checkout = () => {
             </div>
 
             {/* payment section */}
-            <div className="overflow-hidden rounded-2xl border border-zinc-900 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="text-lg font-bold text-zinc-950">
-                Select Payment Method
-              </h2>
+            <div className="card-hover overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm fade-in-up delay-2">
+              <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/60 px-6 py-5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <BadgeCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-gray-900">
+                    Select Payment Method
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    Choose your preferred payment option.
+                  </p>
+                </div>
+              </div>
 
-              <div className="mt-5 space-y-5">
+              <div className="space-y-3 p-6">
                 {[
                   {
                     id: "cod",
@@ -1190,7 +1187,11 @@ const Checkout = () => {
                     key={id}
                     type="button"
                     onClick={() => setPaymentMethod(id)}
-                    className="flex w-full cursor-pointer items-center justify-between gap-4 text-left"
+                    className={`flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl border p-4 text-left transition ${
+                      paymentMethod === id
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-100 bg-white hover:border-primary/40 hover:bg-gray-50"
+                    }`}
                   >
                     <span className="flex min-w-0 items-center gap-2.5">
                       <span
@@ -1204,7 +1205,7 @@ const Checkout = () => {
                           <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                         )}
                       </span>
-                      <span className="truncate text-base font-medium text-zinc-950">
+                      <span className="truncate text-base font-bold text-gray-900">
                         {title}
                       </span>
                     </span>
@@ -1218,52 +1219,52 @@ const Checkout = () => {
                     {paymentMethod === id && <span className="sr-only">✓</span>}
                   </button>
                 ))}
-              </div>
 
-              <div className="mt-6 border-t border-zinc-900 pt-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-zinc-800">
-                      Paid From <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      value={paymentDetails.paidFrom}
-                      onChange={(e) =>
-                        updatePaymentDetails("paidFrom", e.target.value)
-                      }
-                      placeholder="e.g., 01xxxxxxxxx"
-                      className="h-12 w-full rounded-md border border-zinc-900 bg-white px-3 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-zinc-800">
-                      Transaction ID <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      value={paymentDetails.transactionId}
-                      onChange={(e) =>
-                        updatePaymentDetails("transactionId", e.target.value)
-                      }
-                      placeholder="e.g., 8N7F6G5H"
-                      className="h-12 w-full rounded-md border border-zinc-900 bg-white px-3 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="mb-1.5 block text-sm font-semibold text-zinc-800">
-                      Amount
-                    </label>
-                    <div className="flex h-12 overflow-hidden rounded-md border border-zinc-900 bg-white focus-within:border-primary focus-within:ring-2 focus:ring-primary/20">
-                      <span className="flex items-center px-3 text-sm font-medium text-zinc-900">
-                        Tk
-                      </span>
+                <div className="mt-6 border-t border-gray-100 pt-5">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                        Paid From <span className="text-primary">*</span>
+                      </label>
                       <input
-                        value={paymentDetails.amount}
+                        value={paymentDetails.paidFrom}
                         onChange={(e) =>
-                          updatePaymentDetails("amount", e.target.value)
+                          updatePaymentDetails("paidFrom", e.target.value)
                         }
-                        placeholder="120"
-                        className="min-w-0 flex-1 border-0 bg-transparent px-1 text-sm text-zinc-950 outline-none placeholder:text-zinc-400"
+                        placeholder="e.g., 01xxxxxxxxx"
+                        className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary/60 focus:bg-white focus:ring-2 focus:ring-primary/10"
                       />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                        Transaction ID <span className="text-primary">*</span>
+                      </label>
+                      <input
+                        value={paymentDetails.transactionId}
+                        onChange={(e) =>
+                          updatePaymentDetails("transactionId", e.target.value)
+                        }
+                        placeholder="e.g., 8N7F6G5H"
+                        className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary/60 focus:bg-white focus:ring-2 focus:ring-primary/10"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                        Amount
+                      </label>
+                      <div className="flex h-12 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60 focus-within:border-primary/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/10">
+                        <span className="flex items-center px-3 text-sm font-medium text-zinc-900">
+                          Tk
+                        </span>
+                        <input
+                          value={paymentDetails.amount}
+                          onChange={(e) =>
+                            updatePaymentDetails("amount", e.target.value)
+                          }
+                          placeholder="120"
+                          className="min-w-0 flex-1 border-0 bg-transparent px-1 text-sm text-zinc-950 outline-none placeholder:text-zinc-400"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1273,11 +1274,11 @@ const Checkout = () => {
 
           {/* ── RIGHT column / order summary ── */}
           <aside className="lg:col-span-5">
-            <div className="glass-card overflow-hidden rounded-3xl shadow-sm lg:sticky lg:top-28">
+            <div className="card-hover overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm fade-in-up delay-1 lg:sticky lg:top-28">
               {/* header */}
-              <div className="shimmer-line border-b border-zinc-100 px-6 py-5">
-                <h2 className="font-black text-zinc-900">Order Summary</h2>
-                <p className="mt-0.5 text-xs text-zinc-400">
+              <div className="border-b border-gray-100 bg-gray-50/60 px-6 py-5">
+                <h2 className="font-bold text-gray-900">Order Summary</h2>
+                <p className="mt-0.5 text-xs text-gray-500">
                   {cartItems.length} item{cartItems.length !== 1 ? "s" : ""} in
                   your cart
                 </p>
@@ -1293,11 +1294,17 @@ const Checkout = () => {
                     "/Img/logo/logo.png";
                   const qty = item.quantity || 1;
                   const price = parsePrice(item.price);
+                  const productPath = item.slug || item.id;
+                  const SummaryItem = productPath ? Link : "div";
 
                   return (
-                    <div
+                    <SummaryItem
                       key={item.id}
-                      className="flex gap-3.5 rounded-2xl bg-zinc-50 p-3"
+                      {...(productPath
+                        ? { to: `/product/${productPath}` }
+                        : {})}
+                      className="flex gap-3.5 rounded-2xl border border-gray-100 bg-gray-50/70 p-3 transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      title={productPath ? `View ${item.name}` : undefined}
                     >
                       <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-xl border border-zinc-200">
                         <img
@@ -1317,7 +1324,7 @@ const Checkout = () => {
                           {formatWithSymbol(price * qty, currencySymbol)}
                         </p>
                       </div>
-                    </div>
+                    </SummaryItem>
                   );
                 })}
               </div>
