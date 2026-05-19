@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import { useEffect } from "react";
-import { Heart, ShoppingCart } from "lucide-react";
+import { ArrowRight, Heart, ShoppingCart, Sparkles, Trash2 } from "lucide-react";
 import { FaHeart, FaStar } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
 import { useWishlist } from "../context/WishlistContext";
@@ -34,7 +34,6 @@ const formatMoney = (amount, symbol) => {
   return `${sym} ${formatted}`;
 };
 
-/** Card layout aligned with ProductCard; heart removes via toggleWishlist. */
 const WishlistItemCard = ({ item, currencySymbol }) => {
   const navigate = useNavigate();
   const { handleCart } = useCart();
@@ -90,17 +89,17 @@ const WishlistItemCard = ({ item, currencySymbol }) => {
           navigate(`/product/${item.slug}`);
         }
       }}
-      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full group cursor-pointer"
+      className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full group cursor-pointer card-hover fade-in-up"
     >
       <div className="relative aspect-square overflow-hidden bg-gray-50">
         <div className="absolute w-full z-10">
-          <div className="p-2 flex items-center justify-between">
+          <div className="p-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <p className="bg-primary px-1.5 text-white text-[10px] sm:text-xs lg:px-2 py-1 rounded-md shrink-0">
+              <p className="bg-primary px-2 text-white text-[10px] sm:text-xs py-1 rounded-full shrink-0 font-bold shadow-sm">
                 Top selling
               </p>
               <span
-                className="bg-gray-200 rounded-full p-1 shrink-0"
+                className="bg-white/90 rounded-full p-1.5 shrink-0 shadow-sm"
                 aria-hidden
               >
                 <FiShoppingBag
@@ -111,7 +110,7 @@ const WishlistItemCard = ({ item, currencySymbol }) => {
             </div>
             <button
               type="button"
-              className="rounded-full cursor-pointer p-1.5 transition-colors bg-primary/15 text-primary hover:bg-primary/25 shrink-0"
+              className="rounded-full cursor-pointer p-2 transition-colors bg-white/90 text-primary hover:bg-primary hover:text-white shrink-0 shadow-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleWishlist(wishlistPayload);
@@ -133,13 +132,13 @@ const WishlistItemCard = ({ item, currencySymbol }) => {
           }}
         />
         {(item.discountPercent || (hasDeal && pct)) && (
-          <div className="absolute top-2 left-2 bg-primary text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
+          <div className="absolute bottom-2 left-2 bg-[#FBBC05] text-gray-950 text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
             -{item.discountPercent || pct}%
           </div>
         )}
       </div>
 
-      <div className="p-3 md:p-3 space-y-2 flex flex-col flex-grow mt-auto">
+      <div className="p-3 md:p-4 space-y-2.5 flex flex-col flex-grow mt-auto">
         <h3 className="font-semibold text-sm lg:text-base text-primary line-clamp-2 group-hover:text-primary/80 transition-colors">
           {item.name}
         </h3>
@@ -214,7 +213,7 @@ const WishlistItemCard = ({ item, currencySymbol }) => {
                 slug: item.slug,
               });
             }}
-            className="w-full bg-primary text-white py-2.5 rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-md cursor-pointer"
+            className="w-full bg-primary text-white py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs md:text-sm font-semibold hover:bg-[#25573c] transition-all duration-300 hover:shadow-md cursor-pointer"
           >
             <ShoppingCart size={16} />
             Add to Cart
@@ -235,67 +234,124 @@ const WishList = () => {
   const currencySymbol = getCurrencySymbol(wishlistItems[0]?.price || "");
 
   return (
-    <section className="bg-zinc-50 min-h-[70vh] py-10 md:py-14">
-      <div className="w-full px-4 md:px-8">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">
-              Saved items
-            </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              Your wishlist
-            </h1>
-            <p className="text-zinc-500 mt-1 text-sm md:text-base max-w-xl">
-              Tap the heart on a card to remove it from your wishlist. Add to
-              cart when you are ready.
-            </p>
+    <>
+      <style>{`
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { animation: fade-in-up .6s ease-out both; }
+        .delay-1    { animation-delay: .1s; }
+        .delay-2    { animation-delay: .2s; }
+
+        .card-hover {
+          transition: transform .2s ease, box-shadow .15s ease;
+        }
+        .card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 32px rgba(0,0,0,.06);
+        }
+      `}</style>
+
+      <section className="bg-gray-50/30 min-h-screen">
+        <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] text-white py-14 md:py-20 relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+
+          <div className="w-full px-4 md:px-8 max-w-6xl mx-auto relative z-10 fade-in-up">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+              <div className="max-w-3xl">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] mb-4">
+                  <Sparkles size={14} />
+                  Saved Items
+                </span>
+                <h1 className="font-extrabold text-4xl md:text-6xl tracking-tight mb-5 leading-tight">
+                  Your <span className="text-[#FBBC05]">Wishlist</span>
+                </h1>
+                <p className="font-medium text-lg md:text-xl text-gray-200/90 leading-relaxed">
+                  Keep your favorite Gurudeb Enterprise products in one clean
+                  place and move them to cart whenever you are ready.
+                </p>
+              </div>
+
+              <div className="bg-white/10 border border-white/15 rounded-2xl p-5 min-w-[210px] backdrop-blur-sm">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-200">
+                  Total Saved
+                </p>
+                <p className="text-4xl font-extrabold text-[#FBBC05] mt-2">
+                  {wishlistItems.length}
+                </p>
+                <p className="text-sm text-gray-200 mt-1">
+                  {wishlistItems.length === 1 ? "Product" : "Products"} waiting
+                  for you
+                </p>
+              </div>
+            </div>
           </div>
-          {wishlistItems.length > 0 && (
-            <button
-              type="button"
-              onClick={clearWishlist}
-              className="px-4 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 hover:bg-zinc-100 transition text-sm font-semibold cursor-pointer"
-            >
-              Clear all
-            </button>
-          )}
         </div>
 
-        {wishlistItems.length === 0 ? (
-          <div className="bg-white border border-zinc-200 rounded-2xl px-6 py-16 md:py-20 text-center shadow-sm">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-              <Heart
-                className="text-primary w-8 h-8"
-                strokeWidth={1.75}
-                aria-hidden
-              />
+        <div className="w-full px-4 md:px-8 py-12 md:py-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 fade-in-up delay-1">
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-2">
+                  Curated By You
+                </h2>
+                <p className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                  Products you saved for later
+                </p>
+              </div>
+              {wishlistItems.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearWishlist}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 transition text-sm font-semibold cursor-pointer shadow-sm"
+                >
+                  <Trash2 size={16} />
+                  Clear all
+                </button>
+              )}
             </div>
-            <h2 className="text-2xl font-semibold text-primary">
-              No saved items yet
-            </h2>
-            <p className="text-zinc-500 mt-2 mb-8 max-w-md mx-auto">
-              Tap the heart on any product card to save it here.
-            </p>
-            <Link
-              to="/products"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary hover:bg-primary/90 transition text-white text-sm font-semibold shadow-sm"
-            >
-              Browse products
-            </Link>
+
+            {wishlistItems.length === 0 ? (
+              <div className="bg-white border border-gray-100 rounded-3xl px-6 py-16 md:py-20 text-center shadow-xl shadow-gray-200/50 fade-in-up delay-2">
+                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                  <Heart
+                    className="text-primary w-8 h-8"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                  No saved items yet
+                </h2>
+                <p className="text-gray-500 mt-3 mb-8 max-w-md mx-auto leading-relaxed">
+                  Tap the heart on any product card to build your personal
+                  shortlist.
+                </p>
+                <Link
+                  to="/products"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-[#25573c] transition text-white text-sm font-semibold shadow-sm"
+                >
+                  Browse products
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+                {wishlistItems.map((item) => (
+                  <WishlistItemCard
+                    key={item.id}
+                    item={item}
+                    currencySymbol={currencySymbol}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
-            {wishlistItems.map((item) => (
-              <WishlistItemCard
-                key={item.id}
-                item={item}
-                currencySymbol={currencySymbol}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 };
 
