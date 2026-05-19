@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { FiShoppingBag } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { useCart } from "../context/CartContext";
-import { usePlaceOrder } from "../hooks/usePlaceOrder";
 
 const parsePrice = (priceStr) => {
   const clean = String(priceStr)
@@ -32,7 +31,6 @@ const formatWithSymbol = (amount, symbol) => {
 
 const ViewCart = () => {
   const { cartItems, updateQuantity, removeItem, clearCart } = useCart();
-  const placeOrder = usePlaceOrder();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -197,13 +195,12 @@ const ViewCart = () => {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => placeOrder()}
-                className="w-full mt-5 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 transition text-white font-semibold text-sm cursor-pointer"
+              <Link
+                to="/checkout"
+                className="block w-full mt-5 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 transition text-white font-semibold text-sm text-center"
               >
                 Proceed to Checkout
-              </button>
+              </Link>
               <Link
                 to="/products"
                 className="block w-full mt-3 py-3 rounded-xl border border-zinc-200 text-center text-primary hover:bg-zinc-50 transition font-semibold text-sm"

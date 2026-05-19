@@ -10,8 +10,6 @@ export default function CartSidebar({
   cartItems = [],
   updateQuantity,
   removeItem,
-  clearCart,
-  handleBuyNow,
 }) {
   const navigate = useNavigate();
 
@@ -44,6 +42,11 @@ export default function CartSidebar({
             maximumFractionDigits: 2,
           });
     return String(priceStr).replace(/[0-9.,]+/, formatted);
+  };
+
+  const goToCheckout = () => {
+    setCartOpen(false);
+    navigate("/checkout");
   };
 
   return (
@@ -218,11 +221,7 @@ export default function CartSidebar({
               </button>
              </Link>
               <button
-                onClick={() =>
-                  handleBuyNow
-                    ? handleBuyNow(cartItems)
-                    : window.alert(`Buy now: ${cartItems.length} items`)
-                }
+                onClick={goToCheckout}
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all text-white text-sm font-semibold cursor-pointer flex-1 shadow-sm"
               >
                 <BsFillCartCheckFill size={17} />

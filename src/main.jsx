@@ -19,6 +19,7 @@ import UserProfile from './pages/UserProfile.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { UserDataProvider } from './context/UserDataContext.jsx'
 import TermsConditions from './pages/TermsConditions.jsx'
+import Checkout from './pages/Checkout.jsx'
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path:"cart",
         element:<ViewCart/>
+      },
+      {
+        path: "checkout",
+        element: <Checkout />,
       },
       {
         path: "wishlist",

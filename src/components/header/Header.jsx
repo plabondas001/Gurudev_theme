@@ -17,14 +17,12 @@ import logo from "/Img/logo/ge_main_logo.png";
 import CartSidebar from "../../pages/CartSection";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { usePlaceOrder } from "../../hooks/usePlaceOrder";
 import { getUserAvatarImgProps } from "../../utils/avatarUrl";
 
 const Header = () => {
-  const { cartItems, removeItem, clearCart, updateQuantity } = useCart();
+  const { cartItems, removeItem, updateQuantity } = useCart();
   const { wishlistItems } = useWishlist();
   const { user, isAuthenticated, logout } = useAuth();
-  const placeOrderFromCart = usePlaceOrder();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -242,11 +240,7 @@ const Header = () => {
         setCartOpen={setCartOpen}
         cartItems={cartItems}
         removeItem={removeItem}
-        clearCart={clearCart}
         updateQuantity={updateQuantity}
-        handleBuyNow={(items) => {
-          if (placeOrderFromCart(items)) setCartOpen(false);
-        }}
       />
 
       {/* Mobile Menu Drawer */}
