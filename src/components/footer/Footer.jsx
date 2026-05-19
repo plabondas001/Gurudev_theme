@@ -99,7 +99,7 @@ const Footer = () => {
             </NavLink>
             <NavLink
               className="text-xs md:text-sm hover:text-black transition delay-75"
-              to="/terms & conditions"
+              to="/terms_conditions"
             >
               Terms & Conditions
             </NavLink>

@@ -99,118 +99,152 @@ const termsSections = [
 
 const TermsConditions = () => {
   return (
-    <section className="bg-[#F7FBF8] text-gray-800">
-      <div className="bg-primary text-white">
-        <div className="w-full px-4 md:px-8 py-14 md:py-20">
-          <div className="max-w-3xl">
-            <span className="inline-flex rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white/80">
-              Terms & Conditions
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-tight md:text-6xl">
-              Clear policies for a smooth shopping experience.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-white/80 md:text-lg">
-              Please read these terms carefully before purchasing from Gurudeb
-              Enterprise. They explain how orders, payments, delivery, returns,
-              and warranty support are handled.
-            </p>
-          </div>
-        </div>
-      </div>
+    <>
+      <style>{`
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { animation: fade-in-up .55s ease-out both; }
+        .delay-1    { animation-delay: .1s; }
+        .delay-2    { animation-delay: .2s; }
+        .delay-3    { animation-delay: .3s; }
+        .delay-4    { animation-delay: .4s; }
 
-      <div className="w-full px-4 md:px-8 -mt-8 pb-16 md:pb-24">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          {summaryCards.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-xl text-primary">
-                {item.icon}
-              </div>
-              <h2 className="mt-4 text-lg font-extrabold text-gray-900">
-                {item.title}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-gray-600">
-                {item.text}
+        .card-hover {
+          transition: transform .2s ease, box-shadow .1s ease;
+        }
+        .card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 32px rgba(0,0,0,.06);
+        }
+      `}</style>
+
+      <section className="min-h-screen bg-gray-50/30 text-gray-800">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#183f31] to-[#25573c] py-16 text-white md:py-24">
+          <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
+
+          <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-8">
+            <div className="max-w-3xl fade-in-up">
+              <span className="inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] mb-4">
+                Terms & Conditions
+              </span>
+              <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-6xl">
+                Clear policies for a{" "}
+                <span className="text-[#FBBC05]">smooth shopping</span>{" "}
+                experience
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-gray-200/90 md:text-lg">
+                Please read these terms carefully before purchasing from Gurudeb
+                Enterprise. They explain how orders, payments, delivery,
+                returns, and warranty support are handled.
               </p>
             </div>
-          ))}
+          </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[0.34fr_0.66fr]">
-          <aside className="h-fit rounded-2xl border border-primary/10 bg-white p-6 shadow-sm lg:sticky lg:top-24">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary">
-              Policy Overview
-            </p>
-            <h2 className="mt-2 text-2xl font-extrabold text-gray-900">
-              Gurudeb Enterprise
-            </h2>
-            <div className="mt-5 space-y-4 text-sm leading-6 text-gray-600">
-              <div className="rounded-xl bg-[#F0F7F4] p-4">
-                <p className="font-bold text-gray-900">Effective Date</p>
-                <p>May 17, 2026</p>
-              </div>
-              <div className="rounded-xl bg-[#F8F3FB] p-4">
-                <p className="font-bold text-gray-900">Applies To</p>
-                <p>Website orders, direct orders, delivery, service support.</p>
-              </div>
-              <div className="rounded-xl border border-primary/10 p-4">
-                <p className="font-bold text-gray-900">Need Assistance?</p>
-                <p>
-                  Contact our support team before ordering if you need help with
-                  product details, warranty, or delivery.
+        <div className="mx-auto w-full max-w-6xl px-4 pb-16 -mt-8 md:px-8 md:pb-24">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {summaryCards.map((item, i) => (
+              <div
+                key={item.title}
+                className={`group rounded-2xl border border-gray-100 bg-white p-6 shadow-md card-hover fade-in-up delay-${i + 1}`}
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-xl text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-white">
+                  {item.icon}
+                </div>
+                <h2 className="mt-4 text-lg font-extrabold text-gray-900">
+                  {item.title}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  {item.text}
                 </p>
               </div>
-            </div>
-          </aside>
-
-          <div className="space-y-5">
-            {termsSections.map((section) => (
-              <article
-                key={section.title}
-                className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm md:p-8"
-              >
-                <h2 className="text-xl font-extrabold text-gray-900 md:text-2xl">
-                  {section.title}
-                </h2>
-                <ul className="mt-4 space-y-3">
-                  {section.points.map((point) => (
-                    <li key={point} className="flex gap-3 text-sm leading-7 text-gray-600 md:text-base">
-                      <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
             ))}
+          </div>
 
-            <div className="rounded-2xl bg-primary p-6 text-white shadow-sm md:p-8">
-              <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-xl">
-                    <FaRotateLeft aria-hidden />
-                  </div>
-                  <h2 className="mt-4 text-2xl font-extrabold">
-                    Questions about these terms?
-                  </h2>
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-white/80 md:text-base">
-                    Our team can help clarify order, delivery, return, exchange,
-                    and warranty conditions before you make a purchase.
+          <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[0.36fr_0.64fr]">
+            <aside className="h-fit rounded-2xl border border-gray-100 bg-white p-6 shadow-md lg:sticky lg:top-24">
+              <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                Policy Overview
+              </p>
+              <h2 className="mt-2 text-2xl font-extrabold text-gray-900">
+                Gurudeb Enterprise
+              </h2>
+              <div className="mt-5 space-y-4 text-sm leading-6 text-gray-600">
+                <div className="rounded-xl bg-[#F0F7F4] p-4">
+                  <p className="font-bold text-gray-900">Effective Date</p>
+                  <p>May 17, 2026</p>
+                </div>
+                <div className="rounded-xl bg-[#F8F3FB] p-4">
+                  <p className="font-bold text-gray-900">Applies To</p>
+                  <p>
+                    Website orders, direct orders, delivery, service support.
                   </p>
                 </div>
-                <a
-                  href="/contact"
-                  className="inline-flex w-fit items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-primary transition hover:bg-[#F0F7F4]"
+                <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-4">
+                  <p className="font-bold text-gray-900">Need Assistance?</p>
+                  <p>
+                    Contact our support team before ordering if you need help
+                    with product details, warranty, or delivery.
+                  </p>
+                </div>
+              </div>
+            </aside>
+
+            <div className="space-y-5">
+              {termsSections.map((section) => (
+                <article
+                  key={section.title}
+                  className="rounded-2xl border border-gray-100 bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg md:p-8"
                 >
-                  Contact Support
-                </a>
+                  <h2 className="text-xl font-extrabold text-gray-900 md:text-2xl">
+                    {section.title}
+                  </h2>
+                  <ul className="mt-4 space-y-3">
+                    {section.points.map((point) => (
+                      <li
+                        key={point}
+                        className="flex gap-3 text-sm leading-7 text-gray-600 md:text-base"
+                      >
+                        <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+
+              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md">
+                <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] p-6 text-white md:p-8">
+                  <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-xl">
+                        <FaRotateLeft aria-hidden />
+                      </div>
+                      <h2 className="mt-4 text-2xl font-extrabold">
+                        Questions about these terms?
+                      </h2>
+                      <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-200/90 md:text-base">
+                        Our team can help clarify order, delivery, return,
+                        exchange, and warranty conditions before you make a
+                        purchase.
+                      </p>
+                    </div>
+                    <a
+                      href="/contact"
+                      className="inline-flex w-fit items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-primary shadow-md transition hover:bg-[#F0F7F4]"
+                    >
+                      Contact Support
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

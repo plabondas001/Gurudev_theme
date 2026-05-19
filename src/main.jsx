@@ -1,25 +1,25 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router'
-import MainLayout from './layouts/MainLayout.jsx'
-import Home from './pages/Home.jsx'
-import About from './pages/About.jsx'
-import ProductsPage from './pages/ProductsPage.jsx'
-import Contact from './pages/Contact.jsx'
-import ProductDetails from './pages/ProductDetails.jsx'
-import RootError from './pages/RootError.jsx'
-import { CartProvider } from './context/CartContext.jsx'
-import { WishlistProvider } from './context/WishlistContext.jsx'
-import TrackOrder from './pages/TrackOrder.jsx'
-import ViewCart from './pages/ViewCart.jsx'
-import WishList from './pages/WishList.jsx'
-import SignIn from './pages/SignIn.jsx'
-import UserProfile from './pages/UserProfile.jsx'
-import { AuthProvider } from './context/AuthContext.jsx'
-import { UserDataProvider } from './context/UserDataContext.jsx'
-import TermsConditions from './pages/TermsConditions.jsx'
-import Checkout from './pages/Checkout.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import MainLayout from "./layouts/MainLayout.jsx";
+import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
+import ProductsPage from "./pages/ProductsPage.jsx";
+import Contact from "./pages/Contact.jsx";
+import ProductDetails from "./pages/ProductDetails.jsx";
+import RootError from "./pages/RootError.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
+import { WishlistProvider } from "./context/WishlistContext.jsx";
+import TrackOrder from "./pages/TrackOrder.jsx";
+import ViewCart from "./pages/ViewCart.jsx";
+import WishList from "./pages/WishList.jsx";
+import SignIn from "./pages/SignIn.jsx";
+import UserProfile from "./pages/UserProfile.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { UserDataProvider } from "./context/UserDataContext.jsx";
+import TermsConditions from "./pages/TermsConditions.jsx";
+import Checkout from "./pages/Checkout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "about",
@@ -37,23 +37,23 @@ const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: <ProductsPage />
+        element: <ProductsPage />,
       },
       {
         path: "contact",
-        element: <Contact />
+        element: <Contact />,
       },
       {
         path: "product/:slug",
-        element: <ProductDetails />
+        element: <ProductDetails />,
       },
       {
-        path:"track",
-        element: <TrackOrder/>
+        path: "track",
+        element: <TrackOrder />,
       },
       {
-        path:"cart",
-        element:<ViewCart/>
+        path: "cart",
+        element: <ViewCart />,
       },
       {
         path: "checkout",
@@ -72,14 +72,14 @@ const router = createBrowserRouter([
         element: <UserProfile />,
       },
       {
-        path:"terms & conditions",
-        element:<TermsConditions/>
-      }
-    ]
-  }
-])
+        path: "terms_conditions",
+        element: <TermsConditions />,
+      },
+    ],
+  },
+]);
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <UserDataProvider>
@@ -91,4 +91,4 @@ createRoot(document.getElementById('root')).render(
       </UserDataProvider>
     </AuthProvider>
   </StrictMode>,
-)
+);
