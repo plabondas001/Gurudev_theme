@@ -7,6 +7,7 @@ import {
   PackageCheck,
   Truck,
   Plus,
+  ChevronDown,
   ChevronRight,
   Sparkles,
 } from "lucide-react";
@@ -728,14 +729,77 @@ const Textarea = ({ className = "", ...props }) => (
   />
 );
 
-const Select = ({ className = "", children, ...props }) => (
-  <select
-    className={`w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3.5 text-sm text-zinc-900 outline-none ring-0 transition-all duration-200 focus:border-primary/60 focus:bg-white focus:shadow-[0_0_0_4px_rgb(var(--color-primary-rgb)/0.08)] focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
-    {...props}
-  >
-    {children}
-  </select>
-);
+const Select = ({
+  className = "",
+  value,
+  onChange,
+  disabled,
+  placeholder,
+  options = [],
+}) => {
+  const [open, setOpen] = useState(false);
+  const selectedOption = options.find((option) => option.value === value);
+
+  const handleSelect = (nextValue) => {
+    onChange?.({ target: { value: nextValue } });
+    setOpen(false);
+  };
+
+  return (
+    <div
+      className={`relative ${className}`}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setOpen(false);
+        }
+      }}
+    >
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen((current) => !current)}
+        className="flex w-full items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3.5 text-left text-sm text-zinc-900 outline-none ring-0 transition-all duration-200 focus:border-primary/60 focus:bg-white focus:shadow-[0_0_0_4px_rgb(var(--color-primary-rgb)/0.08)] focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span className={selectedOption ? "" : "text-zinc-400"}>
+          {selectedOption?.label || placeholder}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && !disabled && (
+        <div className="absolute left-0 top-full z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-white py-1.5 shadow-xl shadow-zinc-900/10">
+          <button
+            type="button"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => handleSelect("")}
+            className="block w-full px-4 py-2.5 text-left text-sm text-zinc-400 transition hover:bg-primary/10 hover:text-primary"
+          >
+            {placeholder}
+          </button>
+          {options.map((option) => (
+            <button
+              type="button"
+              key={option.value}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => handleSelect(option.value)}
+              className={`block w-full px-4 py-2.5 text-left text-sm transition hover:bg-primary/10 hover:text-primary ${
+                option.value === value
+                  ? "bg-primary/10 font-semibold text-primary"
+                  : "text-zinc-900"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 /* ─── main component ──────────────────────────────────────── */
 const Checkout = () => {
@@ -873,45 +937,6 @@ const Checkout = () => {
 
   return (
     <section className="min-h-[72vh] bg-gray-50/30">
-      <style>{`
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in-up { animation: fade-in-up .6s ease-out both; }
-        .delay-1 { animation-delay: .1s; }
-        .delay-2 { animation-delay: .2s; }
-        .card-hover { transition: transform .2s ease, box-shadow .15s ease; }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.06); }
-        .step-connector { flex: 1; height: 1px; background: linear-gradient(90deg, currentColor, transparent); opacity: .18; }
-      `}</style>
-
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#183f31] to-[#25573c] py-16 text-white md:py-24">
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 text-center md:px-8">
-          <Link
-            to="/cart"
-            className="group mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] transition hover:bg-white/15"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-            Back to cart
-          </Link>
-          <div className="fade-in-up">
-            <span className="mb-4 inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05]">
-              Gurudeb Enterprise
-            </span>
-            <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-extrabold leading-tight tracking-tight md:text-6xl">
-              Complete Your <span className="text-[#FBBC05]">Checkout</span>
-            </h1>
-            <p className="mx-auto max-w-3xl text-lg font-medium leading-relaxed text-gray-200/90 md:text-xl">
-              Confirm delivery details, choose payment, and place your order
-              with confidence.
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="mx-auto w-full max-w-7xl px-4 py-16 md:px-8">
         <form
           onSubmit={handleSubmit}
@@ -1030,20 +1055,14 @@ const Checkout = () => {
                       <Select
                         value={form.division}
                         onChange={(e) => updateForm("division", e.target.value)}
-                      >
-                        <option className="text-lg" value="">
-                          Select Division
-                        </option>
-                        {Object.keys(districtsByDivision).map((division) => (
-                          <option
-                            className="text-lg"
-                            key={division}
-                            value={division}
-                          >
-                            {division}
-                          </option>
-                        ))}
-                      </Select>
+                        placeholder="Select Division"
+                        options={Object.keys(districtsByDivision).map(
+                          (division) => ({
+                            label: division,
+                            value: division,
+                          }),
+                        )}
+                      />
                     </div>
                     <div>
                       <FieldLabel>
@@ -1053,22 +1072,14 @@ const Checkout = () => {
                         value={form.district}
                         onChange={(e) => updateForm("district", e.target.value)}
                         disabled={!form.division}
-                      >
-                        <option className="text-lg" value="">
-                          Select District
-                        </option>
-                        {(districtsByDivision[form.division] || []).map(
-                          (district) => (
-                            <option
-                              className="text-lg"
-                              key={district}
-                              value={district}
-                            >
-                              {district}
-                            </option>
-                          ),
+                        placeholder="Select District"
+                        options={(districtsByDivision[form.division] || []).map(
+                          (district) => ({
+                            label: district,
+                            value: district,
+                          }),
                         )}
-                      </Select>
+                      />
                     </div>
                     <div>
                       <FieldLabel>
@@ -1080,22 +1091,14 @@ const Checkout = () => {
                           updateForm("subDistrict", e.target.value)
                         }
                         disabled={!form.district}
-                      >
-                        <option className="text-lg" value="">
-                          Select Sub District
-                        </option>
-                        {(subDistrictsByDistrict[form.district] || []).map(
-                          (subDistrict) => (
-                            <option
-                              className="text-lg"
-                              key={subDistrict}
-                              value={subDistrict}
-                            >
-                              {subDistrict}
-                            </option>
-                          ),
-                        )}
-                      </Select>
+                        placeholder="Select Sub District"
+                        options={(
+                          subDistrictsByDistrict[form.district] || []
+                        ).map((subDistrict) => ({
+                          label: subDistrict,
+                          value: subDistrict,
+                        }))}
+                      />
                     </div>
                   </div>
                   <div className="md:col-span-2">
