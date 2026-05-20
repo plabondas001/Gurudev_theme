@@ -1,4 +1,4 @@
-const BASE_URL = "https://sarker.shop/api";
+const BASE_URL = "https://dev.sarker.shop/api";
 
 /**
  * Generic request helper
