@@ -85,7 +85,6 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
     <AuthProvider>
       <UserDataProvider>
         <WishlistProvider>
@@ -95,5 +94,4 @@ createRoot(document.getElementById("root")).render(
         </WishlistProvider>
       </UserDataProvider>
     </AuthProvider>
-  </StrictMode>,
 );

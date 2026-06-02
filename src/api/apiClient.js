@@ -1,24 +1,59 @@
 const BASE_URL = "https://dev.sarker.shop/api";
 
+const inFlightRequests = new Map();
+const responseCache = new Map();
+
+const getCacheKey = (endpoint, params = {}, method = "GET") => {
+    const sortedParams = Object.keys(params)
+        .sort()
+        .filter((key) => params[key] !== undefined && params[key] !== null)
+        .map((key) => [key, params[key]]);
+    const queryString = new URLSearchParams(sortedParams).toString();
+    return `${method.toUpperCase()} ${BASE_URL}${endpoint}${queryString ? `?${queryString}` : ""}`;
+};
+
 /**
  * Generic request helper
  */
 const request = async (endpoint, params = {}) => {
-  try {
-    const queryString = new URLSearchParams(params).toString();
-    const url = `${BASE_URL}${endpoint}${queryString ? `?${queryString}` : ""}`;
+    try {
+        const cacheKey = getCacheKey(endpoint, params, "GET");
 
-    const response = await fetch(url);
+        if (responseCache.has(cacheKey)) {
+            return responseCache.get(cacheKey);
+        }
 
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
+        if (inFlightRequests.has(cacheKey)) {
+            return inFlightRequests.get(cacheKey);
+        }
+
+        const queryString = new URLSearchParams(
+            Object.entries(params).sort(),
+        ).toString();
+        const url = `${BASE_URL}${endpoint}${queryString ? `?${queryString}` : ""}`;
+
+        const responsePromise = fetch(url)
+            .then(async (response) => {
+                if (!response.ok) {
+                    throw new Error(`${response.status} ${response.statusText}`);
+                }
+                const data = await response.json();
+                responseCache.set(cacheKey, data);
+                return data;
+            })
+            .catch((error) => {
+                throw error;
+            })
+            .finally(() => {
+                inFlightRequests.delete(cacheKey);
+            });
+
+        inFlightRequests.set(cacheKey, responsePromise);
+        return responsePromise;
+    } catch (error) {
+        console.error(`API Error (${endpoint}):`, error);
+        throw error;
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`API Error (${endpoint}):`, error);
-    throw error;
-  }
 };
 
 /**
@@ -26,56 +61,56 @@ const request = async (endpoint, params = {}) => {
  * Centralized place for all backend calls
  */
 export const apiClient = {
-  // =========================
-  // PRODUCTS
-  // =========================
-  fetchProducts: async (params = {}) => {
-    return request("/products/", {
-      page: 1,
-      page_size: 20, // default for infinite scroll
-      ...params,
-    });
-  },
+    // =========================
+    // PRODUCTS
+    // =========================
+    fetchProducts: async (params = {}) => {
+        return request("/products/", {
+            page: 1,
+            page_size: 20, // default for infinite scroll
+            ...params,
+        });
+    },
 
-  fetchProductById: async (id) => {
-    return request(`/products/${id}/`);
-  },
+    fetchProductById: async (id) => {
+        return request(`/products/${id}/`);
+    },
 
-  fetchProductBySlug: async (slug) => {
-    return request(`/products/${slug}/`);
-  },
+    fetchProductBySlug: async (slug) => {
+        return request(`/products/${slug}/`);
+    },
 
-  // =========================
-  // CATEGORIES
-  // =========================
-  fetchCategories: async () => {
-    const data = await request("/categories/");
+    // =========================
+    // CATEGORIES
+    // =========================
+    fetchCategories: async () => {
+        const data = await request("/categories/");
 
-    // Normalize data for frontend use
-    return data.results.map((category) => ({
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-      img: category.logo,
-      logo: category.logo,
-      parent: category.parent,
-      children: category.children,
-      breadcrumbs: category.breadcrumbs,
-    }));
-  },
+        // Normalize data for frontend use
+        return data.results.map((category) => ({
+            id: category.id,
+            name: category.name,
+            slug: category.slug,
+            img: category.logo,
+            logo: category.logo,
+            parent: category.parent,
+            children: category.children,
+            breadcrumbs: category.breadcrumbs,
+        }));
+    },
 
-  // =========================
-  // BRANDS
-  // =========================
-  fetchBrands: async (params = {}) => {
-    const data = await request("/brands/", params);
-    return Array.isArray(data) ? data : data.results || [];
-  },
+    // =========================
+    // BRANDS
+    // =========================
+    fetchBrands: async (params = {}) => {
+        const data = await request("/brands/", params);
+        return Array.isArray(data) ? data : data.results || [];
+    },
 
-  // =========================
-  // GENERIC ENDPOINT ACCESS
-  // =========================
-  fetch: request,
+    // =========================
+    // GENERIC ENDPOINT ACCESS
+    // =========================
+    fetch: request,
 };
 
 export default apiClient;
