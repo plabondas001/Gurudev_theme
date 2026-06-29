@@ -1,4 +1,4 @@
-const BASE_URL = "https://dev.sarker.shop/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const inFlightRequests = new Map();
 const responseCache = new Map();
