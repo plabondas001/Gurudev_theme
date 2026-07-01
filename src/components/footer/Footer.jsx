@@ -4,13 +4,31 @@ import {
   FaInstagram,
   FaLocationDot,
   FaTwitter,
+  FaYoutube,
+  FaLinkedin,
 } from "react-icons/fa6";
 import { IoMdCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
 import footer from "/Img/logo/ge_main_logo.png";
 import { Link, NavLink } from "react-router";
+import { useConfig } from "../../context/ConfigContext";
 
 const Footer = () => {
+  const { config } = useConfig();
+  const websiteName = config?.website_name || "Gurudeb Enterprise";
+  const logoUrl = config?.logo_light || config?.dashboard_logo || footer;
+  const location = config?.location || "Dhaka, Bangladesh";
+  const supportPhone = config?.support_phone || "1234654554545";
+  const contactEmail = config?.contact_email || "gurudebenterprise@gmail.com";
+
+  const hasSocials = !!(
+    config?.facebook_url ||
+    config?.twitter_url ||
+    config?.instagram_url ||
+    config?.youtube_url ||
+    config?.linkedin_url
+  );
+
   return (
     <div className="mt-6 md:mt-20 text-white bg-primary pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <div className="w-full px-4 md:px-8">
@@ -21,56 +39,100 @@ const Footer = () => {
               <Link to="/" className="inline-flex items-center gap-3">
                 <img
                   className="h-12 w-auto object-contain"
-                  src={footer}
-                  alt="Gurudeb Enterprise Logo"
+                  src={logoUrl}
+                  alt={`${websiteName} Logo`}
                 />
                 <span className="text-left">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#e0e0e0]">
-                    Gurudeb
-                  </span>
                   <span className="block text-sm font-bold text-white leading-tight">
-                    Enterprise
+                    {websiteName}
                   </span>
                 </span>
               </Link>
             </div>
             <p className="text-xs md:text-sm leading-5">
-              Gurudeb Enterprise is an e-commerce platform dedicated to
+              {websiteName} is an e-commerce platform dedicated to
               delivering safe and reliable smart gadgets to every home.
             </p>
             <div className="flex items-center gap-2 mt-3 md:mt-4 text-xs md:text-sm">
               <FaLocationDot size={16} className="flex-shrink-0" />
-              <span>Dhaka, Bangladesh</span>
+              <span>{location}</span>
             </div>
             <button className="flex items-center gap-2 cursor-pointer mt-2 hover:text-black transition duration-700 hover:scale-105 text-xs md:text-sm">
               <IoMdCall size={16} className="flex-shrink-0" />
-              <span>1234654554545</span>
+              <span>{supportPhone}</span>
             </button>
             <button className="flex items-center gap-2 cursor-pointer mt-2 hover:text-black transition duration-700 hover:scale-105 text-xs md:text-sm">
               <MdEmail size={16} className="flex-shrink-0" />
-              <span>gurudebenterprise@gmail.com</span>
+              <span>{contactEmail}</span>
             </button>
 
             {/* Social Icons */}
             <div className="mt-6 md:mt-8 flex flex-wrap gap-3">
-              <a href="#" aria-label="Facebook">
-                <FaFacebook
-                  className=" p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
-                  size={38}
-                />
-              </a>
-              <a href="#" aria-label="Twitter">
-                <FaTwitter
-                  className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
-                  size={38}
-                />
-              </a>
-              <a href="#" aria-label="Instagram">
-                <FaInstagram
-                  className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
-                  size={38}
-                />
-              </a>
+              {!hasSocials ? (
+                <>
+                  <a href="#" aria-label="Facebook">
+                    <FaFacebook
+                      className=" p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                      size={38}
+                    />
+                  </a>
+                  <a href="#" aria-label="Twitter">
+                    <FaTwitter
+                      className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                      size={38}
+                    />
+                  </a>
+                  <a href="#" aria-label="Instagram">
+                    <FaInstagram
+                      className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                      size={38}
+                    />
+                  </a>
+                </>
+              ) : (
+                <>
+                  {config?.facebook_url && (
+                    <a href={config.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                      <FaFacebook
+                        className=" p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                        size={38}
+                      />
+                    </a>
+                  )}
+                  {config?.twitter_url && (
+                    <a href={config.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                      <FaTwitter
+                        className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                        size={38}
+                      />
+                    </a>
+                  )}
+                  {config?.instagram_url && (
+                    <a href={config.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                      <FaInstagram
+                        className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                        size={38}
+                      />
+                    </a>
+                  )}
+                  {config?.youtube_url && (
+                    <a href={config.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="Youtube">
+                      <FaYoutube
+                        className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                        size={38}
+                      />
+                    </a>
+                  )}
+                  {config?.linkedin_url && (
+                    <a href={config.linkedin_url} target="_blank" rel="noopener noreferrer" aria-label="Linkedin">
+                      <FaLinkedin
+                        className="p-2 rounded-full hover:text-black transition delay-75 hover:scale-105"
+                        size={38}
+                      />
+                    </a>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -233,7 +295,7 @@ const Footer = () => {
       {/* Copyright & Payment Methods */}
       <div className="w-full px-4 md:px-8 py-3 md:py-6">
         <p className="font-semibold opacity-60 text-xs md:text-sm text-black order-2 md:order-1 text-center">
-          © 2026 Gurudeb Enterprise. All rights reserved.
+          © {new Date().getFullYear()} {websiteName}. All rights reserved.
         </p>
       </div>
     </div>

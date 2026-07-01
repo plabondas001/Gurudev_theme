@@ -18,15 +18,23 @@ import CartSidebar from "../../pages/CartSection";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { getUserAvatarImgProps } from "../../utils/avatarUrl";
+import { useConfig } from "../../context/ConfigContext";
 
 const Header = () => {
   const { cartItems, removeItem, updateQuantity } = useCart();
   const { wishlistItems } = useWishlist();
   const { user, isAuthenticated, logout } = useAuth();
+  const { config } = useConfig();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+
+  const websiteName = config?.website_name || "Gurudeb Enterprise";
+  const logoUrl = config?.logo_light || config?.dashboard_logo || logo;
+  const nameParts = websiteName.split(" ");
+  const firstName = nameParts[0] || "Gurudeb";
+  const restName = nameParts.slice(1).join(" ") || "Enterprise";
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -53,10 +61,10 @@ const Header = () => {
       <div className="hidden md:flex w-full max-w-[1440px] mx-auto items-center justify-between py-2 px-6 lg:px-12 gap-6">
         <div className="shrink-0">
           <Link to="/" className="flex items-center gap-2">
-            <img className="h-10 lg:h-12 w-auto object-contain p-0.5" src={logo} alt="logo" />
+            <img className="h-10 lg:h-12 w-auto object-contain p-0.5" src={logoUrl} alt={`${websiteName} logo`} />
             <div className="flex flex-col">
-              <span className="text-sm lg:text-base font-extrabold text-primary tracking-tight leading-none">Gurudeb</span>
-              <span className="text-[9px] lg:text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-0.5">Enterprise</span>
+              <span className="text-sm lg:text-base font-extrabold text-primary tracking-tight leading-none">{firstName}</span>
+              <span className="text-[9px] lg:text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-0.5">{restName}</span>
             </div>
           </Link>
         </div>
@@ -169,10 +177,10 @@ const Header = () => {
             <RxHamburgerMenu size={18} />
           </button>
           <a href="/" className="flex items-center gap-1.5">
-            <img className="h-7 w-auto object-contain p-0.5" src={logo} alt="logo" />
+            <img className="h-7 w-auto object-contain p-0.5" src={logoUrl} alt={`${websiteName} logo`} />
             <div className="flex flex-col">
-              <span className="text-[11px] font-extrabold text-primary tracking-tight leading-none">Gurudeb</span>
-              <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-0.5">Enterprise</span>
+              <span className="text-[11px] font-extrabold text-primary tracking-tight leading-none">{firstName}</span>
+              <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-0.5">{restName}</span>
             </div>
           </a>
         </div>

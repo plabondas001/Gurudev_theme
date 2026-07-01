@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { FaEnvelope, FaLocationDot, FaPhone } from "react-icons/fa6";
 import { FaFacebookF, FaWhatsapp, FaInstagram } from "react-icons/fa";
+import { useConfig } from "../context/ConfigContext";
 
 /* ─── Toast ─────────────────────────────────────────────────────────────── */
 const Toast = ({ message, type, onClose }) => {
@@ -77,35 +78,6 @@ const inputBase =
 const inputNormal = `${inputBase} border-gray-200 focus:border-primary`;
 const inputError = `${inputBase} border-red-300 focus:border-red-500 focus:ring-red-500/10`;
 
-/* ─── Contact cards data ─────────────────────────────────────────────────── */
-const contactCards = [
-  {
-    title: "Call Us",
-    value: "+880 123 456 7890",
-    note: "Call Gurudeb Enterprise",
-    icon: <FaPhone aria-hidden />,
-    href: "tel:+8801234567890",
-    ariaLabel: "Call Gurudeb Enterprise",
-  },
-  {
-    title: "Email Us",
-    value: "gurudebenterprise@gmail.com",
-    note: "We reply within 24 hours",
-    icon: <FaEnvelope aria-hidden />,
-    href: "mailto:gurudebenterprise@gmail.com",
-    ariaLabel: "Email Gurudeb Enterprise",
-  },
-  {
-    title: "Visit Store",
-    value: "Dhaka, Bangladesh",
-    note: "Smartphones & gadgets showroom",
-    icon: <FaLocationDot aria-hidden />,
-    href: "https://www.google.com/maps/search/?api=1&query=Dhaka%2C+Bangladesh",
-    ariaLabel: "Get directions to Gurudeb Enterprise store",
-    external: true,
-  },
-];
-
 const subjects = [
   "Product Inquiry",
   "Order Support",
@@ -115,32 +87,97 @@ const subjects = [
   "Other",
 ];
 
-const socials = [
-  {
-    name: "Facebook",
-    icon: <FaFacebookF aria-hidden />,
-    href: "#",
-    colorClass: "bg-[#E7F0FF] text-[#1877F2]",
-    hoverBg: "#1877F2",
-  },
-  {
-    name: "WhatsApp",
-    icon: <FaWhatsapp aria-hidden />,
-    href: "#",
-    colorClass: "bg-[#E6F9EE] text-[#25D366]",
-    hoverBg: "#25D366",
-  },
-  {
-    name: "Instagram",
-    icon: <FaInstagram aria-hidden />,
-    href: "#",
-    colorClass: "bg-[#FFF0EA] text-[#E1306C]",
-    isInstagram: true,
-  },
-];
-
 /* ─── Main Component ─────────────────────────────────────────────────────── */
 const Contact = () => {
+  const { config } = useConfig();
+  const websiteName = config?.website_name || "Gurudeb Enterprise";
+  const supportPhone = config?.support_phone || "+880 123 456 7890";
+  const contactEmail = config?.contact_email || "gurudebenterprise@gmail.com";
+  const location = config?.location || "Dhaka, Bangladesh";
+
+  const contactCards = [
+    {
+      title: "Call Us",
+      value: supportPhone,
+      note: `Call ${websiteName}`,
+      icon: <FaPhone aria-hidden />,
+      href: `tel:${supportPhone}`,
+      ariaLabel: `Call ${websiteName}`,
+    },
+    {
+      title: "Email Us",
+      value: contactEmail,
+      note: "We reply within 24 hours",
+      icon: <FaEnvelope aria-hidden />,
+      href: `mailto:${contactEmail}`,
+      ariaLabel: `Email ${websiteName}`,
+    },
+    {
+      title: "Visit Store",
+      value: location,
+      note: "Smartphones & gadgets showroom",
+      icon: <FaLocationDot aria-hidden />,
+      href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`,
+      ariaLabel: `Get directions to ${websiteName} store`,
+      external: true,
+    },
+  ];
+
+  const socials = [];
+  if (config?.facebook_url) {
+    socials.push({
+      name: "Facebook",
+      icon: <FaFacebookF aria-hidden />,
+      href: config.facebook_url,
+      colorClass: "bg-[#E7F0FF] text-[#1877F2]",
+      hoverBg: "#1877F2",
+    });
+  }
+  if (config?.whatsapp_url) {
+    socials.push({
+      name: "WhatsApp",
+      icon: <FaWhatsapp aria-hidden />,
+      href: config.whatsapp_url,
+      colorClass: "bg-[#E6F9EE] text-[#25D366]",
+      hoverBg: "#25D366",
+    });
+  }
+  if (config?.instagram_url) {
+    socials.push({
+      name: "Instagram",
+      icon: <FaInstagram aria-hidden />,
+      href: config.instagram_url,
+      colorClass: "bg-[#FFF0EA] text-[#E1306C]",
+      isInstagram: true,
+    });
+  }
+
+  if (socials.length === 0) {
+    socials.push(
+      {
+        name: "Facebook",
+        icon: <FaFacebookF aria-hidden />,
+        href: "#",
+        colorClass: "bg-[#E7F0FF] text-[#1877F2]",
+        hoverBg: "#1877F2",
+      },
+      {
+        name: "WhatsApp",
+        icon: <FaWhatsapp aria-hidden />,
+        href: "#",
+        colorClass: "bg-[#E6F9EE] text-[#25D366]",
+        hoverBg: "#25D366",
+      },
+      {
+        name: "Instagram",
+        icon: <FaInstagram aria-hidden />,
+        href: "#",
+        colorClass: "bg-[#FFF0EA] text-[#E1306C]",
+        isInstagram: true,
+      }
+    );
+  }
+
   const [fields, setFields] = useState({
     name: "",
     email: "",
@@ -469,8 +506,8 @@ const Contact = () => {
               {/* Map Showroom */}
               <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md">
                 <iframe
-                  title="Gurudeb Enterprise location on Google Maps"
-                  src="https://www.google.com/maps?q=Dhaka%2C+Bangladesh&output=embed"
+                  title={`${websiteName} location on Google Maps`}
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`}
                   className="h-56 w-full border-0 block"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -481,14 +518,14 @@ const Contact = () => {
                       <FaLocationDot />
                     </span>
                     <p className="font-bold text-gray-900 text-sm">
-                      Dhaka, Bangladesh
+                      {location}
                     </p>
                   </div>
                   <p className="mt-2 text-xs leading-6 text-gray-500">
                     Visit our brand showroom or contact us beforehand for real-time stock confirmation.
                   </p>
                   <a
-                    href="https://www.google.com/maps/search/?api=1&query=Dhaka%2C+Bangladesh"
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline focus-visible:underline outline-none"

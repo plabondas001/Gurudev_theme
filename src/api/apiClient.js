@@ -108,6 +108,13 @@ export const apiClient = {
     },
 
     // =========================
+    // CONFIGURATION
+    // =========================
+    fetchConfiguration: async () => {
+        return request("/configuration/");
+    },
+
+    // =========================
     // GENERIC ENDPOINT ACCESS
     // =========================
     fetch: request,

@@ -18,6 +18,7 @@ import SignIn from "./pages/SignIn.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { UserDataProvider } from "./context/UserDataContext.jsx";
+import { ConfigProvider } from "./context/ConfigContext.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
+  <ConfigProvider>
     <AuthProvider>
       <UserDataProvider>
         <WishlistProvider>
@@ -94,4 +96,5 @@ createRoot(document.getElementById("root")).render(
         </WishlistProvider>
       </UserDataProvider>
     </AuthProvider>
+  </ConfigProvider>
 );

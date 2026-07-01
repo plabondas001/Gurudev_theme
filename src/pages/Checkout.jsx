@@ -16,6 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useUserData } from "../context/UserDataContext";
 import { usePlaceOrder } from "../hooks/usePlaceOrder";
+import { useConfig } from "../context/ConfigContext";
 import {
   computeCartTotals,
   getCurrencySymbol,
@@ -806,6 +807,7 @@ const Checkout = () => {
   const { user } = useAuth();
   const { cartItems } = useCart();
   const { addresses, addAddress } = useUserData();
+  const { config } = useConfig();
   const placeOrder = usePlaceOrder();
 
   const [selectedAddressId, setSelectedAddressId] = useState("");
@@ -1223,54 +1225,97 @@ const Checkout = () => {
                   </button>
                 ))}
 
-                <div className="mt-6 border-t border-gray-100 pt-5">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                        Paid From <span className="text-primary">*</span>
-                      </label>
-                      <input
-                        value={paymentDetails.paidFrom}
-                        onChange={(e) =>
-                          updatePaymentDetails("paidFrom", e.target.value)
-                        }
-                        placeholder="e.g., 01xxxxxxxxx"
-                        className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary/60 focus:bg-white focus:ring-2 focus:ring-primary/10"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                        Transaction ID <span className="text-primary">*</span>
-                      </label>
-                      <input
-                        value={paymentDetails.transactionId}
-                        onChange={(e) =>
-                          updatePaymentDetails("transactionId", e.target.value)
-                        }
-                        placeholder="e.g., 8N7F6G5H"
-                        className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary/60 focus:bg-white focus:ring-2 focus:ring-primary/10"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                        Amount
-                      </label>
-                      <div className="flex h-12 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60 focus-within:border-primary/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/10">
-                        <span className="flex items-center px-3 text-sm font-medium text-zinc-900">
-                          Tk
-                        </span>
+                {paymentMethod !== "cod" && (
+                  <div className="mt-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 p-5 space-y-3">
+                    {paymentMethod === "bkash" && (
+                      <div className="text-sm text-pink-800 space-y-1">
+                        <p className="font-bold">bKash Payment Instructions:</p>
+                        <p>
+                          Please Send Money to our official bKash Personal Number:{" "}
+                          <strong className="text-base select-all text-pink-950 font-black">
+                            {config?.bkash_number || "+880 1781 355377"}
+                          </strong>
+                        </p>
+                      </div>
+                    )}
+                    {paymentMethod === "nagad" && (
+                      <div className="text-sm text-orange-800 space-y-1">
+                        <p className="font-bold">Nagad Payment Instructions:</p>
+                        <p>
+                          Please Send Money to our official Nagad Personal Number:{" "}
+                          <strong className="text-base select-all text-orange-950 font-black">
+                            {config?.nagad_number || "+880 1781 355377"}
+                          </strong>
+                        </p>
+                      </div>
+                    )}
+                    {paymentMethod === "rocket" && (
+                      <div className="text-sm text-purple-800 space-y-1">
+                        <p className="font-bold">Rocket Payment Instructions:</p>
+                        <p>
+                          Please Send Money to our official Rocket Personal Number:{" "}
+                          <strong className="text-base select-all text-purple-950 font-black">
+                            {config?.rocket_number || "+880 1781 355377"}
+                          </strong>
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-xs text-zinc-500 italic">
+                      After sending the money, please fill out the sender number, transaction ID, and amount below.
+                    </p>
+                  </div>
+                )}
+
+                {paymentMethod !== "cod" && (
+                  <div className="mt-6 border-t border-gray-100 pt-5 animate-fade-in">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                          Paid From <span className="text-primary">*</span>
+                        </label>
                         <input
-                          value={paymentDetails.amount}
+                          value={paymentDetails.paidFrom}
                           onChange={(e) =>
-                            updatePaymentDetails("amount", e.target.value)
+                            updatePaymentDetails("paidFrom", e.target.value)
                           }
-                          placeholder="120"
-                          className="min-w-0 flex-1 border-0 bg-transparent px-1 text-sm text-zinc-950 outline-none placeholder:text-zinc-400"
+                          placeholder="e.g., 01xxxxxxxxx"
+                          className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary/60 focus:bg-white focus:ring-2 focus:ring-primary/10"
                         />
+                      </div>
+                      <div>
+                        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                          Transaction ID <span className="text-primary">*</span>
+                        </label>
+                        <input
+                          value={paymentDetails.transactionId}
+                          onChange={(e) =>
+                            updatePaymentDetails("transactionId", e.target.value)
+                          }
+                          placeholder="e.g., 8N7F6G5H"
+                          className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-primary/60 focus:bg-white focus:ring-2 focus:ring-primary/10"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                          Amount
+                        </label>
+                        <div className="flex h-12 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60 focus-within:border-primary/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/10">
+                          <span className="flex items-center px-3 text-sm font-medium text-zinc-900">
+                            Tk
+                          </span>
+                          <input
+                            value={paymentDetails.amount}
+                            onChange={(e) =>
+                              updatePaymentDetails("amount", e.target.value)
+                            }
+                            placeholder="120"
+                            className="min-w-0 flex-1 border-0 bg-transparent px-1 text-sm text-zinc-950 outline-none placeholder:text-zinc-400"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

@@ -3,8 +3,16 @@ import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import { FaHeadset, FaAward, FaUsers, FaArrowRight } from "react-icons/fa6";
 import { TbTruckDelivery as TruckIcon } from "react-icons/tb";
 import logo from "/Img/logo/ge_main_logo.png";
+import { useConfig } from "../context/ConfigContext";
 
 const About = () => {
+  const { config } = useConfig();
+  const websiteName = config?.website_name || "Gurudeb Enterprise";
+  const logoUrl = config?.logo_light || config?.dashboard_logo || logo;
+  const nameParts = websiteName.split(" ");
+  const firstName = nameParts[0] || "Gurudeb";
+  const restName = nameParts.slice(1).join(" ") || "Enterprise";
+
   return (
     <>
       {/* Inline keyframes for premium animations matching Contact page */}
@@ -77,13 +85,13 @@ const About = () => {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/10 rounded-3xl -rotate-2 scale-105 animate-pulse" />
               <div className="relative bg-white border border-gray-100 p-8 md:p-12 rounded-3xl shadow-xl space-y-6 text-center lg:text-left">
                 <div className="flex justify-center lg:justify-start items-center gap-3">
-                  <img src={logo} alt="Gurudeb Enterprise Logo" className="h-14 w-auto object-contain" />
+                  <img src={logoUrl} alt={`${websiteName} Logo`} className="h-14 w-auto object-contain" />
                   <span className="text-left">
                     <span className="block text-sm font-bold uppercase tracking-[0.2em] text-gray-400">
-                      Gurudeb
+                      {firstName}
                     </span>
                     <span className="block text-lg font-extrabold text-primary leading-tight">
-                      Enterprise
+                      {restName}
                     </span>
                   </span>
                 </div>
@@ -91,7 +99,7 @@ const About = () => {
                   "We don't just sell gadgets. We build connections, support aspirations, and deliver a simple, smarter future to every household in Bangladesh."
                 </blockquote>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  — Plabon Das, Founder
+                  — Nandan Saha, Founder
                 </p>
               </div>
             </div>
