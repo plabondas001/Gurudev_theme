@@ -99,7 +99,7 @@ const Header = () => {
   return (
     <div className="w-full bg-white border-b border-gray-100 shadow-xs">
       {/* Desktop Header */}
-      <div className="hidden md:flex w-full max-w-[1440px] mx-auto items-center justify-between py-2 px-6 lg:px-12 gap-6">
+      <div className="hidden md:flex w-full items-center justify-between py-2 px-6 lg:px-12 gap-6">
         <div className="shrink-0">
           <Link to="/" className="flex items-center gap-2">
             <img className="h-10 lg:h-12 w-auto object-contain p-0.5" src={logoUrl} alt={`${websiteName} logo`} />

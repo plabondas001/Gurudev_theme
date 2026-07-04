@@ -78,7 +78,8 @@ function extractError(data) {
  *  Also handles login/register response that may nest user under `.user` key. */
 function toPublicUser(data) {
   // login/register wraps in { access, refresh, user: {...} }
-  const u = data?.user ?? data;
+  // but /customers/me/ returns user as an integer ID, so we must verify it is an object
+  const u = (data?.user && typeof data.user === 'object') ? data.user : data;
   // Display name: prefer full_name, then name, then first+last, then username
   const fullName =
     u?.full_name ||
@@ -163,14 +164,18 @@ export const AuthProvider = ({ children }) => {
     accessTokenRef.current = data.access;
     if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
 
-    const publicUser = toPublicUser(data);
+    // Fetch actual user profile
+    const profileRes = await apiGetCustomer(data.access);
+    const profileData = profileRes.ok && profileRes.data ? profileRes.data : data;
+
+    const publicUser = toPublicUser(profileData);
     setUser(publicUser);
     setEmailVerified(publicUser.emailVerified);
 
     if (!publicUser.emailVerified) {
       toast.warning("Please verify your email address.");
     } else {
-      toast.success(`Welcome back, ${publicUser.name.split(" ")[0] || "there"}!`);
+      toast.success(`Welcome back, ${publicUser.username || publicUser.name.split(" ")[0] || "there"}!`);
     }
 
     return { ok: true };
@@ -199,7 +204,11 @@ export const AuthProvider = ({ children }) => {
     accessTokenRef.current = data.access;
     if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
 
-    const publicUser = toPublicUser(data);
+    // Fetch actual user profile
+    const profileRes = await apiGetCustomer(data.access);
+    const profileData = profileRes.ok && profileRes.data ? profileRes.data : data;
+
+    const publicUser = toPublicUser(profileData);
     setUser(publicUser);
     setEmailVerified(false); // new accounts always need verification
 
@@ -222,11 +231,15 @@ export const AuthProvider = ({ children }) => {
     accessTokenRef.current = data.access;
     if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
 
-    const publicUser = toPublicUser(data);
+    // Fetch actual user profile
+    const profileRes = await apiGetCustomer(data.access);
+    const profileData = profileRes.ok && profileRes.data ? profileRes.data : data;
+
+    const publicUser = toPublicUser(profileData);
     setUser(publicUser);
     setEmailVerified(publicUser.emailVerified ?? true);
 
-    toast.success(`Welcome, ${publicUser.name.split(" ")[0] || "there"}!`);
+    toast.success(`Welcome, ${publicUser.username || publicUser.name.split(" ")[0] || "there"}!`);
     return { ok: true };
   }, []);
 

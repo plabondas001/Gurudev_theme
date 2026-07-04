@@ -1,8 +1,10 @@
 import {
-  ChevronRight,
-  Home,
-  Loader2,
+  PieChart,
+  ShoppingBag,
   MapPin,
+  Settings,
+  LogOut,
+  Loader2,
   Package,
   Pencil,
   Trash2,
@@ -13,13 +15,19 @@ import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { useUserData } from "../context/UserDataContext";
 import { getUserAvatarImgProps } from "../utils/avatarUrl";
+import {
+  apiGetDivisions,
+  apiGetDistricts,
+  apiGetSubDistricts,
+} from "../api/authApi";
 
 const MAX_AVATAR_BYTES = 380 * 1024;
 
 const tabs = [
-  { id: "orders", label: "My orders", icon: Package },
+  { id: "dashboard", label: "Dashboard", icon: PieChart },
+  { id: "orders", label: "My Orders", icon: ShoppingBag },
   { id: "addresses", label: "Addresses", icon: MapPin },
-  { id: "edit", label: "Edit profile", icon: Pencil },
+  { id: "edit", label: "Profile Settings", icon: Settings },
 ];
 
 const inputClass =
@@ -135,10 +143,6 @@ function ProfileSettings({ user, avatarImgProps, updateProfile, changePassword }
     reader.readAsDataURL(file);
   };
 
-  const onRemoveAvatar = async () => {
-    await updateProfile({ avatarDataUrl: null });
-  };
-
   const onChangePassword = async (e) => {
     e.preventDefault();
     if (pwdNew.length < 6) {
@@ -160,137 +164,118 @@ function ProfileSettings({ user, avatarImgProps, updateProfile, changePassword }
   };
 
   return (
-    <div className="space-y-8 max-w-xl">
+    <div className="space-y-6 max-w-4xl">
       <form
         onSubmit={onSaveProfile}
-        className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 card-hover"
+        className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm flex flex-col items-start"
       >
-        <h2 className="font-semibold text-lg">Profile details</h2>
-        <div className="flex items-center gap-4">
-          <img
-            {...avatarImgProps}
-            alt=""
-            className="w-20 h-20 rounded-2xl object-cover border border-border"
-          />
-          <div className="flex flex-wrap gap-2">
-            <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-95">
-              Change photo
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={onAvatarFile}
-              />
-            </label>
-            {user.avatarDataUrl && user.photoURL && (
-              <button
-                type="button"
-                onClick={onRemoveAvatar}
-                className="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted/60"
-              >
-                Use Google photo
+        <h2 className="font-bold text-lg text-slate-900 mb-6">Profile Information</h2>
+        
+        <div className="flex flex-col md:flex-row gap-8 w-full">
+          <div className="flex flex-col items-center shrink-0 md:w-48">
+            <div className="relative">
+              {user.avatarDataUrl || user.photoURL ? (
+                 <img {...avatarImgProps} alt="" className="w-24 h-24 rounded-full object-cover border-4 border-gray-50 shadow-sm" />
+              ) : (
+                 <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl font-bold border-4 border-gray-50 shadow-sm">
+                   {user.name?.charAt(0).toUpperCase()}
+                 </div>
+              )}
+              <label className="absolute bottom-0 right-0 cursor-pointer w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 shadow-sm border-2 border-white">
+                <Pencil className="w-4 h-4" />
+                <input type="file" accept="image/*" className="hidden" onChange={onAvatarFile} />
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mt-4 text-center">Allowed *.jpeg, *.jpg, *.png, *.gif</p>
+          </div>
+          
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+            <div>
+              <label className="text-xs font-semibold text-gray-600">Full Name</label>
+              <input className={`${inputClass} mt-1`} value={editName} onChange={(e) => setEditName(e.target.value)} required />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600 flex justify-between">Email Address {user.email && <span className="text-green-500 font-bold">Verified</span>}</label>
+              <input className={`${inputClass} mt-1`} value={user.email} readOnly />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600">Phone Number</label>
+              <input className={`${inputClass} mt-1`} value={editPhone} onChange={(e) => setEditPhone(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600">Username</label>
+              <input className={`${inputClass} mt-1 bg-gray-50`} value={user.username || ""} readOnly />
+            </div>
+            
+            <div className="md:col-span-2 mt-4">
+              <button type="submit" disabled={savingProfile} className="py-2.5 px-6 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-colors disabled:opacity-60">
+                {savingProfile ? "Saving..." : "Save Profile Changes"}
               </button>
-            )}
+            </div>
           </div>
         </div>
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            Name
-          </label>
-          <input
-            className={`${inputClass} mt-1`}
-            value={editName}
-            onChange={(e) => setEditName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            Phone
-          </label>
-          <input
-            className={`${inputClass} mt-1`}
-            value={editPhone}
-            onChange={(e) => setEditPhone(e.target.value)}
-            placeholder="01XXXXXXXXX"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            Email
-          </label>
-          <input
-            className={`${inputClass} mt-1 opacity-70 cursor-not-allowed`}
-            value={user.email}
-            readOnly
-            title="Email cannot be changed"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            Email is your login and cannot be changed here.
-          </p>
-        </div>
-        <button
-          type="submit"
-          disabled={savingProfile}
-          className="py-3 px-6 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95 disabled:opacity-60"
-        >
-          {savingProfile ? "Saving..." : "Save changes"}
-        </button>
       </form>
 
       <form
         onSubmit={onChangePassword}
-        className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 card-hover"
+        className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm space-y-5"
       >
-        <h2 className="font-semibold text-lg">Change password</h2>
+        <h2 className="font-bold text-lg text-slate-900 flex items-center gap-2 mb-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Change Password
+        </h2>
+        
         <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            Current password
-          </label>
+          <label className="text-xs font-semibold text-gray-600">Current Password</label>
           <input
             type="password"
-            className={`${inputClass} mt-1`}
+            className={`${inputClass} mt-1 max-w-md bg-gray-50`}
             value={pwdCurrent}
             onChange={(e) => setPwdCurrent(e.target.value)}
+            placeholder="Enter current password"
             autoComplete="current-password"
             required
           />
         </div>
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            New password
-          </label>
-          <input
-            type="password"
-            className={`${inputClass} mt-1`}
-            value={pwdNew}
-            onChange={(e) => setPwdNew(e.target.value)}
-            autoComplete="new-password"
-            required
-            minLength={6}
-          />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl">
+          <div>
+            <label className="text-xs font-semibold text-gray-600">New Password</label>
+            <input
+              type="password"
+              className={`${inputClass} mt-1`}
+              value={pwdNew}
+              onChange={(e) => setPwdNew(e.target.value)}
+              placeholder="Min. 8 characters"
+              autoComplete="new-password"
+              required
+              minLength={6}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-600">Confirm New Password</label>
+            <input
+              type="password"
+              className={`${inputClass} mt-1`}
+              value={pwdConfirm}
+              onChange={(e) => setPwdConfirm(e.target.value)}
+              placeholder="Re-enter new password"
+              autoComplete="new-password"
+              required
+              minLength={6}
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            Confirm new password
-          </label>
-          <input
-            type="password"
-            className={`${inputClass} mt-1`}
-            value={pwdConfirm}
-            onChange={(e) => setPwdConfirm(e.target.value)}
-            autoComplete="new-password"
-            required
-            minLength={6}
-          />
+        
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={savingPwd}
+            className="py-2.5 px-6 rounded-lg bg-[#111827] text-white font-bold text-sm hover:bg-black transition-colors disabled:opacity-60"
+          >
+            {savingPwd ? "Updating..." : "Update Password"}
+          </button>
         </div>
-        <button
-          type="submit"
-          disabled={savingPwd}
-          className="py-3 px-6 rounded-xl border-2 border-primary text-primary font-semibold text-sm hover:bg-primary/5 disabled:opacity-60"
-        >
-          {savingPwd ? "Updating..." : "Update password"}
-        </button>
       </form>
     </div>
   );
@@ -307,7 +292,7 @@ const UserProfile = () => {
     changePassword,
     logout,
   } = useAuth();
-  const { orders, ordersLoading, addresses, addressesLoading, addAddress, removeAddress, setDefaultAddress } =
+  const { orders, ordersLoading, addresses, addressesLoading, addAddress, updateAddress, removeAddress, setDefaultAddress } =
     useUserData();
 
   const tab = searchParams.get("tab") || "orders";
@@ -328,9 +313,51 @@ const UserProfile = () => {
   const [addrLabel, setAddrLabel] = useState("Home");
   const [addrName, setAddrName] = useState("");
   const [addrPhone, setAddrPhone] = useState("");
+  const [addrDivision, setAddrDivision] = useState("");
+  const [addrDistrict, setAddrDistrict] = useState("");
+  const [addrSubDistrict, setAddrSubDistrict] = useState("");
   const [addrLine, setAddrLine] = useState("");
-  const [addrCity, setAddrCity] = useState("");
   const [addrDefault, setAddrDefault] = useState(true);
+  const [addressToDelete, setAddressToDelete] = useState(null);
+  const [editingAddressId, setEditingAddressId] = useState(null);
+
+  const [apiDivisions, setApiDivisions] = useState([]);
+  const [apiDistricts, setApiDistricts] = useState([]);
+  const [apiSubDistricts, setApiSubDistricts] = useState([]);
+
+  useEffect(() => {
+    apiGetDivisions().then((res) => {
+      if (res.ok && Array.isArray(res.data)) {
+        setApiDivisions(res.data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!addrDivision) {
+      setApiDistricts([]);
+      return;
+    }
+    const div = apiDivisions.find((d) => d.name === addrDivision);
+    if (div) {
+      apiGetDistricts(div.id).then((res) => {
+        if (res.ok && Array.isArray(res.data)) setApiDistricts(res.data);
+      });
+    }
+  }, [addrDivision, apiDivisions]);
+
+  useEffect(() => {
+    if (!addrDistrict) {
+      setApiSubDistricts([]);
+      return;
+    }
+    const dist = apiDistricts.find((d) => d.name === addrDistrict);
+    if (dist) {
+      apiGetSubDistricts(dist.id).then((res) => {
+        if (res.ok && Array.isArray(res.data)) setApiSubDistricts(res.data);
+      });
+    }
+  }, [addrDistrict, apiDistricts]);
 
   const avatarImgProps = useMemo(() => getUserAvatarImgProps(user), [user]);
 
@@ -353,19 +380,53 @@ const UserProfile = () => {
       toast.error("Phone number can contain numbers only.");
       return;
     }
-    addAddress(user.id, {
-      label: addrLabel,
+    if (!addrDivision || !addrDistrict || !addrSubDistrict) {
+      toast.error("Please select division, district, and sub district.");
+      return;
+    }
+    const payload = {
+      address_type: addrLabel,
       full_name: addrName,
-      phone_number: addrPhone,
-      address_line: addrLine,
-      city: addrCity,
+      phone: addrPhone,
+      address: addrLine,
+      division: addrDivision,
+      district: addrDistrict,
+      sub_district: addrSubDistrict,
       is_default: addrDefault,
-    });
+    };
+
+    if (editingAddressId) {
+      updateAddress(user.id, editingAddressId, payload);
+    } else {
+      addAddress(user.id, payload);
+    }
+    resetAddressForm();
+  };
+
+  const resetAddressForm = () => {
     setAddrName("");
     setAddrPhone("");
     setAddrLine("");
-    setAddrCity("");
+    setAddrDivision("");
+    setAddrDistrict("");
+    setAddrSubDistrict("");
     setAddrDefault(false);
+    setEditingAddressId(null);
+    setAddrLabel("Home");
+  };
+
+  const handleEditAddress = (a) => {
+    setEditingAddressId(a.id);
+    setAddrName(a.full_name || a.fullName || "");
+    setAddrPhone(a.phone_number || a.phone || "");
+    setAddrDivision(a.division || "");
+    setAddrDistrict(a.district || "");
+    setAddrSubDistrict(a.sub_district || a.subDistrict || "");
+    setAddrLine(a.address_line || a.addressLine || a.address || "");
+    setAddrDefault(a.is_default || a.isDefault || false);
+    setAddrLabel(a.address_type || "Home");
+    setTab("addresses");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const activeTabMeta = tabs.find((t) => t.id === tab) || tabs[0];
@@ -374,148 +435,179 @@ const UserProfile = () => {
   return (
     <>
       <style>{`
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes fade-in-overlay {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
-        .fade-in-up { animation: fade-in-up .6s ease-out both; }
-        .delay-1 { animation-delay: .1s; }
-        .delay-2 { animation-delay: .2s; }
-        .card-hover {
-          transition: transform .2s ease, box-shadow .15s ease, border-color .15s ease;
+        @keyframes zoom-in-modal {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
-        .card-hover:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 32px rgba(0,0,0,.06);
-          border-color: rgba(49,113,79,.18);
+        .animate-fade-in {
+          animation: fade-in-overlay 0.2s ease-out forwards;
+        }
+        .animate-zoom-in {
+          animation: zoom-in-modal 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
+      <section className="bg-gray-50/50 min-h-screen pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-16 pt-10">
+        <div className="w-full px-4 md:px-8 max-w-7xl mx-auto">
+          <h1 className="font-extrabold text-3xl text-gray-900 tracking-tight mb-8 ml-2">
+            My Dashboard
+          </h1>
 
-      <section className="bg-gray-50/30 min-h-screen pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-16">
-        <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] text-white py-12 md:py-16 relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-
-          <div className="w-full px-4 md:px-8 max-w-6xl mx-auto relative z-10 fade-in-up">
-            <nav className="flex items-center gap-2 text-sm text-gray-200/85 mb-8">
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 hover:text-[#FBBC05]"
-              >
-                <Home className="w-4 h-4" />
-                Home
-              </Link>
-              <ChevronRight className="w-4 h-4" />
-              <span className="font-semibold text-white">Account</span>
-            </nav>
-
-            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-              <div>
-                <span className="inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#FBBC05] mb-4">
-                  Customer Dashboard
-                </span>
-                <h1 className="font-extrabold text-4xl md:text-5xl tracking-tight leading-tight">
-                  Welcome back,{" "}
-                  <span className="text-[#FBBC05]">{user.name}</span>
-                </h1>
-                <p className="font-medium text-base md:text-lg text-gray-200/90 leading-relaxed max-w-2xl mt-4">
-                  Manage orders, delivery addresses, and profile details from
-                  one trusted Gurudeb Enterprise account.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 sm:min-w-72">
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-3xl font-extrabold text-[#FBBC05]">
-                    {orders.length}
-                  </p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-200">
-                    Orders
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+            {/* Sidebar */}
+            <aside className="lg:w-[280px] shrink-0">
+              <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                <div className="bg-primary p-8 flex flex-col items-center text-center">
+                  <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-white text-3xl font-bold mb-3 border-[3px] border-primary/20 shadow-sm relative">
+                    {user.avatarDataUrl || user.photoURL ? (
+                       <img {...avatarImgProps} alt="" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                       <span>{user.name?.charAt(0).toUpperCase()}</span>
+                    )}
+                  </div>
+                  <h2 className="text-xl font-bold text-white leading-tight">
+                    Hello, {user.name}!
+                  </h2>
+                  <p className="text-xs text-white/90 mt-1.5 font-medium">
+                    Gurudeb Enterprise Customer
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-3xl font-extrabold text-[#FBBC05]">
-                    {addresses.length}
-                  </p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-200">
-                    Addresses
-                  </p>
+
+                <nav className="flex flex-col p-4 gap-2">
+                  {tabs.map(({ id, label, icon: Icon }) => {
+                    const isActive = tab === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setTab(id)}
+                        className={`flex items-center gap-3 w-full text-left cursor-pointer px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-gray-600 hover:bg-primary/5 hover:text-primary"
+                        }`}
+                      >
+                        {createElement(Icon, { className: "w-4 h-4 shrink-0" })}
+                        {label}
+                      </button>
+                    );
+                  })}
+                  <div className="h-px bg-gray-100 my-2 mx-2" />
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="flex items-center gap-3 w-full text-left cursor-pointer px-4 py-3 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 shrink-0" />
+                    Logout
+                  </button>
+                </nav>
+              </div>
+            </aside>
+
+            {/* Content Area */}
+            <div className="flex-1 min-w-0">
+              {tab === "dashboard" && (
+                <div className="space-y-6">
+                  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                      <PieChart className="w-5 h-5 text-slate-700" /> Dashboard Overview
+                    </h2>
+                    <div className="grid grid-cols-2 gap-4 max-w-md">
+                      <div className="rounded-xl border border-gray-100 bg-gray-50 p-5 flex flex-col items-center justify-center text-center">
+                        <p className="text-3xl font-extrabold text-primary">
+                          {orders.length}
+                        </p>
+                        <p className="text-sm font-bold uppercase tracking-wider text-gray-500 mt-1">
+                          Orders
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-gray-100 bg-gray-50 p-5 flex flex-col items-center justify-center text-center">
+                        <p className="text-3xl font-extrabold text-primary">
+                          {addresses.length}
+                        </p>
+                        <p className="text-sm font-bold uppercase tracking-wider text-gray-500 mt-1">
+                          Addresses
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                      <Package className="w-5 h-5 text-slate-700" /> Recent Orders
+                    </h2>
+                  
+                  {orders.length === 0 ? (
+                    <p className="text-sm text-gray-500 py-8 text-center border border-dashed rounded-xl">No recent orders found.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.slice(0, 3).map((order) => (
+                        <div key={order.id} className="border border-gray-100 rounded-xl p-4">
+                          <div className="flex justify-between items-center mb-3">
+                            <div>
+                              <p className="font-bold">Order #{typeof order.id === "string" ? order.id.slice(0, 6).toUpperCase() : String(order.id).padStart(4, "0")}</p>
+                              <p className="text-xs text-gray-500">{formatOrderDate(order.created_at || order.createdAt)}</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                {getOrderStatus(order)}
+                              </span>
+                              <p className="font-bold mt-1">{order.grand_total ?? order.total_amount ?? order.totalLabel ?? "—"} ৳</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-4 text-sm text-gray-600 mb-3">
+                            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${order.payment?.is_paid ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                              {order.payment?.is_paid ? "Paid" : "Unpaid"}
+                            </span>
+                            <span>Transaction ID: {order.payment?.transaction_id || `#${order.id}`}</span>
+                            <span>Payment Method: {order.payment?.payment_method || "cod"}</span>
+                          </div>
+                          
+                          <table className="w-full text-sm border-t border-b border-gray-100 my-3">
+                            <thead>
+                              <tr className="text-left text-gray-600">
+                                <th className="py-2 font-normal">Item</th>
+                                <th className="py-2 font-normal text-center w-16">Qty</th>
+                                <th className="py-2 font-normal text-right w-24">Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {(order.items || []).slice(0, 2).map((line) => (
+                                <tr key={`${order.id}-${line.id}`}>
+                                  <td className="py-2 font-medium">{line.product?.name || line.name || "—"}</td>
+                                  <td className="py-2 text-center">{line.quantity}</td>
+                                  <td className="py-2 text-right">{line.price} ৳</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          
+                          <div className="flex justify-between items-center mt-3">
+                            <div className="text-sm">
+                              <p className="text-gray-500">Shipping Address</p>
+                              <p>{order.shipping_address || order.address?.address || "—"}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Link to={`/track?order=${order.id}`} className="px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-lg hover:opacity-90 transition-colors">
+                                Track Order
+                              </Link>
+                              <button onClick={() => downloadInvoice(order, user)} className="px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-lg hover:opacity-90 transition-colors flex items-center gap-1">
+                                Download Invoice
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full px-4 md:px-8 py-10 md:py-14">
-          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-5 md:gap-8 lg:gap-10">
-            <aside className="lg:w-72 shrink-0 fade-in-up delay-1">
-              <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-900/5 card-hover">
-            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100">
-              <img
-                {...avatarImgProps}
-                alt=""
-                className="w-16 h-16 rounded-2xl object-cover border-2 border-primary/20 bg-gray-100"
-              />
-              <div className="min-w-0">
-                <p className="font-bold text-gray-900 truncate">
-                  {user.name}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {user.email}
-                </p>
-              </div>
-            </div>
-            <nav className="flex-col overflow-visible pb-1 lg:pb-0 no-scrollbar">
-              {tabs.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setTab(id)}
-                  className={`flex items-center gap-2 w-full text-left cursor-pointer px-3 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition ${
-                    tab === id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-gray-600 hover:bg-primary/10 hover:text-primary"
-                  }`}
-                >
-                  {createElement(Icon, { className: "w-4 h-4 shrink-0" })}
-                  {label}
-                </button>
-              ))}
-            </nav>
-            <button
-              type="button"
-              onClick={logout}
-              className="mt-4 w-full py-2.5 text-sm font-semibold text-destructive hover:bg-red-50 cursor-pointer rounded-xl transition"
-            >
-              Sign out
-            </button>
-          </div>
-        </aside>
-
-            <div className="flex-1 min-w-0 fade-in-up delay-2">
-          <header className="mb-6 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                <ActiveTabIcon className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
-                  Account
-                </h2>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mt-1">
-                  {activeTabMeta.label}
-                </h1>
-                <p className="text-gray-600 text-sm mt-2 leading-relaxed">
-              {tab === "orders" &&
-                "Orders you placed from this device while signed in."}
-              {tab === "addresses" &&
-                "Save delivery addresses for faster checkout later."}
-              {tab === "edit" &&
-                "Update your details. Email is fixed to your account."}
-                </p>
-              </div>
-            </div>
-          </header>
+            )}
 
           {tab === "orders" && (
             <div className="rounded-3xl border border-gray-100 bg-white p-4 md:p-6 shadow-sm card-hover">
@@ -645,141 +737,114 @@ const UserProfile = () => {
           )}
 
           {tab === "addresses" && (
-            <div className="grid gap-8 lg:grid-cols-5">
-              <form
-                onSubmit={onAddAddress}
-                className="lg:col-span-2 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4 h-fit card-hover"
-              >
-                <h2 className="font-semibold text-lg">Add address</h2>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Label
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={addrLabel}
-                    onChange={(e) => setAddrLabel(e.target.value)}
-                    placeholder="Home, Office…"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Full name
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={addrName}
-                    onChange={(e) => setAddrName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Phone
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={addrPhone}
-                    onChange={(e) =>
-                      setAddrPhone(e.target.value.replace(/\D/g, ""))
-                    }
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Address
-                  </label>
-                  <textarea
-                    className={`${inputClass} mt-1 min-h-[88px] resize-y`}
-                    value={addrLine}
-                    onChange={(e) => setAddrLine(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">
-                    City / area
-                  </label>
-                  <input
-                    className={`${inputClass} mt-1`}
-                    value={addrCity}
-                    onChange={(e) => setAddrCity(e.target.value)}
-                    required
-                  />
-                </div>
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={addrDefault}
-                    onChange={(e) => setAddrDefault(e.target.checked)}
-                    className="rounded border-border text-primary"
-                  />
-                  Set as default
-                </label>
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-95"
-                >
-                  Save address
-                </button>
-              </form>
-              <div className="lg:col-span-3 space-y-3">
-                {addresses.length === 0 ? (
-                  <p className="text-sm text-muted-foreground rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-                    No saved addresses. Add one on the left.
-                  </p>
-                ) : (
-                  addresses.map((a) => (
-                    <div
-                      key={a.id}
-                    className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm flex flex-col sm:flex-row sm:items-start justify-between gap-4 card-hover"
-                    >
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">{a.label}</span>
-                          {(a.is_default || a.isDefault) && (
-                            <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
-                              Default
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col lg:flex-row gap-8">
+              <div className="lg:flex-1 lg:pr-8 lg:border-r border-gray-100">
+                <h2 className="font-bold text-lg text-slate-900 mb-6">Saved Addresses</h2>
+                <div className="space-y-4">
+                  {addresses.length === 0 ? (
+                    <p className="text-sm text-gray-500 py-8 text-center border border-dashed rounded-xl">No saved addresses.</p>
+                  ) : (
+                    addresses.map((a) => (
+                      <div key={a.id} className="border border-gray-100 rounded-xl p-4 flex justify-between items-start">
+                        <div>
+                          <p className="text-sm font-bold text-gray-700">{a.full_name || a.fullName}</p>
+                          <p className="text-sm text-gray-600 mt-0.5">{a.phone_number || a.phone}</p>
+                          <p className="text-sm text-gray-600 mt-1">{a.address_line || a.addressLine}</p>
+                          <p className="text-sm text-gray-600">{a.sub_district ? `${a.sub_district}, ` : ''}{a.district}{a.division ? `, ${a.division}` : ''}</p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2 shrink-0">
+                          <div className="flex gap-2">
+                            <button type="button" onClick={() => handleEditAddress(a)} className="text-xs font-semibold px-3 py-1 rounded border border-gray-200 hover:bg-gray-50 text-gray-600 cursor-pointer">
+                              Edit
+                            </button>
+                            <button type="button" onClick={() => setAddressToDelete(a.id)} className="text-xs font-semibold px-3 py-1 rounded border border-red-200 text-red-500 hover:bg-red-50 cursor-pointer transition-colors">
+                              Delete
+                            </button>
+                          </div>
+                          {(a.is_default || a.isDefault) ? (
+                            <span className="text-[10px] font-bold text-primary mt-1 bg-primary/10 px-2 py-0.5 rounded">
+                              DEFAULT
                             </span>
+                          ) : (
+                            <button type="button" onClick={() => setDefaultAddress(user.id, a.id)} className="text-[10px] font-bold px-3 py-1 rounded bg-primary text-primary-foreground hover:opacity-90 mt-1 transition-colors">
+                              Set Default
+                            </button>
                           )}
                         </div>
-                        <p className="text-sm font-medium">{a.full_name || a.fullName}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {a.phone_number || a.phone}
-                        </p>
-                        <p className="text-sm mt-2 text-foreground">
-                          {a.address_line || a.addressLine}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {a.city}
-                        </p>
                       </div>
-                      <div className="flex sm:flex-col gap-2 shrink-0">
-                        {!(a.is_default || a.isDefault) && (
-                          <button
-                            type="button"
-                            onClick={() => setDefaultAddress(user.id, a.id)}
-                            className="text-xs font-semibold text-primary hover:underline px-2 py-1"
-                          >
-                            Set default
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeAddress(user.id, a.id)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-destructive hover:bg-destructive/10 rounded-lg px-2 py-1"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
+
+              <form onSubmit={onAddAddress} className="lg:w-[320px] shrink-0 space-y-4">
+                <h2 className="font-bold text-lg text-slate-900 mb-2">{editingAddressId ? "Edit Address" : "Add Address"}</h2>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">Full Name</label>
+                  <input className={`${inputClass} mt-1`} value={addrName} onChange={(e) => setAddrName(e.target.value)} required />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">Phone</label>
+                  <input className={`${inputClass} mt-1`} value={addrPhone} onChange={(e) => setAddrPhone(e.target.value.replace(/\D/g, ""))} required />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">Division</label>
+                  <select className={`${inputClass} mt-1 cursor-pointer`} value={addrDivision} onChange={(e) => { setAddrDivision(e.target.value); setAddrDistrict(""); setAddrSubDistrict(""); }} required>
+                    <option value="">Select Division</option>
+                    {apiDivisions.map((d) => (
+                      <option key={d.id} value={d.name}>{d.bn_name ? `${d.name} / ${d.bn_name}` : d.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">District</label>
+                  <select className={`${inputClass} mt-1 cursor-pointer`} value={addrDistrict} onChange={(e) => { setAddrDistrict(e.target.value); setAddrSubDistrict(""); }} disabled={!addrDivision} required>
+                    <option value="">Select District</option>
+                    {apiDistricts.map((d) => (
+                      <option key={d.id} value={d.name}>{d.bn_name ? `${d.name} / ${d.bn_name}` : d.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">Sub District</label>
+                  <select className={`${inputClass} mt-1 cursor-pointer`} value={addrSubDistrict} onChange={(e) => setAddrSubDistrict(e.target.value)} disabled={!addrDistrict} required>
+                    <option value="">Select Sub District</option>
+                    {apiSubDistricts.map((d) => (
+                      <option key={d.id} value={d.name}>{d.bn_name ? `${d.name} / ${d.bn_name}` : d.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">Address</label>
+                  <input className={`${inputClass} mt-1`} value={addrLine} onChange={(e) => setAddrLine(e.target.value)} required />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-600">Type</label>
+                  <select className={`${inputClass} mt-1 cursor-pointer`} value={addrLabel} onChange={(e) => setAddrLabel(e.target.value)} required>
+                    <option value="Home">Home</option>
+                    <option value="Office">Office</option>
+                  </select>
+                </div>
+                <label className="flex items-center gap-3 text-xs font-semibold cursor-pointer text-gray-700 mt-3 group">
+                  <div className="relative flex items-center justify-center">
+                    <input type="checkbox" checked={addrDefault} onChange={(e) => setAddrDefault(e.target.checked)} className="peer sr-only" />
+                    <div className="w-5 h-5 rounded border-2 border-gray-300 peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center group-hover:border-primary/50 bg-white">
+                      <svg className={`w-3.5 h-3.5 text-white transition-transform ${addrDefault ? "scale-100" : "scale-0"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                  Set as default address
+                </label>
+                <div className="flex gap-3 pt-2">
+                  <button type="submit" className="py-2.5 px-6 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-colors cursor-pointer flex-1">
+                    {editingAddressId ? "Update" : "Add"}
+                  </button>
+                  <button type="button" onClick={resetAddressForm} className="py-2.5 px-6 rounded-lg border border-gray-200 text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors cursor-pointer flex-1">
+                    {editingAddressId ? "Cancel" : "Reset"}
+                  </button>
+                </div>
+              </form>
             </div>
           )}
 
@@ -795,6 +860,25 @@ const UserProfile = () => {
           </div>
         </div>
       </section>
+
+      {addressToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-zoom-in">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Address?</h3>
+            <p className="text-gray-600 text-sm mb-6">
+              Are you sure you want to delete this address? This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button type="button" onClick={() => setAddressToDelete(null)} className="px-4 py-2 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                Cancel
+              </button>
+              <button type="button" onClick={() => { removeAddress(user.id, addressToDelete); setAddressToDelete(null); }} className="px-4 py-2 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-colors shadow-sm cursor-pointer">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

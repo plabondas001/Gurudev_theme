@@ -40,7 +40,7 @@ const normalizeOrderId = (value) =>
     .replace(/^ORDER\s*#?/, "")
     .replace(/^#/, "");
 
-const getOrderCode = (order) => order.id.slice(0, 6).toUpperCase();
+const getOrderCode = (order) => String(order.id).slice(0, 6).toUpperCase();
 
 const getTrackingStep = (status) => {
   const normalized = String(status || "").toLowerCase();
@@ -69,18 +69,22 @@ const mapOrderToTracking = (order) => ({
   eta: order.status === "Delivered" ? "Delivered" : "Processing",
   location: "Your order is being prepared",
   rider: "Assigned soon",
-  items: order.items.map((item) => ({
-    id: item.id,
-    slug: item.slug,
-    name: item.name,
-    quantity: item.quantity || 1,
-    price: item.price,
-    image: item.img || item.image || "/Img/logo/logo.png",
-  })),
-  deliveryCharge: 0,
-  total: order.total,
-  totalLabel: order.totalLabel,
-  lastUpdated: formatLastUpdated(order.createdAt),
+  items: order.items?.map((item) => {
+    const product = item.product || {};
+    const variant = item.variant || {};
+    return {
+      id: item.id,
+      slug: product.slug,
+      name: product.name || "Unknown Product",
+      quantity: item.quantity || 1,
+      price: item.price,
+      image: variant.image || product.image || "/Img/logo/logo.png",
+    };
+  }) || [],
+  deliveryCharge: parseFloat(order.delivery_charge) || 0,
+  total: parseFloat(order.total_amount) || parseFloat(order.grand_total) || 0,
+  totalLabel: "Grand Total",
+  lastUpdated: formatLastUpdated(order.created_at || order.updated_at),
 });
 
 const TrackOrder = () => {
@@ -107,7 +111,7 @@ const TrackOrder = () => {
     (value) => {
       const normalizedOrderId = normalizeOrderId(value);
       return trackableOrders.find((order) => {
-        const fullId = order.id.toUpperCase();
+        const fullId = String(order.id).toUpperCase();
         const shortCode = getOrderCode(order);
         return (
           fullId === normalizedOrderId ||

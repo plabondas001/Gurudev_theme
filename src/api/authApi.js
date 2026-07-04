@@ -8,12 +8,14 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // Core fetch helper
 // ---------------------------------------------------------------------------
 async function authFetch(url, options = {}) {
+  const { headers, ...restOptions } = options;
+
   const response = await fetch(url, {
+    ...restOptions,
     headers: {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
+      ...(headers || {}),
     },
-    ...options,
   });
 
   let data = null;

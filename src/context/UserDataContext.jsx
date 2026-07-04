@@ -117,6 +117,22 @@ export const UserDataProvider = ({ children }) => {
     [getAccessToken]
   );
 
+  const updateAddress = useCallback(
+    async (userId, addressId, payload) => {
+      const token = getAccessToken();
+      if (!token) return;
+
+      const { ok, data } = await apiUpdateAddress(token, addressId, payload);
+      if (!ok) {
+        toast.error("Failed to update address.");
+        return;
+      }
+      setAddresses((prev) => prev.map((a) => (a.id === addressId ? data : a)));
+      toast.success("Address updated.");
+    },
+    [getAccessToken]
+  );
+
   const removeAddress = useCallback(
     async (userId, addressId) => {
       const token = getAccessToken();
@@ -167,6 +183,7 @@ export const UserDataProvider = ({ children }) => {
       addressesLoading,
       placeOrder,
       addAddress,
+      updateAddress,
       removeAddress,
       setDefaultAddress,
     }),
@@ -177,6 +194,7 @@ export const UserDataProvider = ({ children }) => {
       addressesLoading,
       placeOrder,
       addAddress,
+      updateAddress,
       removeAddress,
       setDefaultAddress,
     ]

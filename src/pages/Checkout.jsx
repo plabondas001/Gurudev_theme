@@ -832,13 +832,26 @@ const Checkout = () => {
 
   // Auto-fill from user profile
   useEffect(() => {
-    if (user && !form.fullName && !form.email) {
-      setForm((prev) => ({
-        ...prev,
-        fullName: user.name || prev.fullName,
-        phone: user.phone || prev.phone,
-        email: user.email || prev.email,
-      }));
+    if (user) {
+      setForm((prev) => {
+        const newFullName = prev.fullName || user.name || "";
+        const newPhone = prev.phone || user.phone || "";
+        const newEmail = prev.email || user.email || "";
+        
+        if (
+          newFullName !== prev.fullName ||
+          newPhone !== prev.phone ||
+          newEmail !== prev.email
+        ) {
+          return {
+            ...prev,
+            fullName: newFullName,
+            phone: newPhone,
+            email: newEmail,
+          };
+        }
+        return prev;
+      });
     }
   }, [user]);
 
@@ -931,13 +944,13 @@ const Checkout = () => {
     setSelectedAddressId(address.id);
     setForm((c) => ({
       ...c,
-      fullName: address.fullName || user?.name || "",
+      fullName: address.full_name || user?.name || "",
       phone: address.phone || user?.phone || "",
       email: c.email || user?.email || "",
-      addressLine: address.addressLine || "",
-      division: "",
-      district: "",
-      subDistrict: "",
+      addressLine: address.address || "",
+      division: address.division || "",
+      district: address.district || "",
+      subDistrict: address.sub_district || "",
     }));
   };
 
@@ -955,17 +968,7 @@ const Checkout = () => {
       (!form.division || !form.district || !form.subDistrict)
     )
       return toast.error("Please select division, district, and sub district.");
-
-    if (saveAddress && user?.id && !selectedAddressId) {
-      addAddress(user.id, {
-        label: "Checkout",
-        fullName: form.fullName,
-        phone: form.phone,
-        addressLine: form.addressLine,
-        city: getAddressLocation(form),
-        isDefault: addresses.length === 0,
-      });
-    }
+    // Note: Address saving is handled by the backend Order API when save_address is true.
 
     const payload = {
       address_id: selectedAddressId || undefined,
@@ -1074,20 +1077,20 @@ const Checkout = () => {
                             </span>
                           )}
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-bold text-zinc-900">
-                              {addr.label}
+                            <p className="text-sm font-bold text-zinc-900 capitalize">
+                              {addr.address_type || "Address"}
                             </p>
-                            {addr.isDefault && (
+                            {addr.is_default && (
                               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
                                 Default
                               </span>
                             )}
                           </div>
                           <p className="mt-1.5 text-xs font-medium text-zinc-600">
-                            {addr.fullName} · {addr.phone}
+                            {addr.full_name} · {addr.phone}
                           </p>
                           <p className="mt-0.5 text-xs text-zinc-400">
-                            {addr.addressLine}, {addr.city}
+                            {addr.address}, {addr.sub_district}, {addr.district}
                           </p>
                         </button>
                       ))}
@@ -1133,7 +1136,7 @@ const Checkout = () => {
                         onChange={(e) => updateForm("division", e.target.value)}
                         placeholder="Select Division"
                         options={apiDivisions.map((division) => ({
-                          label: division.name,
+                          label: division.bn_name ? `${division.name} / ${division.bn_name}` : division.name,
                           value: division.name,
                         }))}
                       />
@@ -1148,7 +1151,7 @@ const Checkout = () => {
                         disabled={!form.division}
                         placeholder="Select District"
                         options={apiDistricts.map((district) => ({
-                          label: district.name,
+                          label: district.bn_name ? `${district.name} / ${district.bn_name}` : district.name,
                           value: district.name,
                         }))}
                       />
@@ -1163,7 +1166,7 @@ const Checkout = () => {
                         disabled={!form.district}
                         placeholder="Select Sub District"
                         options={apiSubDistricts.map((subDistrict) => ({
-                          label: subDistrict.name,
+                          label: subDistrict.bn_name ? `${subDistrict.name} / ${subDistrict.bn_name}` : subDistrict.name,
                           value: subDistrict.name,
                         }))}
                       />
