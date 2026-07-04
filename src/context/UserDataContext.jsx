@@ -2,142 +2,169 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "./AuthContext";
 import {
-  computeCartTotals,
-  snapshotOrderItems,
-} from "../utils/orderUtils";
-
-const ORDERS_KEY = "gurudev_orders";
-const ADDRESSES_KEY = "gurudev_addresses";
+  apiAddAddress,
+  apiDeleteAddress,
+  apiGetAddresses,
+  apiGetOrders,
+  apiCreateOrder,
+  apiUpdateAddress,
+} from "../api/authApi";
 
 const UserDataContext = createContext(null);
 
 export const useUserData = () => {
   const ctx = useContext(UserDataContext);
-  if (!ctx) {
-    throw new Error("useUserData must be used within UserDataProvider");
-  }
+  if (!ctx) throw new Error("useUserData must be used within UserDataProvider");
   return ctx;
 };
 
-function loadOrders() {
-  try {
-    const raw = localStorage.getItem(ORDERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveOrders(orders) {
-  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-}
-
-function loadAddressMap() {
-  try {
-    const raw = localStorage.getItem(ADDRESSES_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveAddressMap(map) {
-  localStorage.setItem(ADDRESSES_KEY, JSON.stringify(map));
-}
-
 export const UserDataProvider = ({ children }) => {
-  const { user } = useAuth();
-  const [ordersTick, setOrdersTick] = useState(0);
-  const [addressesTick, setAddressesTick] = useState(0);
+  const { user, isAuthenticated, getAccessToken } = useAuth();
 
-  const orders = useMemo(() => {
-    if (!user?.id) return [];
-    return loadOrders().filter((o) => o.userId === user.id);
-  }, [user?.id, ordersTick]);
+  // -----------------------------------------------------------------------
+  // Orders — fetched from API
+  // -----------------------------------------------------------------------
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
-  const addresses = useMemo(() => {
-    if (!user?.id) return [];
-    const map = loadAddressMap();
-    return map[user.id] || [];
-  }, [user?.id, addressesTick]);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setOrders([]);
+      return;
+    }
+    const token = getAccessToken();
+    if (!token) return;
 
-  const placeOrder = useCallback((userId, cartItems) => {
-    if (!userId || !cartItems?.length) return null;
-    const { subtotal, totalLabel } = computeCartTotals(cartItems);
-    const order = {
-      id: crypto.randomUUID(),
-      userId,
-      createdAt: new Date().toISOString(),
-      status: "Pending",
-      items: snapshotOrderItems(cartItems),
-      total: subtotal,
-      totalLabel,
-    };
-    const all = loadOrders();
-    all.unshift(order);
-    saveOrders(all);
-    setOrdersTick((t) => t + 1);
-    return order;
-  }, []);
+    setOrdersLoading(true);
+    apiGetOrders(token)
+      .then(({ ok, data }) => {
+        if (ok) {
+          const list = Array.isArray(data) ? data : data?.results ?? [];
+          setOrders(list);
+        }
+      })
+      .finally(() => setOrdersLoading(false));
+  }, [isAuthenticated, getAccessToken, user?.id]);
 
-  const addAddress = useCallback(
-    (userId, payload) => {
-      const map = loadAddressMap();
-      const list = map[userId] || [];
-      const next = {
-        id: crypto.randomUUID(),
-        label: payload.label?.trim() || "Address",
-        fullName: payload.fullName?.trim() || "",
-        phone: payload.phone?.trim() || "",
-        addressLine: payload.addressLine?.trim() || "",
-        city: payload.city?.trim() || "",
-        isDefault: Boolean(payload.isDefault),
-      };
-      let updated = [...list, next];
-      if (next.isDefault) {
-        updated = updated.map((a) => ({
-          ...a,
-          isDefault: a.id === next.id,
-        }));
+  /** Place order via POST /orders/ — cart items used automatically by backend */
+  const placeOrder = useCallback(
+    async (userId, cartItems, payload = {}) => {
+      const token = getAccessToken();
+      if (!token) return null;
+
+      const { ok, data } = await apiCreateOrder(token, payload);
+      if (!ok) {
+        const msg =
+          data?.detail ||
+          (typeof data === "object" ? Object.values(data)[0] : null) ||
+          "Failed to place order.";
+        toast.error(Array.isArray(msg) ? msg[0] : msg);
+        return null;
       }
-      map[userId] = updated;
-      saveAddressMap(map);
-      setAddressesTick((t) => t + 1);
-      toast.success("Address saved");
+
+      // Prepend the new order to local state
+      setOrders((prev) => [data, ...prev]);
+      return data;
     },
-    []
+    [getAccessToken]
   );
 
-  const removeAddress = useCallback((userId, addressId) => {
-    const map = loadAddressMap();
-    const list = map[userId] || [];
-    map[userId] = list.filter((a) => a.id !== addressId);
-    saveAddressMap(map);
-    setAddressesTick((t) => t + 1);
-    toast.info("Address removed");
-  }, []);
+  // -----------------------------------------------------------------------
+  // Addresses — fetched from API
+  // -----------------------------------------------------------------------
+  const [addresses, setAddresses] = useState([]);
+  const [addressesLoading, setAddressesLoading] = useState(false);
 
-  const setDefaultAddress = useCallback((userId, addressId) => {
-    const map = loadAddressMap();
-    const list = map[userId] || [];
-    map[userId] = list.map((a) => ({
-      ...a,
-      isDefault: a.id === addressId,
-    }));
-    saveAddressMap(map);
-    setAddressesTick((t) => t + 1);
-  }, []);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAddresses([]);
+      return;
+    }
+    const token = getAccessToken();
+    if (!token) return;
 
+    setAddressesLoading(true);
+    apiGetAddresses(token)
+      .then(({ ok, data }) => {
+        if (ok) {
+          const list = Array.isArray(data) ? data : data?.results ?? [];
+          setAddresses(list);
+        }
+      })
+      .finally(() => setAddressesLoading(false));
+  }, [isAuthenticated, getAccessToken, user?.id]);
+
+  const addAddress = useCallback(
+    async (userId, payload) => {
+      const token = getAccessToken();
+      if (!token) return;
+
+      const { ok, data } = await apiAddAddress(token, payload);
+      if (!ok) {
+        toast.error("Failed to save address.");
+        return;
+      }
+      setAddresses((prev) => [...prev, data]);
+      toast.success("Address saved.");
+    },
+    [getAccessToken]
+  );
+
+  const removeAddress = useCallback(
+    async (userId, addressId) => {
+      const token = getAccessToken();
+      if (!token) return;
+
+      const { ok } = await apiDeleteAddress(token, addressId);
+      if (!ok) {
+        toast.error("Failed to remove address.");
+        return;
+      }
+      setAddresses((prev) => prev.filter((a) => a.id !== addressId));
+      toast.info("Address removed.");
+    },
+    [getAccessToken]
+  );
+
+  const setDefaultAddress = useCallback(
+    async (userId, addressId) => {
+      const token = getAccessToken();
+      if (!token) return;
+
+      const addr = addresses.find((a) => a.id === addressId);
+      if (!addr) return;
+
+      const { ok } = await apiUpdateAddress(token, addressId, {
+        ...addr,
+        is_default: true,
+      });
+      if (!ok) {
+        toast.error("Failed to update default address.");
+        return;
+      }
+      setAddresses((prev) =>
+        prev.map((a) => ({ ...a, is_default: a.id === addressId }))
+      );
+    },
+    [getAccessToken, addresses]
+  );
+
+  // -----------------------------------------------------------------------
+  // Context value
+  // -----------------------------------------------------------------------
   const value = useMemo(
     () => ({
       orders,
+      ordersLoading,
       addresses,
+      addressesLoading,
       placeOrder,
       addAddress,
       removeAddress,
@@ -145,7 +172,9 @@ export const UserDataProvider = ({ children }) => {
     }),
     [
       orders,
+      ordersLoading,
       addresses,
+      addressesLoading,
       placeOrder,
       addAddress,
       removeAddress,

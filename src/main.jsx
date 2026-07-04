@@ -22,6 +22,8 @@ import { ConfigProvider } from "./context/ConfigContext.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 const router = createBrowserRouter([
   {
@@ -80,7 +82,15 @@ const router = createBrowserRouter([
       {
         path: "privacy_policy",
         element:<PrivacyPolicy/>
-      }
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
+      },
     ],
   },
 ]);

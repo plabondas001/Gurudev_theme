@@ -13,22 +13,22 @@ export function usePlaceOrder() {
   const location = useLocation();
 
   return useCallback(
-    (items) => {
+    async (items, payload = {}) => {
       const lineItems = items ?? cartItems;
       if (!lineItems?.length) {
         toast.error("Your cart is empty.");
         return false;
       }
-      if (!user?.id) {
-        toast.error("Please sign in to place an order.");
-        navigate("/signin", { state: { from: location } });
-        return false;
+      
+      const order = await placeOrder(user?.id || 'guest', lineItems, payload);
+      
+      if (order) {
+        clearCartSilent();
+        toast.success("Order placed successfully!");
+        navigate("/profile?tab=orders");
+        return true;
       }
-      placeOrder(user.id, lineItems);
-      clearCartSilent();
-      toast.success("Order placed successfully!");
-      navigate("/profile?tab=orders");
-      return true;
+      return false;
     },
     [user?.id, placeOrder, clearCartSilent, navigate, location, cartItems]
   );

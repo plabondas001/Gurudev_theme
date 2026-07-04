@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
 import {
+  AlertCircle,
   BadgeCheck,
   Eye,
   EyeOff,
   Heart,
   Lock,
   Mail,
+  RefreshCw,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
@@ -174,7 +176,7 @@ const GoogleButtonBlock = ({
 );
 
 const SignIn = () => {
-  const { login, loginWithGoogle, register, isAuthenticated, ready } =
+  const { login, loginWithGoogle, register, isAuthenticated, ready, emailVerified, resendVerification } =
     useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -205,8 +207,7 @@ const SignIn = () => {
     let cancelled = false;
     (async () => {
       try {
-        const profile = decodeJwtPayload(stored);
-        const result = await loginWithGoogle(profile, remember);
+        const result = await loginWithGoogle(stored, remember);
         if (result?.ok) navigate(from, { replace: true });
       } catch {
         if (!cancelled) {
@@ -271,8 +272,8 @@ const SignIn = () => {
               return;
             }
             try {
-              const profile = decodeJwtPayload(response.credential);
-              const result = await loginWithGoogle(profile, remember);
+              // Send the raw Google credential (JWT) as access_token to our backend
+              const result = await loginWithGoogle(response.credential, remember);
               if (result?.ok) navigate(from, { replace: true });
             } catch {
               toast.error("Google sign-in failed. Please try again.");
@@ -345,7 +346,7 @@ const SignIn = () => {
       toast.error("Please enter a valid email address.");
       return;
     }
-    if (password.length < 6) {
+    if (password.length < 5) {
       toast.error("Password must be at least 6 characters.");
       return;
     }
@@ -397,7 +398,7 @@ const SignIn = () => {
   };
 
   const emailInvalid = email.length > 0 && !validateEmail(email);
-  const passTooShort = password.length > 0 && password.length < 6;
+  const passTooShort = password.length > 0 && password.length < 5;
   const confirmMismatch =
     mode === "register" && confirm.length > 0 && password !== confirm;
 
@@ -488,7 +489,7 @@ const SignIn = () => {
                   <ShieldCheck className="w-5 h-5" aria-hidden />
                 </span>
                 <span>
-                  Passwords stay protected with local session storage.
+                  Your credentials are secured with JWT tokens — never stored as plain text.
                 </span>
               </li>
               <li className="flex items-center gap-3 rounded-xl bg-black/10 p-3 ring-1 ring-white/10">
@@ -503,7 +504,7 @@ const SignIn = () => {
           </div>
 
           <div className="relative z-10 mt-8 flex items-center justify-between gap-3 rounded-xl bg-white/10 px-4 py-3 text-xs text-white/75 ring-1 ring-white/10">
-            <span>Ready for store API connection.</span>
+            <span>Connected to secure backend API.</span>
             <span className="font-semibold text-white">Fast checkout</span>
           </div>
         </motion.aside>
@@ -515,6 +516,23 @@ const SignIn = () => {
           transition={{ duration: 0.35, delay: 0.05 }}
           className="rounded-2xl border border-border bg-card text-card-foreground shadow-xl p-4 sm:p-6 md:p-10"
         >
+          {/* Email not verified banner */}
+          {isAuthenticated && !emailVerified && (
+            <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <div className="flex-1">
+                <p className="font-semibold">Email not verified</p>
+                <p className="text-xs mt-0.5">Check your inbox and click the verification link to activate your account.</p>
+              </div>
+              <button
+                type="button"
+                onClick={resendVerification}
+                className="flex items-center gap-1 text-xs font-medium text-amber-700 hover:text-amber-900 whitespace-nowrap"
+              >
+                <RefreshCw className="h-3 w-3" /> Resend
+              </button>
+            </div>
+          )}
           {/* Tab switcher */}
           <div className="flex p-1 rounded-xl bg-gray-100 mb-6 md:mb-8 border border-gray-200/50">
             <button
@@ -585,11 +603,7 @@ const SignIn = () => {
                   <button
                     type="button"
                     className="text-xs font-medium text-primary hover:underline"
-                    onClick={() =>
-                      toast.info(
-                        "Password reset will be available when your store API is connected.",
-                      )
-                    }
+                    onClick={() => navigate("/forgot-password")}
                   >
                     Forgot password?
                   </button>
@@ -608,7 +622,7 @@ const SignIn = () => {
                     className="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
                     placeholder="At least 6 characters"
                     required
-                    minLength={6}
+                    minLength={5}
                   />
                   <button
                     type="button"
@@ -625,7 +639,7 @@ const SignIn = () => {
                 </div>
                 {passTooShort && (
                   <p className="text-destructive text-xs mt-1.5">
-                    Use at least 6 characters.
+                    Use at least 5 characters.
                   </p>
                 )}
               </div>

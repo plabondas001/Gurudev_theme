@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { FaEnvelope, FaLocationDot, FaPhone } from "react-icons/fa6";
 import { FaFacebookF, FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { useConfig } from "../context/ConfigContext";
+import { apiSendContact } from "../api/authApi";
 
 /* ─── Toast ─────────────────────────────────────────────────────────────── */
 const Toast = ({ message, type, onClose }) => {
@@ -224,8 +225,18 @@ const Contact = () => {
 
     setStatus("sending");
     try {
-      // Prototyping realistic delay for premium interactive response
-      await new Promise((res) => setTimeout(res, 1800));
+      const { ok, data } = await apiSendContact({
+        name: fields.name,
+        email: fields.email,
+        subject: `${fields.subject} (Phone: ${fields.phone})`,
+        message: fields.message,
+      });
+      if (!ok) {
+        const msg = data?.detail || data?.message || "Something went wrong. Please try again.";
+        showToast(msg, "error");
+        setStatus("error");
+        return;
+      }
       setStatus("success");
       setFields({ name: "", email: "", phone: "", subject: "", message: "" });
       setTouched({});

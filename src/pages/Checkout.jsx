@@ -18,6 +18,11 @@ import { useUserData } from "../context/UserDataContext";
 import { usePlaceOrder } from "../hooks/usePlaceOrder";
 import { useConfig } from "../context/ConfigContext";
 import {
+  apiGetDivisions,
+  apiGetDistricts,
+  apiGetSubDistricts,
+} from "../api/authApi";
+import {
   computeCartTotals,
   getCurrencySymbol,
   parsePrice,
@@ -821,6 +826,59 @@ const Checkout = () => {
   const [saveAddress, setSaveAddress] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
+  const [apiDivisions, setApiDivisions] = useState([]);
+  const [apiDistricts, setApiDistricts] = useState([]);
+  const [apiSubDistricts, setApiSubDistricts] = useState([]);
+
+  // Auto-fill from user profile
+  useEffect(() => {
+    if (user && !form.fullName && !form.email) {
+      setForm((prev) => ({
+        ...prev,
+        fullName: user.name || prev.fullName,
+        phone: user.phone || prev.phone,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
+
+  // Fetch divisions
+  useEffect(() => {
+    apiGetDivisions().then((res) => {
+      if (res.ok && Array.isArray(res.data)) {
+        setApiDivisions(res.data);
+      }
+    });
+  }, []);
+
+  // Fetch districts when division changes
+  useEffect(() => {
+    if (!form.division) {
+      setApiDistricts([]);
+      return;
+    }
+    const div = apiDivisions.find((d) => d.name === form.division);
+    if (div) {
+      apiGetDistricts(div.id).then((res) => {
+        if (res.ok && Array.isArray(res.data)) setApiDistricts(res.data);
+      });
+    }
+  }, [form.division, apiDivisions]);
+
+  // Fetch sub-districts when district changes
+  useEffect(() => {
+    if (!form.district) {
+      setApiSubDistricts([]);
+      return;
+    }
+    const dist = apiDistricts.find((d) => d.name === form.district);
+    if (dist) {
+      apiGetSubDistricts(dist.id).then((res) => {
+        if (res.ok && Array.isArray(res.data)) setApiSubDistricts(res.data);
+      });
+    }
+  }, [form.district, apiDistricts]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
@@ -908,7 +966,23 @@ const Checkout = () => {
         isDefault: addresses.length === 0,
       });
     }
-    placeOrder();
+
+    const payload = {
+      address_id: selectedAddressId || undefined,
+      full_name: form.fullName,
+      email: form.email || undefined,
+      phone: form.phone,
+      shipping_address: form.addressLine,
+      division: form.division || undefined,
+      district: form.district || undefined,
+      sub_district: form.subDistrict || undefined,
+      payment_method: paymentMethod,
+      payment_details: paymentMethod !== "cod" ? paymentDetails : undefined,
+      coupon_code: voucherCode || undefined,
+      save_address: saveAddress,
+    };
+
+    placeOrder(cartItems, payload);
   };
 
   /* ── empty cart ── */
@@ -1058,12 +1132,10 @@ const Checkout = () => {
                         value={form.division}
                         onChange={(e) => updateForm("division", e.target.value)}
                         placeholder="Select Division"
-                        options={Object.keys(districtsByDivision).map(
-                          (division) => ({
-                            label: division,
-                            value: division,
-                          }),
-                        )}
+                        options={apiDivisions.map((division) => ({
+                          label: division.name,
+                          value: division.name,
+                        }))}
                       />
                     </div>
                     <div>
@@ -1075,12 +1147,10 @@ const Checkout = () => {
                         onChange={(e) => updateForm("district", e.target.value)}
                         disabled={!form.division}
                         placeholder="Select District"
-                        options={(districtsByDivision[form.division] || []).map(
-                          (district) => ({
-                            label: district,
-                            value: district,
-                          }),
-                        )}
+                        options={apiDistricts.map((district) => ({
+                          label: district.name,
+                          value: district.name,
+                        }))}
                       />
                     </div>
                     <div>
@@ -1089,16 +1159,12 @@ const Checkout = () => {
                       </FieldLabel>
                       <Select
                         value={form.subDistrict}
-                        onChange={(e) =>
-                          updateForm("subDistrict", e.target.value)
-                        }
+                        onChange={(e) => updateForm("subDistrict", e.target.value)}
                         disabled={!form.district}
                         placeholder="Select Sub District"
-                        options={(
-                          subDistrictsByDistrict[form.district] || []
-                        ).map((subDistrict) => ({
-                          label: subDistrict,
-                          value: subDistrict,
+                        options={apiSubDistricts.map((subDistrict) => ({
+                          label: subDistrict.name,
+                          value: subDistrict.name,
                         }))}
                       />
                     </div>

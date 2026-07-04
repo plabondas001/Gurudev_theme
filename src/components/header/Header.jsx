@@ -1,4 +1,5 @@
 import {
+  Bell,
   Heart,
   MapPinned,
   Search,
@@ -7,7 +8,7 @@ import {
   User,
 } from "lucide-react";
 import { FaRegUserCircle } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { RiCloseLargeLine } from "react-icons/ri";
 import apiClient from "../../api/apiClient";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -19,16 +20,56 @@ import { Link, NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { getUserAvatarImgProps } from "../../utils/avatarUrl";
 import { useConfig } from "../../context/ConfigContext";
+import {
+  apiGetNotifications,
+  apiMarkAllNotificationsRead,
+} from "../../api/authApi";
 
 const Header = () => {
   const { cartItems, removeItem, updateQuantity } = useCart();
   const { wishlistItems } = useWishlist();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, getAccessToken } = useAuth();
   const { config } = useConfig();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+
+  // Notifications
+  const [notifications, setNotifications] = useState([]);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
+
+  const fetchNotifications = useCallback(async () => {
+    const token = getAccessToken();
+    if (!token) return;
+    const { ok, data } = await apiGetNotifications(token);
+    if (ok && Array.isArray(data)) setNotifications(data);
+  }, [getAccessToken]);
+
+  useEffect(() => {
+    if (!isAuthenticated) { setNotifications([]); return; }
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60_000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, fetchNotifications]);
+
+  // Close notif panel on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleMarkAllRead = async () => {
+    const token = getAccessToken();
+    if (!token) return;
+    await apiMarkAllNotificationsRead(token);
+    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+  };
 
   const websiteName = config?.website_name || "Gurudeb Enterprise";
   const logoUrl = config?.logo_light || config?.dashboard_logo || logo;
@@ -139,6 +180,66 @@ const Header = () => {
             </button>
           </div>
 
+          {/* Notifications Bell (authenticated only) */}
+          {isAuthenticated && (
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setNotifOpen((v) => !v)}
+                className="flex flex-col items-center hover:text-primary transition-colors duration-200 cursor-pointer"
+                aria-label="Notifications"
+              >
+                <div className="relative">
+                  <Bell size={20} className="stroke-[1.5]" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-1.5 -top-1.5 bg-red-500 text-white rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center text-[9px] font-bold">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
+                <p className="hidden lg:block text-sm font-medium mt-0.5">Alerts</p>
+              </button>
+
+              {notifOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                    <span className="font-bold text-sm text-gray-900">Notifications</span>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={handleMarkAllRead}
+                        className="text-xs text-primary hover:underline font-medium"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <ul className="max-h-72 overflow-y-auto divide-y divide-gray-50">
+                    {notifications.length === 0 ? (
+                      <li className="px-4 py-6 text-center text-sm text-gray-400">No notifications yet.</li>
+                    ) : (
+                      notifications.slice(0, 8).map((n) => (
+                        <li
+                          key={n.id}
+                          className={`px-4 py-3 flex gap-3 items-start ${
+                            !n.is_read ? "bg-primary/5" : ""
+                          }`}
+                        >
+                          <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                            !n.is_read ? "bg-primary" : "bg-gray-300"
+                          }`} />
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-900 truncate">{n.title}</p>
+                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
+                            <p className="text-[10px] text-gray-400 mt-1">{n.time}</p>
+                          </div>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
           {isAuthenticated ? (
             <Link
               to="/profile"
@@ -150,8 +251,8 @@ const Header = () => {
                 alt=""
                 className="w-6 h-6 rounded-full object-cover border border-primary/25 shrink-0"
               />
-              <p className="hidden lg:block text-[10px] font-medium mt-0.5 max-w-[80px] truncate">
-                {user?.name || "Account"}
+              <p className="hidden lg:block text-xs font-medium mt-0.5 max-w-[80px] truncate text-center">
+                {user?.username || "Account"}
               </p>
             </Link>
           ) : (

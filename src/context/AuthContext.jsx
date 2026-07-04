@@ -4,303 +4,364 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { toast } from "react-toastify";
+import {
+  apiChangePassword,
+  apiForgotPassword,
+  apiGetCustomer,
+  apiGoogleLogin,
+  apiLogin,
+  apiLogout,
+  apiRefreshToken,
+  apiRegister,
+  apiResendVerification,
+  apiUpdateCustomer,
+} from "../api/authApi";
 
-const USERS_KEY = "gurudev_auth_users";
-const SESSION_LOCAL_KEY = "gurudev_session_local";
-const SESSION_TAB_KEY = "gurudev_session_tab";
+// ---------------------------------------------------------------------------
+// Storage keys — only tokens are persisted, never passwords
+// ---------------------------------------------------------------------------
+const REFRESH_KEY = "gurudev_refresh_token";   // persisted refresh token
+const ACCESS_EXPIRY_KEY = "gurudev_access_exp"; // rough expiry hint
 
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
 
-async function hashPassword(password) {
-  const enc = new TextEncoder().encode(password);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function saveRefreshToken(token, persist) {
+  if (persist) {
+    localStorage.setItem(REFRESH_KEY, token);
+    sessionStorage.removeItem(REFRESH_KEY);
+  } else {
+    sessionStorage.setItem(REFRESH_KEY, token);
+    localStorage.removeItem(REFRESH_KEY);
+  }
 }
 
-function capitalizeName(name) {
-  const trimmed = String(name || "").trim();
-  if (!trimmed) return "";
-  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+function loadRefreshToken() {
+  return localStorage.getItem(REFRESH_KEY) || sessionStorage.getItem(REFRESH_KEY) || null;
 }
 
-function toPublicUser(record) {
-  const photoURL =
-    record.photoURL ||
-    record.photoUrl ||
-    record.picture ||
-    record.image ||
-    record.img ||
-    null;
+function clearRefreshToken() {
+  localStorage.removeItem(REFRESH_KEY);
+  sessionStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem(ACCESS_EXPIRY_KEY);
+}
 
+/** Extract a friendly error message from an API response data object. */
+function extractError(data) {
+  if (!data) return "Something went wrong. Please try again.";
+  if (typeof data === "string") return data;
+  // DRF typically returns { detail: "..." } or { field: ["msg"] }
+  if (data.detail) return data.detail;
+  const firstKey = Object.keys(data)[0];
+  if (firstKey) {
+    const val = data[firstKey];
+    return Array.isArray(val) ? val[0] : String(val);
+  }
+  return "Something went wrong. Please try again.";
+}
+
+/** Build a normalised public user object from the /customers/me/ response shape:
+ *  { id, user, username, name, first_name, last_name, email, phone_number,
+ *    avatar, social_avatar_url, is_email_verified, ... }
+ *  Also handles login/register response that may nest user under `.user` key. */
+function toPublicUser(data) {
+  // login/register wraps in { access, refresh, user: {...} }
+  const u = data?.user ?? data;
+  // Display name: prefer full_name, then name, then first+last, then username
+  const fullName =
+    u?.full_name ||
+    u?.name ||
+    [u?.first_name, u?.last_name].filter(Boolean).join(" ") ||
+    u?.username ||
+    "";
   return {
-    id: record.id,
-    name: capitalizeName(record.name),
-    email: record.email,
-    phone: record.phone ?? "",
-    avatarDataUrl: record.avatarDataUrl ?? null,
-    photoURL,
-    provider: record.provider ?? "password",
+    id: u?.id ?? u?.pk ?? null,
+    name: fullName,
+    username: u?.username ?? "",
+    email: u?.email ?? "",
+    phone: u?.phone_number ?? u?.phone ?? "",
+    // avatar from customer profile, fallback to social avatar (Google etc.)
+    photoURL: u?.avatar ?? u?.social_avatar_url ?? u?.profile_image ?? null,
+    emailVerified: u?.is_email_verified ?? u?.email_verified ?? false,
+    // customerId is the same as id when coming from /customers/me/
+    customerId: u?.id ?? u?.customer_id ?? null,
   };
 }
 
-function loadUsers() {
-  try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-function readSession() {
-  try {
-    const local = localStorage.getItem(SESSION_LOCAL_KEY);
-    if (local) return JSON.parse(local);
-    const tab = sessionStorage.getItem(SESSION_TAB_KEY);
-    if (tab) return JSON.parse(tab);
-  } catch {
-    /* ignore */
-  }
-  return null;
-}
-
-function writeSession(user, persist) {
-  const payload = JSON.stringify({ user });
-  if (persist) {
-    localStorage.setItem(SESSION_LOCAL_KEY, payload);
-    sessionStorage.removeItem(SESSION_TAB_KEY);
-  } else {
-    sessionStorage.setItem(SESSION_TAB_KEY, payload);
-    localStorage.removeItem(SESSION_LOCAL_KEY);
-  }
-}
-
-function updateSessionUser(publicUser) {
-  if (localStorage.getItem(SESSION_LOCAL_KEY)) {
-    writeSession(publicUser, true);
-  } else if (sessionStorage.getItem(SESSION_TAB_KEY)) {
-    writeSession(publicUser, false);
-  }
-}
-
-function clearSession() {
-  localStorage.removeItem(SESSION_LOCAL_KEY);
-  sessionStorage.removeItem(SESSION_TAB_KEY);
-}
-
+// ---------------------------------------------------------------------------
+// Provider
+// ---------------------------------------------------------------------------
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(true);
 
-  useEffect(() => {
-    const session = readSession();
-    if (session?.user) {
-      const users = loadUsers();
-      const full = users.find((u) => u.id === session.user.id);
-      if (full) setUser(toPublicUser(full));
-      else {
-        clearSession();
-        setUser(null);
-      }
+  // Access token lives only in memory — never in storage
+  const accessTokenRef = useRef(null);
+
+  // ------------------------------------------------------------------
+  // Expose a getter so other hooks/contexts can read the token without
+  // triggering re-renders
+  // ------------------------------------------------------------------
+  const getAccessToken = useCallback(() => accessTokenRef.current, []);
+
+  // ------------------------------------------------------------------
+  // Silent refresh — called on boot and before any authenticated request
+  // ------------------------------------------------------------------
+  const silentRefresh = useCallback(async () => {
+    const storedRefresh = loadRefreshToken();
+    if (!storedRefresh) return false;
+
+    const { ok, data } = await apiRefreshToken(storedRefresh);
+    if (!ok || !data?.access) {
+      clearRefreshToken();
+      return false;
     }
-    setReady(true);
+
+    accessTokenRef.current = data.access;
+
+    // Fetch the full user profile with the new access token
+    const profileRes = await apiGetCustomer(data.access);
+    if (profileRes.ok && profileRes.data) {
+      const publicUser = toPublicUser(profileRes.data);
+      setUser(publicUser);
+      setEmailVerified(publicUser.emailVerified);
+    }
+    return true;
   }, []);
 
-  const login = useCallback(async (email, password, rememberMe) => {
-    const users = loadUsers();
-    const hash = await hashPassword(password);
-    const found = users.find(
-      (u) =>
-        u.email.toLowerCase() === email.trim().toLowerCase() &&
-        u.passwordHash === hash
-    );
-    if (!found) {
-      toast.error("Invalid email or password.");
+  // ------------------------------------------------------------------
+  // Boot: restore session from stored refresh token
+  // ------------------------------------------------------------------
+  useEffect(() => {
+    silentRefresh().finally(() => setReady(true));
+  }, [silentRefresh]);
+
+  // ------------------------------------------------------------------
+  // login
+  // ------------------------------------------------------------------
+  const login = useCallback(async (email, password, rememberMe = true) => {
+    const { ok, data } = await apiLogin(email, password);
+
+    if (!ok) {
+      toast.error(extractError(data));
       return { ok: false };
     }
-    const publicUser = toPublicUser(found);
+
+    accessTokenRef.current = data.access;
+    if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
+
+    const publicUser = toPublicUser(data);
     setUser(publicUser);
-    writeSession(publicUser, rememberMe);
-    toast.success(`Welcome back, ${publicUser.name.split(" ")[0]}!`);
+    setEmailVerified(publicUser.emailVerified);
+
+    if (!publicUser.emailVerified) {
+      toast.warning("Please verify your email address.");
+    } else {
+      toast.success(`Welcome back, ${publicUser.name.split(" ")[0] || "there"}!`);
+    }
+
     return { ok: true };
   }, []);
 
-  const register = useCallback(
-    async (name, email, password, rememberMe) => {
-      const users = loadUsers();
-      const lower = email.trim().toLowerCase();
-      if (users.some((u) => u.email.toLowerCase() === lower)) {
-        toast.error("An account with this email already exists.");
+  // ------------------------------------------------------------------
+  // register
+  // ------------------------------------------------------------------
+  const register = useCallback(async (name, email, password, rememberMe = true) => {
+    // Use email prefix as username fallback
+    const username = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "_");
+
+    const { ok, data } = await apiRegister({
+      username,
+      email,
+      password,
+      full_name: name,
+      phone_number: "",
+    });
+
+    if (!ok) {
+      toast.error(extractError(data));
+      return { ok: false };
+    }
+
+    accessTokenRef.current = data.access;
+    if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
+
+    const publicUser = toPublicUser(data);
+    setUser(publicUser);
+    setEmailVerified(false); // new accounts always need verification
+
+    toast.success("Account created! Please check your email to verify your account.");
+    return { ok: true };
+  }, []);
+
+  // ------------------------------------------------------------------
+  // loginWithGoogle
+  // Receives the Google access_token (from OAuth2 flow)
+  // ------------------------------------------------------------------
+  const loginWithGoogle = useCallback(async (access_token, rememberMe = true) => {
+    const { ok, data } = await apiGoogleLogin(access_token);
+
+    if (!ok) {
+      toast.error(extractError(data));
+      return { ok: false };
+    }
+
+    accessTokenRef.current = data.access;
+    if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
+
+    const publicUser = toPublicUser(data);
+    setUser(publicUser);
+    setEmailVerified(publicUser.emailVerified ?? true);
+
+    toast.success(`Welcome, ${publicUser.name.split(" ")[0] || "there"}!`);
+    return { ok: true };
+  }, []);
+
+  // ------------------------------------------------------------------
+  // logout
+  // ------------------------------------------------------------------
+  const logout = useCallback(async () => {
+    const refreshToken = loadRefreshToken();
+    const accessToken = accessTokenRef.current;
+
+    // Fire-and-forget — don't block UI on server response
+    if (accessToken && refreshToken) {
+      apiLogout(accessToken, refreshToken).catch(() => {});
+    }
+
+    accessTokenRef.current = null;
+    clearRefreshToken();
+    setUser(null);
+    setEmailVerified(true);
+    toast.info("You have been signed out.");
+  }, []);
+
+  // ------------------------------------------------------------------
+  // updateProfile
+  // ------------------------------------------------------------------
+  const updateProfile = useCallback(
+    async ({ name, phone, avatarDataUrl }) => {
+      if (!user?.id) return { ok: false };
+      const token = accessTokenRef.current;
+      if (!token) return { ok: false };
+
+      const payload = {};
+      if (name != null) payload.full_name = name;
+      if (phone != null) payload.phone_number = phone;
+      // avatarDataUrl upload is a separate concern (not in scope for text API)
+
+      const customerId = user.customerId ?? user.id;
+      const { ok, data } = await apiUpdateCustomer(token, customerId, payload);
+
+      if (!ok) {
+        toast.error(extractError(data));
         return { ok: false };
       }
-      const hash = await hashPassword(password);
-      const newUser = {
-        id: crypto.randomUUID(),
-        name: capitalizeName(name),
-        email: lower,
-        passwordHash: hash,
-        phone: "",
-        avatarDataUrl: null,
+
+      const updated = {
+        ...user,
+        name: data?.full_name ?? name ?? user.name,
+        phone: data?.phone_number ?? phone ?? user.phone,
       };
-      saveUsers([...users, newUser]);
-      const publicUser = toPublicUser(newUser);
-      setUser(publicUser);
-      writeSession(publicUser, rememberMe);
-      toast.success("Account created. You are signed in.");
+      setUser(updated);
+      toast.success("Profile updated.");
+      return { ok: true };
+    },
+    [user]
+  );
+
+  // ------------------------------------------------------------------
+  // changePassword
+  // ------------------------------------------------------------------
+  const changePassword = useCallback(
+    async (currentPassword, newPassword) => {
+      const token = accessTokenRef.current;
+      if (!token) return { ok: false };
+
+      const { ok, data } = await apiChangePassword(token, currentPassword, newPassword);
+      if (!ok) {
+        toast.error(extractError(data));
+        return { ok: false };
+      }
+      toast.success("Password updated.");
       return { ok: true };
     },
     []
   );
 
-  const loginWithGoogle = useCallback(async (profile, rememberMe) => {
-    const email = String(profile?.email || "").trim().toLowerCase();
-    const googleSub = String(profile?.sub || "").trim();
-    const name = capitalizeName(profile?.name || email.split("@")[0]);
-    const googlePicture = String(
-      profile?.picture || profile?.photo || "",
-    ).trim();
-
-    if (!email || !googleSub) {
-      toast.error("Google sign-in failed. Please try again.");
+  // ------------------------------------------------------------------
+  // forgotPassword
+  // ------------------------------------------------------------------
+  const forgotPassword = useCallback(async (email) => {
+    const { ok, data } = await apiForgotPassword(email);
+    if (!ok) {
+      toast.error(extractError(data));
       return { ok: false };
     }
-
-    const users = loadUsers();
-    const existingIndex = users.findIndex(
-      (u) =>
-        u.email.toLowerCase() === email ||
-        (u.googleSub && u.googleSub === googleSub)
-    );
-
-    let record;
-    if (existingIndex >= 0) {
-      const existing = users[existingIndex];
-      record = {
-        ...existing,
-        name: existing.name || name,
-        email,
-        googleSub,
-        provider: existing.provider || "google",
-        avatarDataUrl: existing.avatarDataUrl || null,
-        photoURL:
-          googlePicture ||
-          existing.photoURL ||
-          existing.photoUrl ||
-          existing.picture ||
-          null,
-      };
-      users[existingIndex] = record;
-      saveUsers(users);
-    } else {
-      record = {
-        id: crypto.randomUUID(),
-        name,
-        email,
-        passwordHash: null,
-        phone: "",
-        avatarDataUrl: null,
-        photoURL: googlePicture || null,
-        googleSub,
-        provider: "google",
-      };
-      saveUsers([...users, record]);
-    }
-
-    const publicUser = toPublicUser(record);
-    setUser(publicUser);
-    writeSession(publicUser, rememberMe);
-    toast.success(`Welcome, ${publicUser.name.split(" ")[0]}!`);
     return { ok: true };
   }, []);
 
-  const updateProfile = useCallback(
-    async ({ name, phone, avatarDataUrl }) => {
-      if (!user?.id) return { ok: false };
-      const users = loadUsers();
-      const idx = users.findIndex((u) => u.id === user.id);
-      if (idx === -1) return { ok: false };
-      if (name != null) users[idx].name = capitalizeName(name);
-      if (phone != null) users[idx].phone = String(phone).trim();
-      if (avatarDataUrl !== undefined) {
-        users[idx].avatarDataUrl = avatarDataUrl;
-      }
-      saveUsers(users);
-      const next = toPublicUser(users[idx]);
-      setUser(next);
-      updateSessionUser(next);
-      toast.success("Profile updated.");
-      return { ok: true };
-    },
-    [user?.id]
-  );
-
-  const changePassword = useCallback(
-    async (currentPassword, newPassword) => {
-      if (!user?.id) return { ok: false };
-      const users = loadUsers();
-      const idx = users.findIndex((u) => u.id === user.id);
-      if (idx === -1) return { ok: false };
-      const hashCurrent = await hashPassword(currentPassword);
-      if (users[idx].passwordHash !== hashCurrent) {
-        toast.error("Current password is incorrect.");
-        return { ok: false };
-      }
-      users[idx].passwordHash = await hashPassword(newPassword);
-      saveUsers(users);
-      toast.success("Password updated.");
-      return { ok: true };
-    },
-    [user?.id]
-  );
-
-  const logout = useCallback(() => {
-    setUser(null);
-    clearSession();
-    toast.info("You have been signed out.");
+  // ------------------------------------------------------------------
+  // resendVerification
+  // ------------------------------------------------------------------
+  const resendVerification = useCallback(async () => {
+    const token = accessTokenRef.current;
+    const { ok, data } = await apiResendVerification(token);
+    if (!ok) {
+      toast.error(extractError(data));
+      return { ok: false };
+    }
+    toast.success("Verification email sent. Please check your inbox.");
+    return { ok: true };
   }, []);
 
+  // ------------------------------------------------------------------
+  // Context value
+  // ------------------------------------------------------------------
   const value = useMemo(
     () => ({
       user,
       ready,
       isAuthenticated: !!user,
+      emailVerified,
+      getAccessToken,
       login,
       loginWithGoogle,
       register,
       logout,
       updateProfile,
       changePassword,
+      forgotPassword,
+      resendVerification,
     }),
     [
       user,
       ready,
+      emailVerified,
+      getAccessToken,
       login,
       loginWithGoogle,
       register,
       logout,
       updateProfile,
       changePassword,
+      forgotPassword,
+      resendVerification,
     ]
   );
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

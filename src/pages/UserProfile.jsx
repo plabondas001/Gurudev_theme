@@ -41,7 +41,8 @@ function formatOrderDate(iso) {
 }
 
 function getOrderStatus(order) {
-  return order.status === "Processing" ? "Pending" : order.status || "Pending";
+  // API returns status as display_name string or via order_status object
+  return order.status || order.order_status?.display_name || "Pending";
 }
 
 function escapeHtml(value) {
@@ -306,7 +307,7 @@ const UserProfile = () => {
     changePassword,
     logout,
   } = useAuth();
-  const { orders, addresses, addAddress, removeAddress, setDefaultAddress } =
+  const { orders, ordersLoading, addresses, addressesLoading, addAddress, removeAddress, setDefaultAddress } =
     useUserData();
 
   const tab = searchParams.get("tab") || "orders";
@@ -354,11 +355,11 @@ const UserProfile = () => {
     }
     addAddress(user.id, {
       label: addrLabel,
-      fullName: addrName,
-      phone: addrPhone,
-      addressLine: addrLine,
+      full_name: addrName,
+      phone_number: addrPhone,
+      address_line: addrLine,
       city: addrCity,
-      isDefault: addrDefault,
+      is_default: addrDefault,
     });
     setAddrName("");
     setAddrPhone("");
@@ -533,7 +534,11 @@ const UserProfile = () => {
                 </p>
               </div>
 
-              {orders.length === 0 ? (
+              {ordersLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : orders.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-10 md:py-14 text-center">
                   <Package className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
                   <p className="font-medium text-foreground">No orders yet</p>
@@ -557,30 +562,32 @@ const UserProfile = () => {
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0">
                           <h3 className="text-lg font-semibold text-slate-950">
-                            Order #{order.id.slice(0, 6).toUpperCase()}
+                  Order #{typeof order.id === "string" ? order.id.slice(0, 6).toUpperCase() : String(order.id).padStart(4, "0")}
                           </h3>
                           <p className="mt-2 text-sm text-slate-500">
-                            {formatOrderDate(order.createdAt)}
+                            {formatOrderDate(order.created_at || order.createdAt)}
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
                             {getOrderStatus(order)}
                           </span>
-                          <p className="text-lg font-semibold text-slate-950">
-                            {order.totalLabel}
-                          </p>
+                           <p className="text-lg font-semibold text-slate-950">
+                             {order.grand_total ?? order.total_amount ?? order.totalLabel ?? "—"} ৳
+                           </p>
                         </div>
                       </div>
 
                       <div className="mt-4 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
-                        <span className="inline-flex w-fit rounded-md bg-red-100 px-3 py-2 text-xs font-semibold text-red-700">
-                          Unpaid
+                        <span className={`inline-flex w-fit rounded-md px-3 py-2 text-xs font-semibold ${
+                          order.payment?.is_paid ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        }`}>
+                          {order.payment?.is_paid ? "Paid" : "Unpaid"}
                         </span>
                         <p>
-                          Transaction ID: {order.id.slice(0, 6).toUpperCase()}
+                          Transaction ID: {order.payment?.transaction_id || (typeof order.id === "string" ? order.id.slice(0, 6).toUpperCase() : `#${order.id}`)}
                         </p>
-                        <p>Payment Method: cod</p>
+                        <p>Payment Method: {order.payment?.payment_method || "—"}</p>
                       </div>
 
                       <div className="mt-5 overflow-x-auto">
@@ -595,19 +602,19 @@ const UserProfile = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {order.items.map((line) => (
+                            {(order.items || []).map((line) => (
                               <tr
                                 key={`${order.id}-${line.id}`}
                                 className="border-b border-slate-300"
                               >
                                 <td className="py-3 pr-4 font-semibold text-slate-950">
-                                  {line.name}
+                                  {line.product?.name || line.name || "—"}
                                 </td>
                                 <td className="py-3 pr-4 text-slate-950">
                                   {line.quantity}
                                 </td>
                                 <td className="py-3 pr-4 text-slate-950">
-                                  {line.price}
+                                  {line.price} ৳
                                 </td>
                               </tr>
                             ))}
@@ -733,25 +740,25 @@ const UserProfile = () => {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-semibold">{a.label}</span>
-                          {a.isDefault && (
+                          {(a.is_default || a.isDefault) && (
                             <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
                               Default
                             </span>
                           )}
                         </div>
-                        <p className="text-sm font-medium">{a.fullName}</p>
+                        <p className="text-sm font-medium">{a.full_name || a.fullName}</p>
                         <p className="text-sm text-muted-foreground">
-                          {a.phone}
+                          {a.phone_number || a.phone}
                         </p>
                         <p className="text-sm mt-2 text-foreground">
-                          {a.addressLine}
+                          {a.address_line || a.addressLine}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {a.city}
                         </p>
                       </div>
                       <div className="flex sm:flex-col gap-2 shrink-0">
-                        {!a.isDefault && (
+                        {!(a.is_default || a.isDefault) && (
                           <button
                             type="button"
                             onClick={() => setDefaultAddress(user.id, a.id)}
