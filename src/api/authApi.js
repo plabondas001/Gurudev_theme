@@ -67,7 +67,7 @@ export async function apiLogout(accessToken, refreshToken) {
 export async function apiGoogleLogin(access_token) {
   return authFetch(`${BASE_URL}/auth/google/`, {
     method: "POST",
-    body: JSON.stringify({ access_token }),
+    body: JSON.stringify({ access_token: access_token, id_token: access_token }),
   });
 }
 
