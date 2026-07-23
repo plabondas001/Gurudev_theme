@@ -24,8 +24,10 @@ import {
 // ---------------------------------------------------------------------------
 // Storage keys — only tokens are persisted, never passwords
 // ---------------------------------------------------------------------------
-const REFRESH_KEY = "gurudev_refresh_token";   // persisted refresh token
-const ACCESS_EXPIRY_KEY = "gurudev_access_exp"; // rough expiry hint
+const ACCESS_KEY = "gurudev_access_token";
+const REFRESH_KEY = "gurudev_refresh_token";
+const USER_KEY = "gurudev_user_profile";
+const ACCESS_EXPIRY_KEY = "gurudev_access_exp";
 
 const AuthContext = createContext(null);
 
@@ -38,31 +40,44 @@ export const useAuth = () => {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-function saveRefreshToken(token, persist) {
-  if (persist) {
-    localStorage.setItem(REFRESH_KEY, token);
-    sessionStorage.removeItem(REFRESH_KEY);
-  } else {
-    sessionStorage.setItem(REFRESH_KEY, token);
-    localStorage.removeItem(REFRESH_KEY);
-  }
+function saveSession(access, refresh, user, persist = true) {
+  const storage = persist ? localStorage : sessionStorage;
+  const otherStorage = persist ? sessionStorage : localStorage;
+
+  if (access) storage.setItem(ACCESS_KEY, access);
+  if (refresh) storage.setItem(REFRESH_KEY, refresh);
+  if (user) storage.setItem(USER_KEY, JSON.stringify(user));
+
+  otherStorage.removeItem(ACCESS_KEY);
+  otherStorage.removeItem(REFRESH_KEY);
+  otherStorage.removeItem(USER_KEY);
 }
 
-function loadRefreshToken() {
-  return localStorage.getItem(REFRESH_KEY) || sessionStorage.getItem(REFRESH_KEY) || null;
+function loadSession() {
+  const access = localStorage.getItem(ACCESS_KEY) || sessionStorage.getItem(ACCESS_KEY) || null;
+  const refresh = localStorage.getItem(REFRESH_KEY) || sessionStorage.getItem(REFRESH_KEY) || null;
+  let user = null;
+  try {
+    const rawUser = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+    if (rawUser) user = JSON.parse(rawUser);
+  } catch (e) {}
+  return { access, refresh, user };
 }
 
-function clearRefreshToken() {
+function clearSession() {
+  localStorage.removeItem(ACCESS_KEY);
   localStorage.removeItem(REFRESH_KEY);
-  sessionStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem(USER_KEY);
   localStorage.removeItem(ACCESS_EXPIRY_KEY);
+  sessionStorage.removeItem(ACCESS_KEY);
+  sessionStorage.removeItem(REFRESH_KEY);
+  sessionStorage.removeItem(USER_KEY);
 }
 
 /** Extract a friendly error message from an API response data object. */
 function extractError(data) {
   if (!data) return "Something went wrong. Please try again.";
   if (typeof data === "string") return data;
-  // DRF typically returns { detail: "..." } or { field: ["msg"] }
   if (data.detail) return data.detail;
   const firstKey = Object.keys(data)[0];
   if (firstKey) {
@@ -72,15 +87,8 @@ function extractError(data) {
   return "Something went wrong. Please try again.";
 }
 
-/** Build a normalised public user object from the /customers/me/ response shape:
- *  { id, user, username, name, first_name, last_name, email, phone_number,
- *    avatar, social_avatar_url, is_email_verified, ... }
- *  Also handles login/register response that may nest user under `.user` key. */
 function toPublicUser(data) {
-  // login/register wraps in { access, refresh, user: {...} }
-  // but /customers/me/ returns user as an integer ID, so we must verify it is an object
   const u = (data?.user && typeof data.user === 'object') ? data.user : data;
-  // Display name: prefer full_name, then name, then first+last, then username
   const fullName =
     u?.full_name ||
     u?.name ||
@@ -93,10 +101,8 @@ function toPublicUser(data) {
     username: u?.username ?? "",
     email: u?.email ?? "",
     phone: u?.phone_number ?? u?.phone ?? "",
-    // avatar from customer profile, fallback to social avatar (Google etc.)
     photoURL: u?.avatar ?? u?.social_avatar_url ?? u?.profile_image ?? null,
     emailVerified: u?.is_email_verified ?? u?.email_verified ?? false,
-    // customerId is the same as id when coming from /customers/me/
     customerId: u?.id ?? u?.customer_id ?? null,
   };
 }
@@ -105,54 +111,61 @@ function toPublicUser(data) {
 // Provider
 // ---------------------------------------------------------------------------
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const initialSession = loadSession();
+  const [user, setUser] = useState(initialSession.user);
   const [ready, setReady] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(initialSession.user?.emailVerified ?? true);
 
-  // Access token lives only in memory — never in storage
-  const accessTokenRef = useRef(null);
+  const accessTokenRef = useRef(initialSession.access);
 
-  // ------------------------------------------------------------------
-  // Expose a getter so other hooks/contexts can read the token without
-  // triggering re-renders
-  // ------------------------------------------------------------------
   const getAccessToken = useCallback(() => accessTokenRef.current, []);
 
-  // ------------------------------------------------------------------
-  // Silent refresh — called on boot and before any authenticated request
-  // ------------------------------------------------------------------
   const silentRefresh = useCallback(async () => {
-    const storedRefresh = loadRefreshToken();
-    if (!storedRefresh) return false;
+    const { refresh, access, user: storedUser } = loadSession();
 
-    const { ok, data } = await apiRefreshToken(storedRefresh);
-    if (!ok || !data?.access) {
-      clearRefreshToken();
+    if (access) {
+      accessTokenRef.current = access;
+      if (storedUser && !user) setUser(storedUser);
+    }
+
+    if (!refresh) {
+      if (!access) {
+        clearSession();
+        setUser(null);
+      }
+      return Boolean(access);
+    }
+
+    const { ok, data } = await apiRefreshToken(refresh);
+    if (ok && data?.access) {
+      accessTokenRef.current = data.access;
+      const currentRefresh = data.refresh || refresh;
+
+      const profileRes = await apiGetCustomer(data.access);
+      if (profileRes.ok && profileRes.data) {
+        const publicUser = toPublicUser(profileRes.data);
+        setUser(publicUser);
+        setEmailVerified(publicUser.emailVerified);
+        saveSession(data.access, currentRefresh, publicUser, true);
+      } else {
+        saveSession(data.access, currentRefresh, storedUser, true);
+      }
+      return true;
+    }
+
+    if (!access) {
+      clearSession();
+      setUser(null);
       return false;
     }
 
-    accessTokenRef.current = data.access;
-
-    // Fetch the full user profile with the new access token
-    const profileRes = await apiGetCustomer(data.access);
-    if (profileRes.ok && profileRes.data) {
-      const publicUser = toPublicUser(profileRes.data);
-      setUser(publicUser);
-      setEmailVerified(publicUser.emailVerified);
-    }
     return true;
-  }, []);
+  }, [user]);
 
-  // ------------------------------------------------------------------
-  // Boot: restore session from stored refresh token
-  // ------------------------------------------------------------------
   useEffect(() => {
     silentRefresh().finally(() => setReady(true));
-  }, [silentRefresh]);
+  }, []);
 
-  // ------------------------------------------------------------------
-  // login
-  // ------------------------------------------------------------------
   const login = useCallback(async (email, password, rememberMe = true) => {
     const { ok, data } = await apiLogin(email, password);
 
@@ -162,15 +175,15 @@ export const AuthProvider = ({ children }) => {
     }
 
     accessTokenRef.current = data.access;
-    if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
 
-    // Fetch actual user profile
     const profileRes = await apiGetCustomer(data.access);
     const profileData = profileRes.ok && profileRes.data ? profileRes.data : data;
 
     const publicUser = toPublicUser(profileData);
     setUser(publicUser);
     setEmailVerified(publicUser.emailVerified);
+
+    saveSession(data.access, data.refresh, publicUser, rememberMe);
 
     if (!publicUser.emailVerified) {
       toast.warning("Please verify your email address.");
@@ -202,24 +215,20 @@ export const AuthProvider = ({ children }) => {
     }
 
     accessTokenRef.current = data.access;
-    if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
 
-    // Fetch actual user profile
     const profileRes = await apiGetCustomer(data.access);
     const profileData = profileRes.ok && profileRes.data ? profileRes.data : data;
 
     const publicUser = toPublicUser(profileData);
     setUser(publicUser);
-    setEmailVerified(false); // new accounts always need verification
+    setEmailVerified(false);
+
+    saveSession(data.access, data.refresh, publicUser, rememberMe);
 
     toast.success("Account created! Please check your email to verify your account.");
     return { ok: true };
   }, []);
 
-  // ------------------------------------------------------------------
-  // loginWithGoogle
-  // Receives the Google access_token (from OAuth2 flow)
-  // ------------------------------------------------------------------
   const loginWithGoogle = useCallback(async (access_token, rememberMe = true) => {
     const { ok, data } = await apiGoogleLogin(access_token);
 
@@ -229,9 +238,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     accessTokenRef.current = data.access;
-    if (data.refresh) saveRefreshToken(data.refresh, rememberMe);
 
-    // Fetch actual user profile
     const profileRes = await apiGetCustomer(data.access);
     const profileData = profileRes.ok && profileRes.data ? profileRes.data : data;
 
@@ -239,24 +246,21 @@ export const AuthProvider = ({ children }) => {
     setUser(publicUser);
     setEmailVerified(publicUser.emailVerified ?? true);
 
+    saveSession(data.access, data.refresh, publicUser, rememberMe);
+
     toast.success(`Welcome, ${publicUser.username || publicUser.name.split(" ")[0] || "there"}!`);
     return { ok: true };
   }, []);
 
-  // ------------------------------------------------------------------
-  // logout
-  // ------------------------------------------------------------------
   const logout = useCallback(async () => {
-    const refreshToken = loadRefreshToken();
-    const accessToken = accessTokenRef.current;
+    const { access: accessToken, refresh: refreshToken } = loadSession();
 
-    // Fire-and-forget — don't block UI on server response
     if (accessToken && refreshToken) {
       apiLogout(accessToken, refreshToken).catch(() => {});
     }
 
     accessTokenRef.current = null;
-    clearRefreshToken();
+    clearSession();
     setUser(null);
     setEmailVerified(true);
     toast.info("You have been signed out.");
