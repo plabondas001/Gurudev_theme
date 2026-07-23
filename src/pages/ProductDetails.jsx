@@ -32,6 +32,8 @@ const ProductDetails = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [product, setProduct] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [selectedColor, setSelectedColor] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,6 +48,14 @@ const ProductDetails = () => {
         const data = await apiClient.fetchProductBySlug(slug);
         setProduct(data);
         setActiveImage(0);
+        if (data?.variants?.length) {
+          const firstVariant = data.variants[0];
+          setSelectedVariant(firstVariant);
+          setSelectedColor(firstVariant.color || "");
+        } else {
+          setSelectedVariant(null);
+          setSelectedColor("");
+        }
         setLoading(false);
       } catch (err) {
         console.error("Error fetching product:", err);
@@ -119,9 +129,17 @@ const ProductDetails = () => {
     );
   }
 
-  const price = product.price || 0;
-  const discountPrice = product.discount_price;
+  // Active price and stock derived from selected variant or product base
+  const price = selectedVariant
+    ? Number(selectedVariant.price)
+    : Number(product.price || 0);
+  const discountPrice = selectedVariant
+    ? selectedVariant.discount_price ? Number(selectedVariant.discount_price) : null
+    : product.discount_price ? Number(product.discount_price) : null;
   const hasDiscount = discountPrice && discountPrice < price;
+  const stockQuantity = selectedVariant
+    ? selectedVariant.stock_quantity
+    : product.stock_quantity;
   const savedToWishlist = isInWishlist(product.id);
 
   const wishlistPayload = {
@@ -260,8 +278,8 @@ const ProductDetails = () => {
                 )}
                 <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-4 py-1.5 rounded-full text-xs font-bold border border-green-100">
                   <FaCheckCircle size={14} />
-                  {product.stock_quantity > 0
-                    ? `In Stock (${product.stock_quantity})`
+                  {stockQuantity > 0
+                    ? `In Stock (${stockQuantity})`
                     : "Out of Stock"}
                 </div>
               </div>
@@ -328,11 +346,33 @@ const ProductDetails = () => {
 
               {product.category?.slug === "smart-phones" && <Infographics />}
 
-              {/* Color */}
-              {product.category?.slug === "smart-phones" && <Color />}
+              {/* Color Selection */}
+              {Boolean(product.variants?.length) && (
+                <Color
+                  variants={product.variants}
+                  selectedColor={selectedColor}
+                  onSelectColor={(colorName) => {
+                    setSelectedColor(colorName);
+                    // Match a variant that has this color
+                    const match = product.variants.find(
+                      (v) => v.color?.toLowerCase() === colorName.toLowerCase()
+                    );
+                    if (match) setSelectedVariant(match);
+                  }}
+                />
+              )}
 
-              {/* Variants */}
-              {product.category?.slug === "smart-phones" && <Variant />}
+              {/* Variant Selection (RAM / Storage) */}
+              {Boolean(product.variants?.length) && (
+                <Variant
+                  variants={product.variants}
+                  selectedVariant={selectedVariant}
+                  onSelectVariant={(variantObj) => {
+                    setSelectedVariant(variantObj);
+                    if (variantObj.color) setSelectedColor(variantObj.color);
+                  }}
+                />
+              )}
 
               {/* Actions */}
               <div className="mt-auto space-y-6">
@@ -382,7 +422,24 @@ const ProductDetails = () => {
 
                   {/* Add to Cart Button */}
                   <button
-                    onClick={() => handleCart({ ...product, quantity })}
+                    onClick={() => {
+                      let vName = "";
+                      if (selectedVariant) {
+                        const parts = [];
+                        if (selectedVariant.ram && selectedVariant.storage) parts.push(`${selectedVariant.ram}GB/${selectedVariant.storage}GB`);
+                        else if (selectedVariant.ram) parts.push(`${selectedVariant.ram}GB RAM`);
+                        else if (selectedVariant.storage) parts.push(`${selectedVariant.storage}GB Storage`);
+                        if (selectedVariant.color) parts.push(selectedVariant.color);
+                        vName = parts.join(" • ");
+                      }
+                      handleCart({
+                        ...product,
+                        price: hasDiscount ? discountPrice : price,
+                        variant_id: selectedVariant?.id,
+                        variant_name: vName,
+                        quantity,
+                      });
+                    }}
                     className="order-2 w-full sm:w-auto bg-gray-100 text-gray-800 h-14 px-8 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-primary hover:text-white transition-all duration-300 delay-100 hover:scale-103 active:scale-95 cursor-pointer group"
                   >
                     <ShoppingCart className="group-hover:translate-x-1 transition-transform" />
@@ -392,8 +449,23 @@ const ProductDetails = () => {
                   {/* Buy Now Button */}
                   <button
                     onClick={() => {
-                      handleCart({ ...product, quantity });
-                      navigate("/cart"); // Assuming there is a cart page
+                      let vName = "";
+                      if (selectedVariant) {
+                        const parts = [];
+                        if (selectedVariant.ram && selectedVariant.storage) parts.push(`${selectedVariant.ram}GB/${selectedVariant.storage}GB`);
+                        else if (selectedVariant.ram) parts.push(`${selectedVariant.ram}GB RAM`);
+                        else if (selectedVariant.storage) parts.push(`${selectedVariant.storage}GB Storage`);
+                        if (selectedVariant.color) parts.push(selectedVariant.color);
+                        vName = parts.join(" • ");
+                      }
+                      handleCart({
+                        ...product,
+                        price: hasDiscount ? discountPrice : price,
+                        variant_id: selectedVariant?.id,
+                        variant_name: vName,
+                        quantity,
+                      });
+                      navigate("/cart");
                     }}
                     className="order-3 grow w-full sm:w-auto bg-primary text-white h-14 rounded-2xl flex items-center justify-center gap-3 font-bold text-lg hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20 cursor-pointer group"
                   >
@@ -436,7 +508,7 @@ const ProductDetails = () => {
         </div>
 
         {/* Write Review */}
-        <UserReview></UserReview>
+        <UserReview product={product} />
 
         {/* FAQ */}
         <div id="faq">

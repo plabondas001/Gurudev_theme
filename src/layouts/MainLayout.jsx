@@ -9,9 +9,30 @@ import 'react-toastify/dist/ReactToastify.css';
 const MainLayout = () => {
     const { pathname } = useLocation();
 
-    // Scroll to top on route change or refresh
+    // Disable browser auto-scroll restoration on page refresh
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+
+        const resetScroll = () => {
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        };
+
+        resetScroll();
+        window.addEventListener('beforeunload', resetScroll);
+        return () => {
+            window.removeEventListener('beforeunload', resetScroll);
+        };
+    }, []);
+
+    // Scroll to top on route change
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
     }, [pathname]);
 
     useEffect(() => {

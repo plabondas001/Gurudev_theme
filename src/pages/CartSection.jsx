@@ -1,9 +1,9 @@
 import { RiCloseLargeLine } from "react-icons/ri";
-import { BsFillCartCheckFill } from "react-icons/bs";
-import { BsCartXFill } from "react-icons/bs";
+import { BsFillCartCheckFill, BsCartXFill } from "react-icons/bs";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { Link, useNavigate } from "react-router";
 import { FaOpencart } from "react-icons/fa";
+import { useConfig } from "../context/ConfigContext";
 export default function CartSidebar({
   cartOpen,
   setCartOpen,
@@ -12,6 +12,8 @@ export default function CartSidebar({
   removeItem,
 }) {
   const navigate = useNavigate();
+  const { config } = useConfig();
+  const currencySymbol = config?.currency_symbol || config?.currency || "৳";
 
   const handleProductClick = (item) => {
     setCartOpen(false);
@@ -41,7 +43,7 @@ export default function CartSidebar({
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           });
-    return String(priceStr).replace(/[0-9.,]+/, formatted);
+    return currencySymbol ? `${currencySymbol} ${formatted}` : formatted;
   };
 
   const goToCheckout = () => {
@@ -120,7 +122,7 @@ export default function CartSidebar({
               >
                 {/* Product image */}
                 <div
-                  className="w-[72px] h-[84px] rounded-xl border border-gray-100 bg-gray-50 dark:bg-zinc-800 overflow-hidden shrink-0 cursor-pointer shadow-sm"
+                  className="w-[56px] h-[64px] rounded-xl border border-gray-100 bg-gray-50 dark:bg-zinc-800 overflow-hidden shrink-0 cursor-pointer shadow-sm"
                   onClick={() => handleProductClick(item)}
                 >
                   <img
@@ -136,59 +138,74 @@ export default function CartSidebar({
                 </div>
 
                 {/* Info */}
-                <div className="flex-1 min-w-0 pr-6">
-                  <h3
-                    className="text-sm font-bold leading-snug cursor-pointer text-gray-900 hover:text-primary transition-colors"
-                    onClick={() => handleProductClick(item)}
-                  >
-                    {item.name}
-                  </h3>
+                <div className="flex-1 min-w-0 pr-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3
+                        className="text-sm font-bold leading-snug cursor-pointer text-gray-900 hover:text-primary transition-colors"
+                        onClick={() => handleProductClick(item)}
+                      >
+                        {item.name}
+                      </h3>
 
-                  <div className="flex items-center gap-2 mt-1">
-                    <p className="text-primary text-sm font-semibold">
-                      {formatPrice(item.price, item.quantity || 1)}
-                    </p>
-                    {item.old_price && (
-                      <p className="line-through text-zinc-400 dark:text-zinc-500 text-xs">
-                        {formatPrice(item.old_price, item.quantity || 1)}
+                      {item.variant_name && (
+                        <p className="mt-0.5 text-xs text-gray-500 font-semibold flex items-center gap-1">
+                          <span className="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[11px]">
+                            {item.variant_name}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Price at Top Right */}
+                    <div className="text-right shrink-0">
+                      <p className="text-primary text-base font-extrabold">
+                        {formatPrice(item.price, item.quantity || 1)}
                       </p>
-                    )}
+                      {item.old_price && (
+                        <p className="line-through text-zinc-400 text-xs">
+                          {formatPrice(item.old_price, item.quantity || 1)}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Quantity */}
-                  <div className="flex items-center mt-2.5 border border-gray-200 dark:border-zinc-700 rounded-xl overflow-hidden w-fit bg-gray-50/70">
+                  {/* Quantity & Delete Row */}
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center border border-gray-200 dark:border-zinc-700 rounded-xl overflow-hidden w-fit bg-gray-50/70">
+                      <button
+                        onClick={() =>
+                          updateQuantity && updateQuantity(item.id, -1)
+                        }
+                        className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors text-base font-medium cursor-pointer"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 h-7 flex items-center justify-center text-xs font-bold text-gray-900 border-x border-gray-200 bg-white">
+                        {item.quantity || 1}
+                      </span>
+                      <button
+                        onClick={() =>
+                          updateQuantity && updateQuantity(item.id, 1)
+                        }
+                        className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors text-base font-medium cursor-pointer"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Delete Button at Bottom Right */}
                     <button
-                      onClick={() =>
-                        updateQuantity && updateQuantity(item.id, -1)
-                      }
-                      className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-primary/10 dark:hover:bg-zinc-700 transition-colors text-base font-medium cursor-pointer"
-                      aria-label="Decrease quantity"
+                      onClick={() => removeItem(item.id)}
+                      className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-1"
+                      aria-label="Remove item"
                     >
-                      −
-                    </button>
-                    <span className="w-8 h-8 flex items-center justify-center text-sm font-bold text-gray-900 dark:text-zinc-100 border-x border-gray-200 dark:border-zinc-700 bg-white">
-                      {item.quantity || 1}
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateQuantity && updateQuantity(item.id, 1)
-                      }
-                      className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-primary/10 dark:hover:bg-zinc-700 transition-colors text-base font-medium cursor-pointer"
-                      aria-label="Increase quantity"
-                    >
-                      +
+                      <MdOutlineDeleteForever size={22} />
                     </button>
                   </div>
                 </div>
-
-                {/* Remove button */}
-                <button
-                  onClick={() => removeItem(item.id)}
-                  className="absolute top-3 right-3 cursor-pointer text-primary hover:text-red-500 transition-colors"
-                  aria-label="Remove item"
-                >
-                  <MdOutlineDeleteForever size={22} />
-                </button>
               </div>
             ))
           )}
@@ -214,11 +231,7 @@ export default function CartSidebar({
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         });
-                  // currency symbol নেওয়া হচ্ছে প্রথম item থেকে
-                  const symbol = String(cartItems[0]?.price)
-                    .replace(/[0-9.,\s]/g, "")
-                    .trim();
-                  return symbol ? `${symbol} ${formatted}` : formatted;
+                  return currencySymbol ? `${currencySymbol} ${formatted}` : formatted;
                 })()}
               </span>
             </div>

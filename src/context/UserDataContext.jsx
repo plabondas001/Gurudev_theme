@@ -26,7 +26,7 @@ export const useUserData = () => {
 };
 
 export const UserDataProvider = ({ children }) => {
-  const { user, isAuthenticated, getAccessToken } = useAuth();
+  const { user, isAuthenticated, getAccessToken, ready } = useAuth();
 
   // -----------------------------------------------------------------------
   // Orders — fetched from API
@@ -35,6 +35,7 @@ export const UserDataProvider = ({ children }) => {
   const [ordersLoading, setOrdersLoading] = useState(false);
 
   useEffect(() => {
+    if (!ready) return;
     if (!isAuthenticated) {
       setOrders([]);
       return;
@@ -51,7 +52,7 @@ export const UserDataProvider = ({ children }) => {
         }
       })
       .finally(() => setOrdersLoading(false));
-  }, [isAuthenticated, getAccessToken, user?.id]);
+  }, [ready, isAuthenticated, getAccessToken, user?.id]);
 
   /** Place order via POST /orders/ — cart items used automatically by backend */
   const placeOrder = useCallback(
@@ -83,6 +84,7 @@ export const UserDataProvider = ({ children }) => {
   const [addressesLoading, setAddressesLoading] = useState(false);
 
   useEffect(() => {
+    if (!ready) return;
     if (!isAuthenticated) {
       setAddresses([]);
       return;
@@ -99,7 +101,7 @@ export const UserDataProvider = ({ children }) => {
         }
       })
       .finally(() => setAddressesLoading(false));
-  }, [isAuthenticated, getAccessToken, user?.id]);
+  }, [ready, isAuthenticated, getAccessToken, user?.id]);
 
   const addAddress = useCallback(
     async (userId, payload) => {

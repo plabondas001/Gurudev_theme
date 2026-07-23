@@ -16,13 +16,14 @@ import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import logo from "/Img/logo/ge_main_logo.png";
 import CartSidebar from "../../pages/CartSection";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { getUserAvatarImgProps } from "../../utils/avatarUrl";
 import { useConfig } from "../../context/ConfigContext";
 import {
   apiGetNotifications,
   apiMarkAllNotificationsRead,
+  apiMarkNotificationRead,
 } from "../../api/authApi";
 
 const Header = () => {
@@ -30,6 +31,7 @@ const Header = () => {
   const { wishlistItems } = useWishlist();
   const { user, isAuthenticated, logout, getAccessToken } = useAuth();
   const { config } = useConfig();
+  const navigate = useNavigate();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -69,6 +71,34 @@ const Header = () => {
     if (!token) return;
     await apiMarkAllNotificationsRead(token);
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+  };
+
+  const handleNotifClick = async (n) => {
+    // Mark as read if unread
+    if (!n.is_read) {
+      const token = getAccessToken();
+      if (token) {
+        apiMarkNotificationRead(token, n.id).catch(() => {});
+        setNotifications((prev) =>
+          prev.map((notif) =>
+            notif.id === n.id ? { ...notif, is_read: true } : notif
+          )
+        );
+      }
+    }
+    setNotifOpen(false);
+
+    // Extract order ID from the notification link, e.g. "/order-tracking/<uuid>"
+    // and navigate to /track?order=<id> so TrackOrder auto-loads the order.
+    const orderId = n.link
+      ? n.link.replace(/.*\/order-tracking\//i, "").replace(/\/+$/, "")
+      : null;
+
+    if (orderId) {
+      navigate(`/track?order=${encodeURIComponent(orderId)}`);
+    } else {
+      navigate("/track");
+    }
   };
 
   const websiteName = config?.website_name || "Gurudeb Enterprise";
@@ -217,20 +247,23 @@ const Header = () => {
                       <li className="px-4 py-6 text-center text-sm text-gray-400">No notifications yet.</li>
                     ) : (
                       notifications.slice(0, 8).map((n) => (
-                        <li
-                          key={n.id}
-                          className={`px-4 py-3 flex gap-3 items-start ${
-                            !n.is_read ? "bg-primary/5" : ""
-                          }`}
-                        >
-                          <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
-                            !n.is_read ? "bg-primary" : "bg-gray-300"
-                          }`} />
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold text-gray-900 truncate">{n.title}</p>
-                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
-                            <p className="text-[10px] text-gray-400 mt-1">{n.time}</p>
-                          </div>
+                        <li key={n.id}>
+                          <button
+                            type="button"
+                            onClick={() => handleNotifClick(n)}
+                            className={`w-full text-left px-4 py-3 flex gap-3 items-start transition hover:bg-gray-50 cursor-pointer ${
+                              !n.is_read ? "bg-primary/5" : ""
+                            }`}
+                          >
+                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                              !n.is_read ? "bg-primary" : "bg-gray-300"
+                            }`} />
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-gray-900 truncate">{n.title}</p>
+                              <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
+                              <p className="text-[10px] text-gray-400 mt-1">{n.time}</p>
+                            </div>
+                          </button>
                         </li>
                       ))
                     )}
@@ -343,7 +376,7 @@ const Header = () => {
         </div>
       )}
 
-      {/* ✅ Cart Sidebar — সব props পাঠানো হয়েছে */}
+      {/* Cart Sidebar */}
       <CartSidebar
         cartOpen={cartOpen}
         setCartOpen={setCartOpen}

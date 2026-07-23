@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 import { useEffect } from "react";
-import { FiShoppingBag, FiArrowRight } from "react-icons/fi";
+import { FiShoppingBag } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { useCart } from "../context/CartContext";
+import { useConfig } from "../context/ConfigContext";
 
 const parsePrice = (priceStr) => {
   const clean = String(priceStr)
@@ -31,6 +32,7 @@ const formatWithSymbol = (amount, symbol) => {
 
 const ViewCart = () => {
   const { cartItems, updateQuantity, removeItem, clearCart } = useCart();
+  const { config } = useConfig();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -42,7 +44,7 @@ const ViewCart = () => {
   );
   const shipping = cartItems.length ? 0 : 0;
   const total = subtotal + shipping;
-  const currencySymbol = getCurrencySymbol(cartItems[0]?.price || "");
+  const currencySymbol = config?.currency_symbol || config?.currency || "৳";
 
   return (
     <>
@@ -64,7 +66,7 @@ const ViewCart = () => {
       `}</style>
 
       <section className="bg-gray-50/30 min-h-[70vh]">
-        <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] text-white py-14 md:py-20 relative overflow-hidden">
+        {/* <div className="bg-gradient-to-br from-[#183f31] to-[#25573c] text-white py-14 md:py-20 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
 
@@ -79,7 +81,7 @@ const ViewCart = () => {
               Review your items, adjust quantities, and continue to checkout when everything looks right.
             </p>
           </div>
-        </div>
+        </div> */}
 
         <div className="w-full px-4 md:px-8 py-12 md:py-16">
           <div className="max-w-6xl mx-auto">
@@ -126,12 +128,13 @@ const ViewCart = () => {
         ) : (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                 <div className="lg:col-span-2 bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden fade-in-up delay-1">
+                  {/* Desktop header — hidden on mobile */}
                   <div className="hidden md:grid grid-cols-12 px-5 py-4 bg-gray-100/60 text-xs font-bold uppercase tracking-[0.16em] text-primary">
-                <p className="col-span-6">Product</p>
-                <p className="col-span-2 text-center">Price</p>
-                <p className="col-span-2 text-center">Quantity</p>
-                <p className="col-span-2 text-right">Subtotal</p>
-              </div>
+                    <p className="col-span-6">Product</p>
+                    <p className="col-span-2 text-center">Price</p>
+                    <p className="col-span-2 text-center">Quantity</p>
+                    <p className="col-span-2 text-right">Subtotal</p>
+                  </div>
 
               {cartItems.map((item) => {
                 const imageSrc =
@@ -144,64 +147,127 @@ const ViewCart = () => {
                 const rowSubtotal = itemPrice * quantity;
 
                 return (
-                  <div
-                    key={item.id}
-                        className="grid grid-cols-1 md:grid-cols-12 gap-4 px-5 py-5 border-t border-gray-100 first:border-t-0"
-                  >
-                    <div className="md:col-span-6 flex gap-4">
+                  <>
+                    {/* ── Mobile row (single line, no wrap) ── */}
+                    <div
+                      key={`mobile-${item.id}`}
+                      className="flex md:hidden items-center gap-2.5 px-3 py-3 border-t border-gray-100 first:border-t-0"
+                    >
+                      {/* Image */}
                       <img
                         src={imageSrc}
                         alt={item.name}
-                            className="w-20 h-24 object-cover rounded-2xl border border-gray-100 bg-gray-50 shrink-0 shadow-sm"
+                        className="w-12 h-14 object-cover rounded-xl border border-gray-100 bg-gray-50 shrink-0 shadow-sm"
                       />
-                      <div>
-                            <h3 className="text-base font-bold text-gray-900 leading-snug">
+
+                      {/* Name + price */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-xs font-bold text-gray-900 leading-snug line-clamp-2">
                           {item.name}
                         </h3>
-                        <button
-                          onClick={() => removeItem(item.id)}
-                              className="mt-3 inline-flex items-center gap-1.5 text-red-500 hover:text-red-600 text-sm font-semibold cursor-pointer"
-                        >
-                          <MdDeleteForever size={19} />
-                          Remove
-                        </button>
+                        {item.variant_name && (
+                          <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-gray-100 text-gray-600 rounded text-[10px] font-semibold">
+                            {item.variant_name}
+                          </span>
+                        )}
+                        <p className="text-primary font-bold text-xs mt-0.5">
+                          {formatWithSymbol(itemPrice, currencySymbol)}
+                        </p>
                       </div>
-                    </div>
 
-                    <div className="md:col-span-2 flex md:justify-center md:items-center">
-                          <p className="text-primary font-bold text-sm md:text-base">
-                        {formatWithSymbol(itemPrice, currencySymbol)}
-                      </p>
-                    </div>
-
-                    <div className="md:col-span-2 flex md:justify-center md:items-center">
-                          <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50/70">
+                      {/* Quantity stepper */}
+                      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50/70 shrink-0">
                         <button
                           onClick={() => updateQuantity(item.id, -1)}
-                              className="w-9 h-9 text-gray-500 hover:bg-primary/10 hover:text-primary transition cursor-pointer"
+                          className="w-7 h-7 text-gray-500 hover:bg-primary/10 hover:text-primary transition cursor-pointer text-sm"
                           aria-label="Decrease quantity"
-                        >
-                          -
-                        </button>
-                            <span className="w-10 h-9 flex items-center justify-center text-sm font-bold text-gray-900 border-x border-gray-200 bg-white">
+                        >−</button>
+                        <span className="w-7 h-7 flex items-center justify-center text-xs font-bold text-gray-900 border-x border-gray-200 bg-white">
                           {quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, 1)}
-                              className="w-9 h-9 text-gray-500 hover:bg-primary/10 hover:text-primary transition cursor-pointer"
+                          className="w-7 h-7 text-gray-500 hover:bg-primary/10 hover:text-primary transition cursor-pointer text-sm"
                           aria-label="Increase quantity"
-                        >
-                          +
-                        </button>
+                        >+</button>
                       </div>
-                    </div>
 
-                    <div className="md:col-span-2 flex md:justify-end md:items-center">
-                          <p className="text-base font-extrabold text-primary">
+                      {/* Subtotal */}
+                      <p className="text-sm font-extrabold text-primary shrink-0 w-14 text-right">
                         {formatWithSymbol(rowSubtotal, currencySymbol)}
                       </p>
+
+                      {/* Remove */}
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="shrink-0 text-red-400 hover:text-red-600 transition cursor-pointer"
+                        aria-label="Remove item"
+                      >
+                        <MdDeleteForever size={18} />
+                      </button>
                     </div>
-                  </div>
+
+                    {/* ── Desktop row (original grid layout) ── */}
+                    <div
+                      key={`desktop-${item.id}`}
+                      className="hidden md:grid md:grid-cols-12 gap-4 px-5 py-5 border-t border-gray-100 first:border-t-0"
+                    >
+                      <div className="md:col-span-6 flex gap-4">
+                        <img
+                          src={imageSrc}
+                          alt={item.name}
+                          className="w-20 h-24 object-cover rounded-2xl border border-gray-100 bg-gray-50 shrink-0 shadow-sm"
+                        />
+                        <div>
+                          <h3 className="text-base font-bold text-gray-900 leading-snug">
+                            {item.name}
+                          </h3>
+                          {item.variant_name && (
+                            <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-600 rounded-md text-xs font-semibold">
+                              {item.variant_name}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => removeItem(item.id)}
+                            className="mt-3 inline-flex items-center gap-1.5 text-red-500 hover:text-red-600 text-sm font-semibold cursor-pointer"
+                          >
+                            <MdDeleteForever size={19} />
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2 flex md:justify-center md:items-center">
+                        <p className="text-primary font-bold text-base">
+                          {formatWithSymbol(itemPrice, currencySymbol)}
+                        </p>
+                      </div>
+
+                      <div className="md:col-span-2 flex md:justify-center md:items-center">
+                        <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50/70">
+                          <button
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className="w-9 h-9 text-gray-500 hover:bg-primary/10 hover:text-primary transition cursor-pointer"
+                            aria-label="Decrease quantity"
+                          >-</button>
+                          <span className="w-10 h-9 flex items-center justify-center text-sm font-bold text-gray-900 border-x border-gray-200 bg-white">
+                            {quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className="w-9 h-9 text-gray-500 hover:bg-primary/10 hover:text-primary transition cursor-pointer"
+                            aria-label="Increase quantity"
+                          >+</button>
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2 flex md:justify-end md:items-center">
+                        <p className="text-base font-extrabold text-primary">
+                          {formatWithSymbol(rowSubtotal, currencySymbol)}
+                        </p>
+                      </div>
+                    </div>
+                  </>
                 );
               })}
             </div>

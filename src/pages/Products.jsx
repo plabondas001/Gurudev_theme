@@ -45,23 +45,35 @@ const Products = ({
       // - Divides perfectly by 6 columns on desktop (5 rows)
       // Leaving ZERO empty slots or incomplete lines!
       const pageSize = isHomePage ? 30 : LIMIT;
-      const data = await apiClient.fetchProducts({
+
+      // Build API request params combining params and active filters
+      const apiParams = {
         ...params,
         page: pageNumber,
         page_size: pageSize,
-      });
+      };
 
-      const newProducts = data.results || [];
+      if (filters.categories?.length) {
+        apiParams.category = filters.categories.join(",");
+      }
+      if (filters.brands?.length) {
+        apiParams.brand = filters.brands.join(",");
+      }
+
+      const data = await apiClient.fetchProducts(apiParams);
+      const newProducts = Array.isArray(data) ? data : data.results || [];
 
       setProducts((prev) =>
         pageNumber === 1 ? newProducts : [...prev, ...newProducts],
       );
 
-      // On Homepage, we cap it at exactly 30 products and never load more
+      // Determine if there are more pages available
       if (isHomePage) {
         setHasMore(false);
+      } else if (data && typeof data === "object" && "next" in data) {
+        setHasMore(Boolean(data.next));
       } else {
-        setHasMore(newProducts.length === LIMIT);
+        setHasMore(newProducts.length >= pageSize);
       }
     } catch (err) {
       console.error("Error fetching products:", err);
@@ -73,14 +85,14 @@ const Products = ({
   };
 
   // =========================
-  // INITIAL LOAD
+  // INITIAL LOAD & FILTER REFETCH
   // =========================
   useEffect(() => {
     if (!initialProducts) {
       setPage(1);
       fetchProducts(1);
     }
-  }, [JSON.stringify(params)]);
+  }, [JSON.stringify(params), JSON.stringify(filters)]);
 
   // =========================
   // ERROR STATE

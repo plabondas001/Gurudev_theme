@@ -38,10 +38,23 @@ function normalizeApiItem(apiItem) {
     product?.price ||
     0;
 
+  // Build readable variant label (e.g. "4GB/64GB • Red")
+  let variantName = apiItem.variant_name || "";
+  if (variant && !variantName) {
+    const parts = [];
+    if (variant.ram && variant.storage) parts.push(`${variant.ram}GB/${variant.storage}GB`);
+    else if (variant.ram) parts.push(`${variant.ram}GB RAM`);
+    else if (variant.storage) parts.push(`${variant.storage}GB Storage`);
+    if (variant.color) parts.push(variant.color);
+    variantName = parts.join(" • ");
+  }
+
   return {
     id: product.id || apiItem.product_id,       // product id (for cart dedup logic)
     cartItemId: apiItem.id,                      // cart item id (for API calls)
     variant_id: variant?.id || apiItem.variant_id || null,
+    variant_name: variantName,
+    variant,
     name: product.name || "",
     slug: product.slug || "",
     price,
@@ -51,7 +64,7 @@ function normalizeApiItem(apiItem) {
 }
 
 export const CartProvider = ({ children }) => {
-  const { isAuthenticated, getAccessToken } = useAuth();
+  const { isAuthenticated, getAccessToken, ready } = useAuth();
   const [cartItems, setCartItems] = useState(() => {
     try {
       const saved = localStorage.getItem("cart");
@@ -71,6 +84,11 @@ export const CartProvider = ({ children }) => {
   // Load cart from API when user logs in
   // -----------------------------------------------------------------------
   useEffect(() => {
+    // Wait until the silent-refresh boot is complete before acting on auth state.
+    // Without this guard, the effect fires with isAuthenticated=false during the
+    // refresh cycle (page reload), making the app appear logged out.
+    if (!ready) return;
+
     if (!isAuthenticated) {
       // Keep local cart as-is when logged out (guest cart)
       return;
@@ -87,7 +105,7 @@ export const CartProvider = ({ children }) => {
       })
       .catch(() => {})
       .finally(() => setSyncing(false));
-  }, [isAuthenticated, getAccessToken]);
+  }, [ready, isAuthenticated, getAccessToken]);
 
   // -----------------------------------------------------------------------
   // Add to cart

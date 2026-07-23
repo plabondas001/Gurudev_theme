@@ -12,6 +12,9 @@ import { GrDeliver } from "react-icons/gr";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import { useUserData } from "../context/UserDataContext";
+import { useAuth } from "../context/AuthContext";
+import { useConfig } from "../context/ConfigContext";
+import { apiGetOrder } from "../api/authApi";
 import { parsePrice } from "../utils/orderUtils";
 
 const TRACKING_STEPS = [
@@ -39,6 +42,18 @@ const normalizeOrderId = (value) =>
     .toUpperCase()
     .replace(/^ORDER\s*#?/, "")
     .replace(/^#/, "");
+
+const formatWithSymbol = (amount, symbol) => {
+  const num = typeof amount === "number" ? amount : parsePrice(amount);
+  const formatted =
+    num % 1 === 0
+      ? num.toLocaleString("en-US")
+      : num.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+  return symbol ? `${symbol} ${formatted}` : formatted;
+};
 
 const getOrderCode = (order) => String(order.id).slice(0, 6).toUpperCase();
 
@@ -81,6 +96,7 @@ const mapOrderToTracking = (order) => ({
       image: variant.image || product.image || "/Img/logo/logo.png",
     };
   }) || [],
+  discount: parseFloat(order.discount) || 0,
   deliveryCharge: parseFloat(order.delivery_charge) || 0,
   total: parseFloat(order.total_amount) || parseFloat(order.grand_total) || 0,
   totalLabel: "Grand Total",
@@ -89,6 +105,9 @@ const mapOrderToTracking = (order) => ({
 
 const TrackOrder = () => {
   const { orders } = useUserData();
+  const { getAccessToken } = useAuth();
+  const { config } = useConfig();
+  const currencySymbol = config?.currency_symbol || config?.currency || "৳";
   const [searchParams] = useSearchParams();
   const [orderIdInput, setOrderIdInput] = useState("");
   const [trackingData, setTrackingData] = useState(null);
@@ -132,17 +151,35 @@ const TrackOrder = () => {
     const orderFromUrl = searchParams.get("order");
     if (!orderFromUrl) return;
 
-    // URL-driven tracking should hydrate the form once on navigation.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOrderIdInput(getOrderCode({ id: orderFromUrl }));
     const foundOrder = findOrderById(orderFromUrl);
     if (foundOrder) {
       showOrder(foundOrder);
     } else {
-      setTrackingData(null);
-      setError("Order not found. Please check your order ID and try again.");
+      // Attempt API lookup from database
+      const token = getAccessToken();
+      if (token) {
+        setIsLoading(true);
+        apiGetOrder(token, orderFromUrl)
+          .then(({ ok, data }) => {
+            if (ok && data && data.id) {
+              showOrder(data);
+            } else {
+              setTrackingData(null);
+              setError("Order not found. Please check your order ID and try again.");
+            }
+          })
+          .catch(() => {
+            setTrackingData(null);
+            setError("Order not found. Please check your order ID and try again.");
+          })
+          .finally(() => setIsLoading(false));
+      } else {
+        setTrackingData(null);
+        setError("Order not found. Please check your order ID and try again.");
+      }
     }
-  }, [findOrderById, searchParams, showOrder]);
+  }, [findOrderById, getAccessToken, searchParams, showOrder]);
 
   const totals = useMemo(() => {
     if (!trackingData) return null;
@@ -151,9 +188,11 @@ const TrackOrder = () => {
       (sum, item) => sum + parsePrice(item.price) * item.quantity,
       0,
     );
-    const total = subtotal + trackingData.deliveryCharge;
+    const discount = trackingData.discount || 0;
+    const deliveryCharge = trackingData.deliveryCharge || 0;
+    const total = trackingData.total || Math.max(0, subtotal + deliveryCharge - discount);
 
-    return { subtotal, total };
+    return { subtotal, discount, deliveryCharge, total };
   }, [trackingData]);
 
   const fetchTracking = async (event) => {
@@ -169,17 +208,30 @@ const TrackOrder = () => {
     setError("");
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
     const foundOrder = findOrderById(normalizedOrderId);
-    if (!foundOrder) {
-      setError("Order not found. Please check your order ID and try again.");
-      setTrackingData(null);
+    if (foundOrder) {
+      showOrder(foundOrder);
       setIsLoading(false);
       return;
     }
 
-    showOrder(foundOrder);
+    // Query backend database via Order API endpoint
+    const token = getAccessToken();
+    if (token) {
+      try {
+        const { ok, data } = await apiGetOrder(token, normalizedOrderId);
+        if (ok && data && data.id) {
+          showOrder(data);
+          setIsLoading(false);
+          return;
+        }
+      } catch {
+        // Fall through to error state
+      }
+    }
+
+    setError("Order not found. Please check your order ID and try again.");
+    setTrackingData(null);
     setIsLoading(false);
   };
 
@@ -373,7 +425,7 @@ const TrackOrder = () => {
                             </p>
                           </div>
                           <p className="text-primary font-extrabold text-sm md:text-base">
-                            {item.price}
+                            {formatWithSymbol(item.price, currencySymbol)}
                           </p>
                         </div>
                       );
@@ -408,21 +460,29 @@ const TrackOrder = () => {
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
                     <span className="font-semibold text-gray-900">
-                      {trackingData.totalLabel ||
-                        totals.subtotal.toLocaleString("en-US")}
+                      {formatWithSymbol(totals.subtotal, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery Charge</span>
                     <span className="font-semibold text-gray-900">
-                      {trackingData.deliveryCharge}
+                      {totals.deliveryCharge > 0
+                        ? `+ ${formatWithSymbol(totals.deliveryCharge, currencySymbol)}`
+                        : "Free"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Discount</span>
+                    <span className={`font-semibold ${totals.discount > 0 ? "text-emerald-600" : "text-gray-900"}`}>
+                      {totals.discount > 0
+                        ? `- ${formatWithSymbol(totals.discount, currencySymbol)}`
+                        : formatWithSymbol(0, currencySymbol)}
                     </span>
                   </div>
                   <div className="border-t border-gray-100 pt-3 flex justify-between font-extrabold text-gray-900">
                     <span>Total</span>
                     <span className="text-primary">
-                      {trackingData.totalLabel ||
-                        totals.total.toLocaleString("en-US")}
+                      {formatWithSymbol(totals.total, currencySymbol)}
                     </span>
                   </div>
                 </div>

@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router";
 import Products from "./Products";
 import apiClient from "../api/apiClient";
 
 const ProductsPage = () => {
+  const { categorySlug, brandSlug } = useParams();
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -11,6 +13,8 @@ const ProductsPage = () => {
   const [minPriceInput, setMinPriceInput] = useState("0");
   const [maxPriceInput, setMaxPriceInput] = useState("50000");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  const [filteredCatalogProducts, setFilteredCatalogProducts] = useState([]);
 
   useEffect(() => {
     const loadFilterOptions = async () => {
@@ -29,6 +33,101 @@ const ProductsPage = () => {
     loadFilterOptions();
   }, []);
 
+  // Fetch products matching selected category or brand to cross-filter available sidebar options
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCatalogForFilter = async () => {
+      if (!selectedCategories.length && !selectedBrands.length) {
+        if (isMounted) setFilteredCatalogProducts([]);
+        return;
+      }
+
+      try {
+        const queryParams = { page_size: 100 };
+        if (selectedCategories.length) {
+          queryParams.category = selectedCategories.join(",");
+        }
+        if (selectedBrands.length) {
+          queryParams.brand = selectedBrands.join(",");
+        }
+        const data = await apiClient.fetchProducts(queryParams);
+        if (isMounted) {
+          const list = Array.isArray(data) ? data : data?.results || [];
+          setFilteredCatalogProducts(list);
+        }
+      } catch (err) {
+        console.error("Error fetching catalog for filter:", err);
+      }
+    };
+
+    fetchCatalogForFilter();
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedCategories, selectedBrands]);
+
+  // Pre-select category if categorySlug is passed in URL
+  useEffect(() => {
+    if (!categorySlug || !categories.length) return;
+    const match = categories.find(
+      (c) => c.slug?.toLowerCase() === categorySlug.toLowerCase() || String(c.id) === String(categorySlug)
+    );
+    if (match) {
+      setSelectedCategories([match.id]);
+    }
+  }, [categorySlug, categories]);
+
+  // Pre-select brand if brandSlug is passed in URL
+  useEffect(() => {
+    if (!brandSlug || !brands.length) return;
+    const match = brands.find(
+      (b) => b.slug?.toLowerCase() === brandSlug.toLowerCase() || String(b.id) === String(brandSlug)
+    );
+    if (match) {
+      setSelectedBrands([match.id]);
+    }
+  }, [brandSlug, brands]);
+
+  // Filter categories to show ONLY those available under the selected brand
+  const visibleCategories = useMemo(() => {
+    if (!selectedBrands.length) {
+      return categories;
+    }
+    const catIdentifiers = new Set();
+    filteredCatalogProducts.forEach((p) => {
+      const cId = p.category?.id ?? p.category;
+      const cSlug = p.category?.slug;
+      if (cId !== undefined && cId !== null) catIdentifiers.add(String(cId));
+      if (cSlug) catIdentifiers.add(String(cSlug).toLowerCase());
+    });
+
+    return categories.filter(
+      (c) =>
+        catIdentifiers.has(String(c.id)) ||
+        (c.slug && catIdentifiers.has(String(c.slug).toLowerCase()))
+    );
+  }, [categories, selectedBrands, filteredCatalogProducts]);
+
+  // Filter brands to show ONLY those available under the selected category
+  const visibleBrands = useMemo(() => {
+    if (!selectedCategories.length) {
+      return brands;
+    }
+    const brandIdentifiers = new Set();
+    filteredCatalogProducts.forEach((p) => {
+      const bId = p.brand?.id ?? p.brand;
+      const bSlug = p.brand?.slug;
+      if (bId !== undefined && bId !== null) brandIdentifiers.add(String(bId));
+      if (bSlug) brandIdentifiers.add(String(bSlug).toLowerCase());
+    });
+
+    return brands.filter(
+      (b) =>
+        brandIdentifiers.has(String(b.id)) ||
+        (b.slug && brandIdentifiers.has(String(b.slug).toLowerCase()))
+    );
+  }, [brands, selectedCategories, filteredCatalogProducts]);
+
   const filterValues = useMemo(
     () => ({
       categories: selectedCategories,
@@ -39,12 +138,8 @@ const ProductsPage = () => {
     [selectedCategories, selectedBrands, priceRange.min, priceRange.max],
   );
 
-  const toggleSelection = (value, setSelectedValues) => {
-    setSelectedValues((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value],
-    );
+  const selectSingle = (value, setSelectedValues) => {
+    setSelectedValues((prev) => (prev.includes(value) ? [] : [value]));
   };
 
   const MAX_PRICE_CEILING = 100000;
@@ -72,44 +167,60 @@ const ProductsPage = () => {
           <div>
             <h2 className="font-semibold mb-3 text-lg">Categories</h2>
             <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
-              {categories.map((category) => (
-                <label
-                  key={category.id}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category.id)}
-                    onChange={() =>
-                      toggleSelection(category.id, setSelectedCategories)
-                    }
-                    className="cursor-pointer"
-                  />
-                  <span>{category.name}</span>
-                </label>
-              ))}
+              {visibleCategories.length > 0 ? (
+                visibleCategories.map((category) => (
+                  <label
+                    key={category.id}
+                    className="flex items-center gap-2 text-sm cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="desktop_category"
+                      checked={selectedCategories.includes(category.id)}
+                      onChange={() => selectSingle(category.id, setSelectedCategories)}
+                      onClick={() => {
+                        if (selectedCategories.includes(category.id)) {
+                          setSelectedCategories([]);
+                        }
+                      }}
+                      className="cursor-pointer accent-primary"
+                    />
+                    <span>{category.name}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-xs text-gray-500 italic">No available categories</p>
+              )}
             </div>
           </div>
 
           <div>
             <h2 className="font-semibold mb-3 text-lg">Brands</h2>
             <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100  text-primary p-4 rounded-lg">
-              {brands.map((brand) => (
-                <label
-                  key={brand.id}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedBrands.includes(brand.id)}
-                    onChange={() =>
-                      toggleSelection(brand.id, setSelectedBrands)
-                    }
-                    className="cursor-pointer"
-                  />
-                  <span>{brand.name}</span>
-                </label>
-              ))}
+              {visibleBrands.length > 0 ? (
+                visibleBrands.map((brand) => (
+                  <label
+                    key={brand.id}
+                    className="flex items-center gap-2 text-sm cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="desktop_brand"
+                      checked={selectedBrands.includes(brand.id)}
+                      onChange={() => selectSingle(brand.id, setSelectedBrands)}
+                      onClick={() => {
+                        if (selectedBrands.includes(brand.id)) {
+                          setSelectedBrands([]);
+                        }
+                      }}
+                      className="cursor-pointer accent-primary"
+                    />
+                    <span>{brand.name}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-xs text-gray-500 italic">No available brands</p>
+              )}
             </div>
           </div>
 
@@ -300,44 +411,60 @@ const ProductsPage = () => {
               <div>
                 <h2 className="font-semibold mb-3 text-lg">Categories</h2>
                 <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
-                  {categories.map((category) => (
-                    <label
-                      key={`mobile-category-${category.id}`}
-                      className="flex items-center gap-2 text-sm cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(category.id)}
-                        onChange={() =>
-                          toggleSelection(category.id, setSelectedCategories)
-                        }
-                        className="cursor-pointer"
-                      />
-                      <span>{category.name}</span>
-                    </label>
-                  ))}
+                  {visibleCategories.length > 0 ? (
+                    visibleCategories.map((category) => (
+                      <label
+                        key={`mobile-category-${category.id}`}
+                        className="flex items-center gap-2 text-sm cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="mobile_category"
+                          checked={selectedCategories.includes(category.id)}
+                          onChange={() => selectSingle(category.id, setSelectedCategories)}
+                          onClick={() => {
+                            if (selectedCategories.includes(category.id)) {
+                              setSelectedCategories([]);
+                            }
+                          }}
+                          className="cursor-pointer accent-primary"
+                        />
+                        <span>{category.name}</span>
+                      </label>
+                    ))
+                  ) : (
+                    <p className="text-xs text-gray-500 italic">No available categories</p>
+                  )}
                 </div>
               </div>
 
               <div>
                 <h2 className="font-semibold mb-3 text-lg">Brands</h2>
                 <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
-                  {brands.map((brand) => (
-                    <label
-                      key={`mobile-brand-${brand.id}`}
-                      className="flex items-center gap-2 text-sm cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedBrands.includes(brand.id)}
-                        onChange={() =>
-                          toggleSelection(brand.id, setSelectedBrands)
-                        }
-                        className="cursor-pointer"
-                      />
-                      <span>{brand.name}</span>
-                    </label>
-                  ))}
+                  {visibleBrands.length > 0 ? (
+                    visibleBrands.map((brand) => (
+                      <label
+                        key={`mobile-brand-${brand.id}`}
+                        className="flex items-center gap-2 text-sm cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="mobile_brand"
+                          checked={selectedBrands.includes(brand.id)}
+                          onChange={() => selectSingle(brand.id, setSelectedBrands)}
+                          onClick={() => {
+                            if (selectedBrands.includes(brand.id)) {
+                              setSelectedBrands([]);
+                            }
+                          }}
+                          className="cursor-pointer accent-primary"
+                        />
+                        <span>{brand.name}</span>
+                      </label>
+                    ))
+                  ) : (
+                    <p className="text-xs text-gray-500 italic">No available brands</p>
+                  )}
                 </div>
               </div>
 

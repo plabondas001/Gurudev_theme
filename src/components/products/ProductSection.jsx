@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router";
 import ProductCard from "./ProductCard";
 import ProductSkeleton from "./ProductSkeleton";
 import apiClient from "../../api/apiClient";
@@ -84,12 +85,12 @@ const ProductSection = ({ title, params = {}, initialProducts = null }) => {
     >
       <div className="flex items-center justify-between mb-6 md:mb-8 border-b pb-4">
         <h2 className="text-xl md:text-2xl font-bold text-gray-800">{title}</h2>
-        <a
-          href="/product"
+        <Link
+          to="/products"
           className="text-primary font-semibold text-sm hover:underline"
         >
           View All
-        </a>
+        </Link>
       </div>
 
       {shouldAnimateProducts ? (

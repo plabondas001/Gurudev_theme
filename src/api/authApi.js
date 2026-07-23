@@ -244,6 +244,13 @@ export async function apiGetOrders(accessToken) {
   });
 }
 
+export async function apiGetOrder(accessToken, orderId) {
+  return authFetch(`${BASE_URL}/orders/${orderId}/`, {
+    method: "GET",
+    headers: bearerHeaders(accessToken),
+  });
+}
+
 /** Create order from cart. Payload: { address_id?, full_name, phone, email,
  *  shipping_address, division, district, sub_district?,
  *  payment_method, coupon_code?, save_address? } */

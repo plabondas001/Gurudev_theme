@@ -1,13 +1,16 @@
 import React from "react";
+import { Link } from "react-router";
 
 const CatData = ({ catdata }) => {
-    const { img, name } = catdata;
+    const { img, logo, name, slug, id } = catdata;
+    const catImage = img || logo || "/Img/logo/logo.png";
+    const catSlug = slug || id;
 
     return (
-        <div className="text-center">
+        <Link to={`/category/${catSlug}`} className="text-center block">
             <div className="group">
                 <img
-                    src={img}
+                    src={catImage}
                     alt={name ? `${name} category image` : "Category image"}
                     loading="lazy"
                     decoding="async"
@@ -29,11 +32,11 @@ const CatData = ({ catdata }) => {
           "
                 />
 
-                <h1 className="font-semibold text-sm mt-2 whitespace-nowrap">
+                <h3 className="font-semibold text-sm mt-2 whitespace-nowrap text-gray-900 group-hover:text-primary transition-colors">
                     {name}
-                </h1>
+                </h3>
             </div>
-        </div>
+        </Link>
     );
 };
 

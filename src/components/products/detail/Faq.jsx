@@ -1,5 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, MessageSquare, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
+import { useAuth } from "../../../context/AuthContext";
+import { apiCreateQuestion } from "../../../api/authApi";
 
 const formatPrice = (value) => {
   if (value === null || value === undefined || value === "") return null;
@@ -57,29 +61,87 @@ const getProductFaqs = (product) => {
 };
 
 const Faq = ({ product }) => {
-  const faqs = useMemo(() => getProductFaqs(product), [product]);
+  const { isAuthenticated, getAccessToken } = useAuth();
+  const navigate = useNavigate();
   const [openIndex, setOpenIndex] = useState(0);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [dbQuestions, setDbQuestions] = useState(product?.questions || []);
+
+  const hasDbQuestions = dbQuestions.length > 0;
+
+  const faqs = useMemo(() => {
+    if (hasDbQuestions) {
+      return dbQuestions.map((q) => ({
+        question: q.question,
+        answer: q.answer || "Our support team will answer this question soon.",
+        isDb: true,
+      }));
+    }
+    return getProductFaqs(product);
+  }, [dbQuestions, hasDbQuestions, product]);
+
+  const handleQuestionSubmit = async (e) => {
+    e.preventDefault();
+    if (!newQuestion.trim()) return toast.error("Please enter a question.");
+
+    if (!isAuthenticated) {
+      toast.info("Please sign in to ask a question.");
+      navigate("/signin");
+      return;
+    }
+
+    const token = getAccessToken();
+    if (!token) return;
+
+    setSubmitting(true);
+    try {
+      const { ok, data } = await apiCreateQuestion(token, {
+        product: product.id,
+        question: newQuestion.trim(),
+      });
+
+      if (ok && data) {
+        toast.success("Question submitted successfully!");
+        setDbQuestions((prev) => [data, ...prev]);
+        setNewQuestion("");
+      } else {
+        const msg =
+          data?.detail ||
+          data?.question?.[0] ||
+          "Failed to submit question. Please try again.";
+        toast.error(msg);
+      }
+    } catch {
+      toast.error("An error occurred while submitting your question.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <section className="mt-12 bg-white rounded-3xl p-8 shadow-lg border border-primary">
-      <div className="mx-a">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b-2 border-primary w-fit">
-          Your questions, Our answers
-        </h2>
+    <section className="mt-12 bg-white rounded-3xl p-6 md:p-8 shadow-lg border border-primary">
+      <div className="mx-auto">
+        <div className="flex items-center justify-between border-b-2 border-primary pb-2 w-fit">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {hasDbQuestions ? "Customer Questions & Answers" : "Your questions, Our answers"}
+          </h2>
+        </div>
 
-        <div className="mt-10 divide-y divide-gray-300/80 border-b border-gray-300/80">
+        <div className="mt-8 divide-y divide-gray-200 border-b border-gray-200">
           {faqs.map((item, index) => {
             const isOpen = openIndex === index;
 
             return (
-              <div key={item.question} className="py-6">
+              <div key={index} className="py-5">
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? -1 : index)}
                   className="flex w-full items-start justify-between gap-5 text-left cursor-pointer"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-xl font-bold leading-snug text-gray-950">
+                  <span className="text-lg md:text-xl font-bold leading-snug text-gray-950 flex items-center gap-2">
+                    {item.isDb && <MessageSquare className="h-5 w-5 text-primary shrink-0" />}
                     {item.question}
                   </span>
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center text-gray-950">
@@ -95,7 +157,7 @@ const Faq = ({ product }) => {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="max-w-3xl pt-4 text-base leading-7 text-gray-700 sm:text-lg">
+                    <p className="max-w-3xl pt-3 text-base leading-7 text-gray-700">
                       {item.answer}
                     </p>
                   </div>
@@ -105,19 +167,32 @@ const Faq = ({ product }) => {
           })}
         </div>
 
-        {/* Q&A */}
-        <h1 className="mt-5 lg:mt-12 font-semibold lg:font-bold text-2xl lg:text-2xl border-b-2 w-fit border-primary py-2">
-          Ask more questions to know about this product.
-        </h1>
-        <textarea
-          className="border border-gray-400 mt-5 w-full h-32 lg:h-52 p-3 text-semibo rounded-md"
-          placeholder="Ask more questions...."
-        ></textarea>
-        <input
-          className="mt-1 lg:mt-3 px-5 lg:px-8 py-2 bg-primary rounded-md text-white cursor-pointer"
-          type="submit"
-          value="Submit"
-        />
+        {/* Q&A Submit Form */}
+        <form onSubmit={handleQuestionSubmit} className="mt-10 pt-6 border-t border-gray-100">
+          <h3 className="font-bold text-xl text-gray-900 mb-3">
+            Have a question about this product?
+          </h3>
+          <textarea
+            value={newQuestion}
+            onChange={(e) => setNewQuestion(e.target.value)}
+            rows={3}
+            className="border border-gray-300 w-full p-4 text-sm font-medium rounded-xl outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition placeholder:text-gray-400"
+            placeholder="Type your question here..."
+          />
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-3 px-6 py-3 bg-primary hover:bg-primary/90 rounded-xl text-white font-bold cursor-pointer transition flex items-center gap-2 disabled:opacity-60"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Submitting...
+              </>
+            ) : (
+              "Submit Question"
+            )}
+          </button>
+        </form>
       </div>
     </section>
   );

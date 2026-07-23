@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import {
-  ArrowLeft,
-  BadgeCheck,
-  MapPin,
-  PackageCheck,
   Truck,
   Plus,
   ChevronDown,
-  ChevronRight,
+  Loader2,
+  MapPin,
+  PackageCheck,
   Sparkles,
+  BadgeCheck,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -21,6 +21,7 @@ import {
   apiGetDivisions,
   apiGetDistricts,
   apiGetSubDistricts,
+  apiValidateCoupon,
 } from "../api/authApi";
 import {
   computeCartTotals,
@@ -28,7 +29,6 @@ import {
   parsePrice,
 } from "../utils/orderUtils";
 
-/* ─── helpers ─────────────────────────────────────────────── */
 const formatWithSymbol = (amount, symbol) => {
   const formatted =
     amount % 1 === 0
@@ -51,644 +51,8 @@ const emptyForm = {
   note: "",
 };
 
-const districtsByDivision = {
-  Barishal: [
-    "Barguna",
-    "Barishal",
-    "Bhola",
-    "Jhalokati",
-    "Patuakhali",
-    "Pirojpur",
-  ],
-  Chattogram: [
-    "Bandarban",
-    "Brahmanbaria",
-    "Chandpur",
-    "Chattogram",
-    "Cox's Bazar",
-    "Cumilla",
-    "Feni",
-    "Khagrachhari",
-    "Lakshmipur",
-    "Noakhali",
-    "Rangamati",
-  ],
-  Dhaka: [
-    "Dhaka",
-    "Faridpur",
-    "Gazipur",
-    "Gopalganj",
-    "Kishoreganj",
-    "Madaripur",
-    "Manikganj",
-    "Munshiganj",
-    "Narayanganj",
-    "Narsingdi",
-    "Rajbari",
-    "Shariatpur",
-    "Tangail",
-  ],
-  Khulna: [
-    "Bagerhat",
-    "Chuadanga",
-    "Jashore",
-    "Jhenaidah",
-    "Khulna",
-    "Kushtia",
-    "Magura",
-    "Meherpur",
-    "Narail",
-    "Satkhira",
-  ],
-  Mymensingh: ["Jamalpur", "Mymensingh", "Netrokona", "Sherpur"],
-  Rajshahi: [
-    "Bogura",
-    "Joypurhat",
-    "Naogaon",
-    "Natore",
-    "Chapainawabganj",
-    "Pabna",
-    "Rajshahi",
-    "Sirajganj",
-  ],
-  Rangpur: [
-    "Dinajpur",
-    "Gaibandha",
-    "Kurigram",
-    "Lalmonirhat",
-    "Nilphamari",
-    "Panchagarh",
-    "Rangpur",
-    "Thakurgaon",
-  ],
-  Sylhet: ["Habiganj", "Moulvibazar", "Sunamganj", "Sylhet"],
-};
 
-const subDistrictsByDistrict = {
-  Cumilla: [
-    "Barura",
-    "Brahmanpara",
-    "Burichang",
-    "Chandina",
-    "Chauddagram",
-    "Comilla Sadar",
-    "Daudkandi",
-    "Debidwar",
-    "Homna",
-    "Laksam",
-    "Lalmai",
-    "Meghna",
-    "Monohargonj",
-    "Muradnagar",
-    "Nangalkot",
-    "Sadarsouth",
-    "Titas",
-  ],
-  Feni: [
-    "Chhagalnaiya",
-    "Daganbhuiyan",
-    "Feni Sadar",
-    "Fulgazi",
-    "Parshuram",
-    "Sonagazi",
-  ],
-  Brahmanbaria: [
-    "Akhaura",
-    "Ashuganj",
-    "Bancharampur",
-    "Bijoynagar",
-    "Brahmanbaria Sadar",
-    "Kasba",
-    "Nabinagar",
-    "Nasirnagar",
-    "Sarail",
-  ],
-  Rangamati: [
-    "Baghaichari",
-    "Barkal",
-    "Belaichari",
-    "Juraichari",
-    "Kaptai",
-    "Kawkhali",
-    "Langadu",
-    "Naniarchar",
-    "Rajasthali",
-    "Rangamati Sadar",
-  ],
-  Noakhali: [
-    "Begumganj",
-    "Chatkhil",
-    "Companiganj",
-    "Hatia",
-    "Kabirhat",
-    "Noakhali Sadar",
-    "Senbug",
-    "Sonaimori",
-    "Subarnachar",
-  ],
-  Chandpur: [
-    "Chandpur Sadar",
-    "Faridgonj",
-    "Haimchar",
-    "Hajiganj",
-    "Kachua",
-    "Matlab North",
-    "Matlab South",
-    "Shahrasti",
-  ],
-  Lakshmipur: [
-    "Kamalnagar",
-    "Lakshmipur Sadar",
-    "Raipur",
-    "Ramganj",
-    "Ramgati",
-  ],
-  Chattogram: [
-    "Anwara",
-    "Banshkhali",
-    "Boalkhali",
-    "Chandanaish",
-    "Fatikchhari",
-    "Hathazari",
-    "Karnafuli",
-    "Lohagara",
-    "Mirsharai",
-    "Patiya",
-    "Rangunia",
-    "Raozan",
-    "Sandwip",
-    "Satkania",
-    "Sitakunda",
-  ],
-  "Cox's Bazar": [
-    "Chakaria",
-    "Coxsbazar Sadar",
-    "Eidgaon",
-    "Kutubdia",
-    "Moheshkhali",
-    "Pekua",
-    "Ramu",
-    "Teknaf",
-    "Ukhiya",
-  ],
-  Khagrachhari: [
-    "Dighinala",
-    "Guimara",
-    "Khagrachhari Sadar",
-    "Laxmichhari",
-    "Manikchari",
-    "Matiranga",
-    "Mohalchari",
-    "Panchari",
-    "Ramgarh",
-  ],
-  Bandarban: [
-    "Alikadam",
-    "Bandarban Sadar",
-    "Lama",
-    "Naikhongchhari",
-    "Rowangchhari",
-    "Ruma",
-    "Thanchi",
-  ],
-  Sirajganj: [
-    "Belkuchi",
-    "Chauhali",
-    "Kamarkhand",
-    "Kazipur",
-    "Raigonj",
-    "Shahjadpur",
-    "Sirajganj Sadar",
-    "Tarash",
-    "Ullapara",
-  ],
-  Pabna: [
-    "Atghoria",
-    "Bera",
-    "Bhangura",
-    "Chatmohar",
-    "Faridpur",
-    "Ishurdi",
-    "Pabna Sadar",
-    "Santhia",
-    "Sujanagar",
-  ],
-  Bogura: [
-    "Adamdighi",
-    "Bogra Sadar",
-    "Dhunot",
-    "Dupchanchia",
-    "Gabtali",
-    "Kahaloo",
-    "Nondigram",
-    "Shajahanpur",
-    "Shariakandi",
-    "Sherpur",
-    "Shibganj",
-    "Sonatala",
-  ],
-  Rajshahi: [
-    "Bagha",
-    "Bagmara",
-    "Charghat",
-    "Durgapur",
-    "Godagari",
-    "Mohonpur",
-    "Paba",
-    "Puthia",
-    "Tanore",
-  ],
-  Natore: [
-    "Bagatipara",
-    "Baraigram",
-    "Gurudaspur",
-    "Lalpur",
-    "Naldanga",
-    "Natore Sadar",
-    "Singra",
-  ],
-  Joypurhat: ["Akkelpur", "Joypurhat Sadar", "Kalai", "Khetlal", "Panchbibi"],
-  Chapainawabganj: [
-    "Bholahat",
-    "Chapainawabganj Sadar",
-    "Gomostapur",
-    "Nachol",
-    "Shibganj",
-  ],
-  Naogaon: [
-    "Atrai",
-    "Badalgachi",
-    "Dhamoirhat",
-    "Manda",
-    "Mohadevpur",
-    "Naogaon Sadar",
-    "Niamatpur",
-    "Patnitala",
-    "Porsha",
-    "Raninagar",
-    "Sapahar",
-  ],
-  Jashore: [
-    "Abhaynagar",
-    "Bagherpara",
-    "Chougachha",
-    "Jessore Sadar",
-    "Jhikargacha",
-    "Keshabpur",
-    "Manirampur",
-    "Sharsha",
-  ],
-  Satkhira: [
-    "Assasuni",
-    "Debhata",
-    "Kalaroa",
-    "Kaliganj",
-    "Satkhira Sadar",
-    "Shyamnagar",
-    "Tala",
-  ],
-  Meherpur: ["Gangni", "Meherpur Sadar", "Mujibnagar"],
-  Narail: ["Kalia", "Lohagara", "Narail Sadar"],
-  Chuadanga: ["Alamdanga", "Chuadanga Sadar", "Damurhuda", "Jibannagar"],
-  Kushtia: [
-    "Bheramara",
-    "Daulatpur",
-    "Khoksa",
-    "Kumarkhali",
-    "Kushtia Sadar",
-    "Mirpur",
-  ],
-  Magura: ["Magura Sadar", "Mohammadpur", "Shalikha", "Sreepur"],
-  Khulna: [
-    "Botiaghata",
-    "Dakop",
-    "Digholia",
-    "Dumuria",
-    "Fultola",
-    "Koyra",
-    "Paikgasa",
-    "Rupsha",
-    "Terokhada",
-  ],
-  Bagerhat: [
-    "Bagerhat Sadar",
-    "Chitalmari",
-    "Fakirhat",
-    "Kachua",
-    "Mollahat",
-    "Mongla",
-    "Morrelganj",
-    "Rampal",
-    "Sarankhola",
-  ],
-  Jhenaidah: [
-    "Harinakundu",
-    "Jhenaidah Sadar",
-    "Kaliganj",
-    "Kotchandpur",
-    "Moheshpur",
-    "Shailkupa",
-  ],
-  Jhalokati: ["Jhalakathi Sadar", "Kathalia", "Nalchity", "Rajapur"],
-  Patuakhali: [
-    "Bauphal",
-    "Dashmina",
-    "Dumki",
-    "Galachipa",
-    "Kalapara",
-    "Mirzaganj",
-    "Patuakhali Sadar",
-    "Rangabali",
-  ],
-  Pirojpur: [
-    "Bhandaria",
-    "Indurkani",
-    "Kawkhali",
-    "Mathbaria",
-    "Nazirpur",
-    "Nesarabad",
-    "Pirojpur Sadar",
-  ],
-  Barishal: [
-    "Agailjhara",
-    "Babuganj",
-    "Bakerganj",
-    "Banaripara",
-    "Barisal Sadar",
-    "Gournadi",
-    "Hizla",
-    "Mehendiganj",
-    "Muladi",
-    "Wazirpur",
-  ],
-  Bhola: [
-    "Bhola Sadar",
-    "Borhanuddin",
-    "Charfesson",
-    "Doulatkhan",
-    "Lalmohan",
-    "Monpura",
-    "Tazumuddin",
-  ],
-  Barguna: [
-    "Amtali",
-    "Bamna",
-    "Barguna Sadar",
-    "Betagi",
-    "Pathorghata",
-    "Taltali",
-  ],
-  Sylhet: [
-    "Balaganj",
-    "Beanibazar",
-    "Bishwanath",
-    "Companiganj",
-    "Dakshinsurma",
-    "Fenchuganj",
-    "Golapganj",
-    "Gowainghat",
-    "Jaintiapur",
-    "Kanaighat",
-    "Osmaninagar",
-    "Sylhet Sadar",
-    "Zakiganj",
-  ],
-  Moulvibazar: [
-    "Barlekha",
-    "Juri",
-    "Kamolganj",
-    "Kulaura",
-    "Moulvibazar Sadar",
-    "Rajnagar",
-    "Sreemangal",
-  ],
-  Habiganj: [
-    "Ajmiriganj",
-    "Bahubal",
-    "Baniachong",
-    "Chunarughat",
-    "Habiganj Sadar",
-    "Lakhai",
-    "Madhabpur",
-    "Nabiganj",
-    "Shaistaganj",
-  ],
-  Sunamganj: [
-    "Bishwambarpur",
-    "Chhatak",
-    "Derai",
-    "Dharmapasha",
-    "Dowarabazar",
-    "Jagannathpur",
-    "Jamalganj",
-    "Madhyanagar",
-    "Shalla",
-    "Shantiganj",
-    "Sunamganj Sadar",
-    "Tahirpur",
-  ],
-  Narsingdi: [
-    "Belabo",
-    "Monohardi",
-    "Narsingdi Sadar",
-    "Palash",
-    "Raipura",
-    "Shibpur",
-  ],
-  Gazipur: ["Gazipur Sadar", "Kaliakair", "Kaliganj", "Kapasia", "Sreepur"],
-  Shariatpur: [
-    "Bhedarganj",
-    "Damudya",
-    "Gosairhat",
-    "Naria",
-    "Shariatpur Sadar",
-    "Zajira",
-  ],
-  Narayanganj: [
-    "Araihazar",
-    "Bandar",
-    "Narayanganj Sadar",
-    "Rupganj",
-    "Sonargaon",
-  ],
-  Tangail: [
-    "Basail",
-    "Bhuapur",
-    "Delduar",
-    "Dhanbari",
-    "Ghatail",
-    "Gopalpur",
-    "Kalihati",
-    "Madhupur",
-    "Mirzapur",
-    "Nagarpur",
-    "Sakhipur",
-    "Tangail Sadar",
-  ],
-  Kishoreganj: [
-    "Austagram",
-    "Bajitpur",
-    "Bhairab",
-    "Hossainpur",
-    "Itna",
-    "Karimgonj",
-    "Katiadi",
-    "Kishoreganj Sadar",
-    "Kuliarchar",
-    "Mithamoin",
-    "Nikli",
-    "Pakundia",
-    "Tarail",
-  ],
-  Manikganj: [
-    "Doulatpur",
-    "Gior",
-    "Harirampur",
-    "Manikganj Sadar",
-    "Saturia",
-    "Shibaloy",
-    "Singiar",
-  ],
-  Dhaka: ["Dhamrai", "Dohar", "Keraniganj", "Nawabganj", "Savar"],
-  Munshiganj: [
-    "Gajaria",
-    "Louhajanj",
-    "Munshiganj Sadar",
-    "Sirajdikhan",
-    "Sreenagar",
-    "Tongibari",
-  ],
-  Rajbari: ["Baliakandi", "Goalanda", "Kalukhali", "Pangsa", "Rajbari Sadar"],
-  Madaripur: ["Dasar", "Kalkini", "Madaripur Sadar", "Rajoir", "Shibchar"],
-  Gopalganj: [
-    "Gopalganj Sadar",
-    "Kashiani",
-    "Kotalipara",
-    "Muksudpur",
-    "Tungipara",
-  ],
-  Faridpur: [
-    "Alfadanga",
-    "Bhanga",
-    "Boalmari",
-    "Charbhadrasan",
-    "Faridpur Sadar",
-    "Madhukhali",
-    "Nagarkanda",
-    "Sadarpur",
-    "Saltha",
-  ],
-  Panchagarh: ["Atwari", "Boda", "Debiganj", "Panchagarh Sadar", "Tetulia"],
-  Dinajpur: [
-    "Birampur",
-    "Birganj",
-    "Birol",
-    "Bochaganj",
-    "Chirirbandar",
-    "Dinajpur Sadar",
-    "Fulbari",
-    "Ghoraghat",
-    "Hakimpur",
-    "Kaharol",
-    "Khansama",
-    "Nawabganj",
-    "Parbatipur",
-  ],
-  Lalmonirhat: [
-    "Aditmari",
-    "Hatibandha",
-    "Kaliganj",
-    "Lalmonirhat Sadar",
-    "Patgram",
-  ],
-  Nilphamari: [
-    "Dimla",
-    "Domar",
-    "Jaldhaka",
-    "Kishorganj",
-    "Nilphamari Sadar",
-    "Syedpur",
-  ],
-  Gaibandha: [
-    "Gaibandha Sadar",
-    "Gobindaganj",
-    "Palashbari",
-    "Phulchari",
-    "Sadullapur",
-    "Saghata",
-    "Sundarganj",
-  ],
-  Thakurgaon: [
-    "Baliadangi",
-    "Haripur",
-    "Pirganj",
-    "Ranisankail",
-    "Thakurgaon Sadar",
-  ],
-  Rangpur: [
-    "Badargonj",
-    "Gangachara",
-    "Kaunia",
-    "Mithapukur",
-    "Pirgacha",
-    "Pirgonj",
-    "Rangpur Sadar",
-    "Taragonj",
-  ],
-  Kurigram: [
-    "Bhurungamari",
-    "Charrajibpur",
-    "Chilmari",
-    "Kurigram Sadar",
-    "Nageshwari",
-    "Phulbari",
-    "Rajarhat",
-    "Rowmari",
-    "Ulipur",
-  ],
-  Sherpur: ["Jhenaigati", "Nalitabari", "Nokla", "Sherpur Sadar", "Sreebordi"],
-  Mymensingh: [
-    "Bhaluka",
-    "Dhobaura",
-    "Fulbaria",
-    "Gafargaon",
-    "Gouripur",
-    "Haluaghat",
-    "Iswarganj",
-    "Muktagacha",
-    "Mymensingh Sadar",
-    "Nandail",
-    "Phulpur",
-    "Tarakanda",
-    "Trishal",
-  ],
-  Jamalpur: [
-    "Bokshiganj",
-    "Dewangonj",
-    "Islampur",
-    "Jamalpur Sadar",
-    "Madarganj",
-    "Melandah",
-    "Sarishabari",
-  ],
-  Netrokona: [
-    "Atpara",
-    "Barhatta",
-    "Durgapur",
-    "Kalmakanda",
-    "Kendua",
-    "Khaliajuri",
-    "Madan",
-    "Mohongonj",
-    "Netrokona Sadar",
-    "Purbadhala",
-  ],
-};
 
-const getAddressLocation = (form) =>
-  [form.division, form.district, form.subDistrict].filter(Boolean).join(", ");
-
-/* ─── sub-components ──────────────────────────────────────── */
 const StepBadge = ({ number, label, active, done }) => (
   <div className="flex items-center gap-2">
     <div
@@ -807,7 +171,6 @@ const Select = ({
   );
 };
 
-/* ─── main component ──────────────────────────────────────── */
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems } = useCart();
@@ -823,8 +186,12 @@ const Checkout = () => {
     amount: "",
   });
   const [voucherCode, setVoucherCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponData, setCouponData] = useState(null);   // applied coupon info
+  const [couponError, setCouponError] = useState("");   // error message
   const [saveAddress, setSaveAddress] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [orderLoading, setOrderLoading] = useState(false);
 
   const [apiDivisions, setApiDivisions] = useState([]);
   const [apiDistricts, setApiDistricts] = useState([]);
@@ -904,12 +271,29 @@ const Checkout = () => {
       ),
     [cartItems],
   );
-  const shipping = 0;
-  const discount = 0;
+  const shipping = useMemo(() => {
+    if (!form.district) return 120;
+    const dName = String(form.district).toLowerCase();
+    const sName = String(form.subDistrict).toLowerCase();
+    if (dName.includes("kishoreganj")) {
+      if (sName.includes("sadar")) return 0;
+      return 60;
+    }
+    return 120;
+  }, [form.district, form.subDistrict]);
+
+  // Compute discount from applied coupon
+  const discount = useMemo(() => {
+    if (!couponData) return 0;
+    if (couponData.discount_type === "percentage") {
+      return Math.round((subtotal * couponData.discount_amount) / 100);
+    }
+    // flat / fixed amount
+    return Math.min(couponData.discount_amount, subtotal);
+  }, [couponData, subtotal]);
   const total = subtotal + shipping - discount;
   const currencySymbol =
-    getCurrencySymbol(cartItems[0]?.price || "") ||
-    computeCartTotals(cartItems).currencySymbol;
+    config?.currency_symbol || config?.currency || "৳";
 
   const deliveryStepComplete = Boolean(
     form.fullName.trim() &&
@@ -936,6 +320,40 @@ const Checkout = () => {
     }));
   };
 
+  const handleApplyCoupon = async () => {
+    const code = voucherCode.trim();
+    if (!code) return;
+    setCouponError("");
+    setCouponData(null);
+    setCouponLoading(true);
+    try {
+      const { ok, data } = await apiValidateCoupon(code, subtotal);
+      if (ok && data) {
+        setCouponData(data);
+        toast.success(`Coupon "${code}" applied!`);
+      } else {
+        const msg =
+          data?.detail ||
+          data?.non_field_errors?.[0] ||
+          (typeof data === "string" ? data : null) ||
+          "Invalid or expired coupon code.";
+        setCouponError(Array.isArray(msg) ? msg[0] : msg);
+        toast.error(Array.isArray(msg) ? msg[0] : msg);
+      }
+    } catch {
+      setCouponError("Failed to validate coupon. Please try again.");
+      toast.error("Failed to validate coupon.");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponData(null);
+    setCouponError("");
+    setVoucherCode("");
+  };
+
   const updatePaymentDetails = (field, value) => {
     setPaymentDetails((c) => ({ ...c, [field]: value }));
   };
@@ -954,7 +372,7 @@ const Checkout = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!cartItems.length) return toast.error("Your cart is empty.");
     if (!form.fullName.trim())
@@ -985,10 +403,14 @@ const Checkout = () => {
       save_address: saveAddress,
     };
 
-    placeOrder(cartItems, payload);
+    setOrderLoading(true);
+    try {
+      await placeOrder(cartItems, payload);
+    } finally {
+      setOrderLoading(false);
+    }
   };
 
-  /* ── empty cart ── */
   if (cartItems.length === 0) {
     return (
       <section className="flex min-h-[72vh] items-center justify-center bg-gray-50/30 px-4">
@@ -1021,7 +443,7 @@ const Checkout = () => {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 gap-6 lg:grid-cols-12"
         >
-          {/* ── LEFT column ── */}
+          {/*  LEFT column  */}
           <div className="space-y-5 lg:col-span-7">
             {/* delivery section */}
             <div className="card-hover overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm fade-in-up delay-1">
@@ -1087,7 +509,7 @@ const Checkout = () => {
                             )}
                           </div>
                           <p className="mt-1.5 text-xs font-medium text-zinc-600">
-                            {addr.full_name} · {addr.phone}
+                            {addr.full_name} Â· {addr.phone}
                           </p>
                           <p className="mt-0.5 text-xs text-zinc-400">
                             {addr.address}, {addr.sub_district}, {addr.district}
@@ -1179,7 +601,7 @@ const Checkout = () => {
                       onChange={(e) =>
                         updateForm("addressLine", e.target.value)
                       }
-                      placeholder="House no., road, area, landmark…"
+                      placeholder="House no., road, area, landmark..."
                       className="min-h-[100px]"
                     />
                   </div>
@@ -1193,7 +615,7 @@ const Checkout = () => {
                     <Textarea
                       value={form.note}
                       onChange={(e) => updateForm("note", e.target.value)}
-                      placeholder="Preferred delivery time, special instructions…"
+                      placeholder="Preferred delivery time, special instructions..."
                       className="min-h-[80px]"
                     />
                   </div>
@@ -1389,7 +811,7 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* ── RIGHT column / order summary ── */}
+          {/*  RIGHT column / order summary  */}
           <aside className="lg:col-span-5">
             <div className="card-hover overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm fade-in-up delay-1 lg:sticky lg:top-28">
               {/* header */}
@@ -1434,9 +856,16 @@ const Checkout = () => {
                         </span>
                       </div>
                       <div className="flex flex-1 items-center justify-between gap-2 min-w-0">
-                        <p className="line-clamp-2 text-xs font-semibold text-zinc-800">
-                          {item.name}
-                        </p>
+                        <div>
+                          <p className="line-clamp-2 text-xs font-semibold text-zinc-800">
+                            {item.name}
+                          </p>
+                          {item.variant_name && (
+                            <span className="inline-block mt-0.5 px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded text-[10px] font-semibold">
+                              {item.variant_name}
+                            </span>
+                          )}
+                        </div>
                         <p className="shrink-0 text-sm font-black text-primary">
                           {formatWithSymbol(price * qty, currencySymbol)}
                         </p>
@@ -1456,30 +885,73 @@ const Checkout = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-zinc-500">Delivery charge</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700">
-                    <Truck className="h-3 w-3" /> Free
+                  <span className="font-bold text-zinc-800">
+                    {shipping > 0 ? (
+                      `+ ${formatWithSymbol(shipping, currencySymbol)}`
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700">
+                        <Truck className="h-3 w-3" /> Free
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-zinc-500">Discount</span>
-                  <span className="font-bold text-zinc-800">
-                    {formatWithSymbol(discount, currencySymbol)}
+                  <span className={`font-bold ${discount > 0 ? "text-emerald-600" : "text-zinc-800"}`}>
+                    {discount > 0 ? `- ${formatWithSymbol(discount, currencySymbol)}` : formatWithSymbol(0, currencySymbol)}
                   </span>
                 </div>
+
+                {/* Applied coupon badge */}
+                {couponData && (
+                  <div className="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        {voucherCode.toUpperCase()}
+                      </span>
+                      <span className="text-xs text-emerald-700 font-medium">
+                        {couponData.discount_type === "percentage"
+                          ? `${couponData.discount_amount}% off`
+                          : `${formatWithSymbol(couponData.discount_amount, currencySymbol)} off`}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-xs text-red-400 hover:text-red-600 font-semibold transition cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+
                 <div className="flex gap-2 border-b border-zinc-200 pb-4">
                   <input
                     value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value)}
+                    onChange={(e) => { setVoucherCode(e.target.value); setCouponError(""); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                     placeholder="Have a voucher code?"
-                    className="h-11 min-w-0 flex-1 rounded-lg border border-primary bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-primary/20"
+                    disabled={!!couponData || couponLoading}
+                    className="h-11 min-w-0 flex-1 rounded-lg border border-primary bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-primary/20 disabled:opacity-60 disabled:cursor-not-allowed"
                   />
                   <button
                     type="button"
-                    className="h-11 shrink-0 cursor-pointer rounded-lg bg-primary px-5 text-sm font-bold text-white transition hover:bg-primary/90 active:scale-[0.98]"
+                    onClick={handleApplyCoupon}
+                    disabled={couponLoading || !!couponData || !voucherCode.trim()}
+                    className="h-11 shrink-0 cursor-pointer rounded-lg bg-primary px-5 text-sm font-bold text-white transition hover:bg-primary/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 flex items-center gap-1.5"
                   >
-                    Apply
+                    {couponLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : couponData ? (
+                      "Applied ✓"
+                    ) : (
+                      "Apply"
+                    )}
                   </button>
                 </div>
+                {couponError && (
+                  <p className="-mt-2 text-xs text-red-500 font-medium">{couponError}</p>
+                )}
                 <div className="flex items-center justify-between rounded-2xl bg-primary/5 px-4 py-3.5">
                   <span className="font-bold text-primary">Total</span>
                   <span className="text-2xl font-black tracking-tight text-primary">
@@ -1492,13 +964,23 @@ const Checkout = () => {
               <div className="px-6 pb-6">
                 <button
                   type="submit"
-                  className="group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-primary px-6 py-4 text-sm font-black text-white shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-primary/50 active:scale-[0.98]"
+                  disabled={orderLoading}
+                  className="group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-primary px-6 py-4 text-sm font-black text-white shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-primary/50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <span className="absolute inset-0 -translate-x-full skew-x-[-15deg] bg-white/10 transition-transform duration-500 group-hover:translate-x-full" />
                   <span className="relative flex items-center justify-center gap-2">
-                    <PackageCheck className="h-5 w-5" />
-                    Place Order
-                    <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    {orderLoading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Placing Order...
+                      </>
+                    ) : (
+                      <>
+                        <PackageCheck className="h-5 w-5" />
+                        Place Order
+                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </>
+                    )}
                   </span>
                 </button>
 
@@ -1519,3 +1001,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+

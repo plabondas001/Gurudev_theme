@@ -141,24 +141,20 @@ const GoogleButtonBlock = ({
           {googleClientIdEnvInvalid ? (
             <>
               <span className="font-semibold text-foreground">
-                এখনও উদাহরণ বা ভুল Client ID আছে।
+                Example or invalid Client ID detected.
               </span>{" "}
               <code className="rounded bg-background/80 px-1 py-0.5">
                 your-google-oauth…
               </code>{" "}
-              বাস্তব ID নয়। Google Cloud থেকে Web application এর Client ID
-              বসান,{" "}
-              <code className="rounded bg-background/80 px-1">npm run dev</code>{" "}
-              আবার চালান।
+              is not a valid Client ID. Please set a real Web application Client ID from Google Cloud and restart the dev server.
             </>
           ) : (
             <>
-              Google লগইন চালু করতে প্রজেক্ট রুটে{" "}
-              <code className="rounded bg-muted px-1">.env</code> এ{" "}
+              To enable Google sign-in, add{" "}
               <code className="rounded bg-muted px-1">
                 VITE_GOOGLE_CLIENT_ID
               </code>{" "}
-              যোগ করুন, তারপর ডেভ সার্ভার রিস্টার্ট করুন।
+              to your <code className="rounded bg-muted px-1">.env</code> file in the project root, then restart the dev server.
             </>
           )}{" "}
           <a
