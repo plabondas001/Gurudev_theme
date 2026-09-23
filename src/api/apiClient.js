@@ -115,6 +115,26 @@ export const apiClient = {
     },
 
     // =========================
+    // PRICE RANGE
+    // =========================
+    fetchPriceRange: async () => {
+        return request("/products/price_range/");
+    },
+
+    // =========================
+    // SEARCH AUTOCOMPLETE
+    // =========================
+    /**
+     * Lightweight autocomplete — returns [{id, name, slug}], max 10 results.
+     * Requires query to be at least 2 characters (enforced on the caller side).
+     */
+    suggestProducts: async (query) => {
+        return request("/products/suggest/", { search: query });
+    },
+
+
+
+    // =========================
     // GENERIC ENDPOINT ACCESS
     // =========================
     fetch: request,

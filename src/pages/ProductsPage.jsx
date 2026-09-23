@@ -1,354 +1,410 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { useSearchParams } from "react-router";
 import Products from "./Products";
 import apiClient from "../api/apiClient";
 
+// ---------------------------------------------------------------------------
+// FilterPanel — extracted so it can be shared between desktop sidebar and
+// mobile drawer without defining a component inside the render function.
+// ---------------------------------------------------------------------------
+const FilterPanel = ({
+  categories,
+  brands,
+  selectedCategory,
+  onCategoryChange,
+  selectedBrand,
+  onBrandChange,
+  priceRange,
+  maxPriceCeiling,
+  minPriceInput,
+  maxPriceInput,
+  onMinSliderChange,
+  onMaxSliderChange,
+  onMinInputChange,
+  onMaxInputChange,
+  onMinInputBlur,
+  onMaxInputBlur,
+  onMinInputFocus,
+  onClearFilters,
+}) => (
+  <div className="space-y-6">
+    {/* ── Category Dropdown ── */}
+    <div>
+      <h2 className="font-semibold mb-2 text-base">Category</h2>
+      <div className="relative">
+        <select
+          value={selectedCategory}
+          onChange={(e) => onCategoryChange(e.target.value)}
+          className="w-full appearance-none rounded-lg border border-gray-200 bg-white px-3 py-2.5 pr-8 text-sm text-gray-700 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer transition-colors"
+        >
+          <option value="">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.slug}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+            <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    {/* ── Brand Dropdown ── */}
+    <div>
+      <h2 className="font-semibold mb-2 text-base">Brand</h2>
+      <div className="relative">
+        <select
+          value={selectedBrand}
+          onChange={(e) => onBrandChange(e.target.value)}
+          className="w-full appearance-none rounded-lg border border-gray-200 bg-white px-3 py-2.5 pr-8 text-sm text-gray-700 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer transition-colors"
+        >
+          <option value="">All Brands</option>
+          {brands.map((brand) => (
+            <option key={brand.id} value={brand.slug}>
+              {brand.name}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+            <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    {/* ── Price Range ── */}
+    <div>
+      <h2 className="font-semibold mb-3 text-base">Price Range</h2>
+      <div className="space-y-4">
+        {/* Min */}
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Min Price</p>
+          <input
+            type="range"
+            min="0"
+            max={maxPriceCeiling}
+            step="100"
+            value={priceRange.min}
+            onChange={onMinSliderChange}
+            className="w-full cursor-pointer accent-primary"
+          />
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-sm text-gray-600 shrink-0">৳</span>
+            <input
+              type="number"
+              min={0}
+              max={priceRange.max}
+              step={100}
+              value={minPriceInput}
+              onFocus={onMinInputFocus}
+              onChange={onMinInputChange}
+              onBlur={onMinInputBlur}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+            />
+          </div>
+        </div>
+
+        {/* Max */}
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Max Price</p>
+          <input
+            type="range"
+            min="0"
+            max={maxPriceCeiling}
+            step="100"
+            value={priceRange.max}
+            onChange={onMaxSliderChange}
+            className="w-full cursor-pointer accent-primary"
+          />
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-sm text-gray-600 shrink-0">৳</span>
+            <input
+              type="number"
+              min={priceRange.min}
+              max={maxPriceCeiling}
+              step={100}
+              value={maxPriceInput}
+              onChange={onMaxInputChange}
+              onBlur={onMaxInputBlur}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      onClick={onClearFilters}
+      className="w-full bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg py-2 text-sm font-medium cursor-pointer"
+    >
+      Clear Filters
+    </button>
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// ProductsPage
+// ---------------------------------------------------------------------------
 const ProductsPage = () => {
-  const { categorySlug, brandSlug } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 50000 });
-  const [minPriceInput, setMinPriceInput] = useState("0");
-  const [maxPriceInput, setMaxPriceInput] = useState("50000");
+  const [maxPriceCeiling, setMaxPriceCeiling] = useState(50000);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  const [filteredCatalogProducts, setFilteredCatalogProducts] = useState([]);
+  // ── Filter state — initialised from URL ──
+  const [selectedCategory, setSelectedCategory] = useState(
+    searchParams.get("category") || ""
+  );
+  const [selectedBrand, setSelectedBrand] = useState(
+    searchParams.get("brand") || ""
+  );
+  const [priceRange, setPriceRange] = useState({
+    min: Number(searchParams.get("min_price") || 0),
+    max: Number(searchParams.get("max_price") || 50000),
+  });
+  const [minPriceInput, setMinPriceInput] = useState(
+    searchParams.get("min_price") || "0"
+  );
+  const [maxPriceInput, setMaxPriceInput] = useState(
+    searchParams.get("max_price") || "50000"
+  );
 
+  // ── Load categories, brands, and real price ceiling ──
   useEffect(() => {
-    const loadFilterOptions = async () => {
+    const load = async () => {
       try {
-        const [categoriesData, brandsData] = await Promise.all([
+        const [categoriesData, brandsData, priceData] = await Promise.all([
           apiClient.fetchCategories(),
           apiClient.fetchBrands(),
+          apiClient.fetchPriceRange(),
         ]);
         setCategories(categoriesData || []);
         setBrands(brandsData || []);
-      } catch (error) {
-        console.error("Error loading filter options:", error);
-      }
-    };
 
-    loadFilterOptions();
-  }, []);
-
-  // Fetch products matching selected category or brand to cross-filter available sidebar options
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCatalogForFilter = async () => {
-      if (!selectedCategories.length && !selectedBrands.length) {
-        if (isMounted) setFilteredCatalogProducts([]);
-        return;
-      }
-
-      try {
-        const queryParams = { page_size: 100 };
-        if (selectedCategories.length) {
-          queryParams.category = selectedCategories.join(",");
-        }
-        if (selectedBrands.length) {
-          queryParams.brand = selectedBrands.join(",");
-        }
-        const data = await apiClient.fetchProducts(queryParams);
-        if (isMounted) {
-          const list = Array.isArray(data) ? data : data?.results || [];
-          setFilteredCatalogProducts(list);
+        if (priceData?.max) {
+          // Round ceiling up to nearest 1 000 for a clean slider
+          const ceil = Math.ceil(priceData.max / 1000) * 1000;
+          setMaxPriceCeiling(ceil);
+          // Only set defaults when the URL doesn't already specify a max
+          if (!searchParams.get("max_price")) {
+            setPriceRange((prev) => ({ ...prev, max: ceil }));
+            setMaxPriceInput(String(ceil));
+          }
         }
       } catch (err) {
-        console.error("Error fetching catalog for filter:", err);
+        console.error("Error loading filter options:", err);
       }
     };
+    load();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    fetchCatalogForFilter();
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedCategories, selectedBrands]);
+  const searchQuery = searchParams.get("search") || "";
 
-  // Pre-select category if categorySlug is passed in URL
-  useEffect(() => {
-    if (!categorySlug || !categories.length) return;
-    const match = categories.find(
-      (c) => c.slug?.toLowerCase() === categorySlug.toLowerCase() || String(c.id) === String(categorySlug)
-    );
-    if (match) {
-      setSelectedCategories([match.id]);
-    }
-  }, [categorySlug, categories]);
-
-  // Pre-select brand if brandSlug is passed in URL
-  useEffect(() => {
-    if (!brandSlug || !brands.length) return;
-    const match = brands.find(
-      (b) => b.slug?.toLowerCase() === brandSlug.toLowerCase() || String(b.id) === String(brandSlug)
-    );
-    if (match) {
-      setSelectedBrands([match.id]);
-    }
-  }, [brandSlug, brands]);
-
-  // Filter categories to show ONLY those available under the selected brand
-  const visibleCategories = useMemo(() => {
-    if (!selectedBrands.length) {
-      return categories;
-    }
-    const catIdentifiers = new Set();
-    filteredCatalogProducts.forEach((p) => {
-      const cId = p.category?.id ?? p.category;
-      const cSlug = p.category?.slug;
-      if (cId !== undefined && cId !== null) catIdentifiers.add(String(cId));
-      if (cSlug) catIdentifiers.add(String(cSlug).toLowerCase());
-    });
-
-    return categories.filter(
-      (c) =>
-        catIdentifiers.has(String(c.id)) ||
-        (c.slug && catIdentifiers.has(String(c.slug).toLowerCase()))
-    );
-  }, [categories, selectedBrands, filteredCatalogProducts]);
-
-  // Filter brands to show ONLY those available under the selected category
-  const visibleBrands = useMemo(() => {
-    if (!selectedCategories.length) {
-      return brands;
-    }
-    const brandIdentifiers = new Set();
-    filteredCatalogProducts.forEach((p) => {
-      const bId = p.brand?.id ?? p.brand;
-      const bSlug = p.brand?.slug;
-      if (bId !== undefined && bId !== null) brandIdentifiers.add(String(bId));
-      if (bSlug) brandIdentifiers.add(String(bSlug).toLowerCase());
-    });
-
-    return brands.filter(
-      (b) =>
-        brandIdentifiers.has(String(b.id)) ||
-        (b.slug && brandIdentifiers.has(String(b.slug).toLowerCase()))
-    );
-  }, [brands, selectedCategories, filteredCatalogProducts]);
-
-  const filterValues = useMemo(
-    () => ({
-      categories: selectedCategories,
-      brands: selectedBrands,
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
-    }),
-    [selectedCategories, selectedBrands, priceRange.min, priceRange.max],
+  // ── Sync filters → URL ──
+  const updateURL = useCallback(
+    (cat, brand, minP, maxP, ceil, search) => {
+      const p = {};
+      if (search) p.search = search;
+      if (cat) p.category = cat;
+      if (brand) p.brand = brand;
+      if (minP > 0) p.min_price = String(minP);
+      if (maxP < ceil) p.max_price = String(maxP);
+      setSearchParams(p, { replace: true });
+    },
+    [setSearchParams]
   );
 
-  const selectSingle = (value, setSelectedValues) => {
-    setSelectedValues((prev) => (prev.includes(value) ? [] : [value]));
-  };
+  useEffect(() => {
+    updateURL(
+      selectedCategory,
+      selectedBrand,
+      priceRange.min,
+      priceRange.max,
+      maxPriceCeiling,
+      searchQuery
+    );
+  }, [
+    selectedCategory,
+    selectedBrand,
+    priceRange.min,
+    priceRange.max,
+    maxPriceCeiling,
+    searchQuery,
+    updateURL,
+  ]);
 
-  const MAX_PRICE_CEILING = 100000;
+  // ── API params passed to <Products> ──
+  const apiParams = useMemo(() => {
+    const p = {};
+    if (searchQuery) p["search"] = searchQuery;
+    if (selectedCategory) p["category__slug"] = selectedCategory;
+    if (selectedBrand) p["brand__slug"] = selectedBrand;
+    if (priceRange.min > 0) p["price__gte"] = priceRange.min;
+    if (priceRange.max < maxPriceCeiling) p["price__lte"] = priceRange.max;
+    return p;
+  }, [
+    searchQuery,
+    selectedCategory,
+    selectedBrand,
+    priceRange.min,
+    priceRange.max,
+    maxPriceCeiling,
+  ]);
 
-  const clampMinPrice = (value, max) =>
+  // ── Price helpers ──
+  const clampMin = (value, max) =>
     Math.min(Math.max(0, Math.round(value)), max);
+  const clampMax = (value, min) =>
+    Math.min(Math.max(min, Math.round(value)), maxPriceCeiling);
 
-  const clampMaxPrice = (value, min) =>
-    Math.min(Math.max(min, Math.round(value)), MAX_PRICE_CEILING);
-
-  const clearFilters = () => {
-    setSelectedCategories([]);
-    setSelectedBrands([]);
-    setPriceRange({ min: 0, max: 50000 });
+  const clearFilters = useCallback(() => {
+    setSelectedCategory("");
+    setSelectedBrand("");
+    setPriceRange({ min: 0, max: maxPriceCeiling });
     setMinPriceInput("0");
-    setMaxPriceInput("50000");
+    setMaxPriceInput(String(maxPriceCeiling));
+    setSearchParams({}, { replace: true });
+  }, [maxPriceCeiling, setSearchParams]);
+
+  // ── Active filter chips ──
+  const activeFilters = useMemo(() => {
+    const chips = [];
+    if (searchQuery) {
+      chips.push({
+        key: "search",
+        label: `Search: "${searchQuery}"`,
+        onRemove: () => {
+          updateURL(
+            selectedCategory,
+            selectedBrand,
+            priceRange.min,
+            priceRange.max,
+            maxPriceCeiling,
+            ""
+          );
+        },
+      });
+    }
+    if (selectedCategory) {
+      const cat = categories.find((c) => c.slug === selectedCategory);
+      if (cat)
+        chips.push({
+          key: "category",
+          label: cat.name,
+          onRemove: () => setSelectedCategory(""),
+        });
+    }
+    if (selectedBrand) {
+      const brand = brands.find((b) => b.slug === selectedBrand);
+      if (brand)
+        chips.push({
+          key: "brand",
+          label: brand.name,
+          onRemove: () => setSelectedBrand(""),
+        });
+    }
+    const priceActive =
+      priceRange.min > 0 || priceRange.max < maxPriceCeiling;
+    if (priceActive) {
+      chips.push({
+        key: "price",
+        label: `৳${priceRange.min.toLocaleString()} – ৳${priceRange.max.toLocaleString()}`,
+        onRemove: () => {
+          setPriceRange({ min: 0, max: maxPriceCeiling });
+          setMinPriceInput("0");
+          setMaxPriceInput(String(maxPriceCeiling));
+        },
+      });
+    }
+    return chips;
+  }, [
+    searchQuery,
+    selectedCategory,
+    selectedBrand,
+    priceRange,
+    categories,
+    brands,
+    maxPriceCeiling,
+    updateURL,
+  ]);
+
+  // ── Shared panel props ──
+  const panelProps = {
+    categories,
+    brands,
+    selectedCategory,
+    onCategoryChange: setSelectedCategory,
+    selectedBrand,
+    onBrandChange: setSelectedBrand,
+    priceRange,
+    maxPriceCeiling,
+    minPriceInput,
+    maxPriceInput,
+    onMinSliderChange: (e) => {
+      const v = Math.min(Number(e.target.value), priceRange.max);
+      setPriceRange((prev) => ({ ...prev, min: v }));
+      setMinPriceInput(String(v));
+    },
+    onMaxSliderChange: (e) => {
+      const v = Math.max(Number(e.target.value), priceRange.min);
+      setPriceRange((prev) => ({ ...prev, max: v }));
+      setMaxPriceInput(String(v));
+    },
+    onMinInputFocus: () => {
+      if (priceRange.min === 0 && minPriceInput === "0") setMinPriceInput("");
+    },
+    onMinInputChange: (e) => {
+      const raw = e.target.value;
+      setMinPriceInput(raw);
+      if (raw === "") return;
+      const n = Number(raw);
+      if (Number.isNaN(n)) return;
+      setPriceRange((prev) => ({ ...prev, min: clampMin(n, prev.max) }));
+    },
+    onMaxInputChange: (e) => {
+      const raw = e.target.value;
+      setMaxPriceInput(raw);
+      if (raw === "") return;
+      const n = Number(raw);
+      if (Number.isNaN(n)) return;
+      setPriceRange((prev) => ({ ...prev, max: clampMax(n, prev.min) }));
+    },
+    onMinInputBlur: () => {
+      if (minPriceInput === "") setMinPriceInput(String(priceRange.min));
+    },
+    onMaxInputBlur: () => {
+      if (maxPriceInput === "") setMaxPriceInput(String(priceRange.max));
+    },
+    onClearFilters: clearFilters,
   };
 
   return (
     <div className="w-full px-4 md:px-8 lg:px-12 my-8">
       <div className="flex flex-col lg:flex-row gap-6">
+        {/* ── Desktop sidebar ── */}
         <aside className="hidden lg:block w-full lg:w-[280px] bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-6 h-fit sticky top-24">
           <h1 className="text-2xl font-bold">Filter</h1>
-
-          <div>
-            <h2 className="font-semibold mb-3 text-lg">Categories</h2>
-            <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
-              {visibleCategories.length > 0 ? (
-                visibleCategories.map((category) => (
-                  <label
-                    key={category.id}
-                    className="flex items-center gap-2 text-sm cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="desktop_category"
-                      checked={selectedCategories.includes(category.id)}
-                      onChange={() => selectSingle(category.id, setSelectedCategories)}
-                      onClick={() => {
-                        if (selectedCategories.includes(category.id)) {
-                          setSelectedCategories([]);
-                        }
-                      }}
-                      className="cursor-pointer accent-primary"
-                    />
-                    <span>{category.name}</span>
-                  </label>
-                ))
-              ) : (
-                <p className="text-xs text-gray-500 italic">No available categories</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="font-semibold mb-3 text-lg">Brands</h2>
-            <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100  text-primary p-4 rounded-lg">
-              {visibleBrands.length > 0 ? (
-                visibleBrands.map((brand) => (
-                  <label
-                    key={brand.id}
-                    className="flex items-center gap-2 text-sm cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="desktop_brand"
-                      checked={selectedBrands.includes(brand.id)}
-                      onChange={() => selectSingle(brand.id, setSelectedBrands)}
-                      onClick={() => {
-                        if (selectedBrands.includes(brand.id)) {
-                          setSelectedBrands([]);
-                        }
-                      }}
-                      className="cursor-pointer accent-primary"
-                    />
-                    <span>{brand.name}</span>
-                  </label>
-                ))
-              ) : (
-                <p className="text-xs text-gray-500 italic">No available brands</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="font-semibold mb-3">Price Range</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Min Price</p>
-                <input
-                  type="range"
-                  min="0"
-                  max={MAX_PRICE_CEILING}
-                  step="100"
-                  value={priceRange.min}
-                  onChange={(e) => {
-                    const nextMin = Math.min(
-                      Number(e.target.value),
-                      priceRange.max,
-                    );
-                    setPriceRange((prev) => ({
-                      ...prev,
-                      min: nextMin,
-                    }));
-                    setMinPriceInput(String(nextMin));
-                  }}
-                  className="w-full cursor-pointer accent-primary"
-                />
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-sm text-gray-600 shrink-0">৳</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={priceRange.max}
-                    step={100}
-                    value={minPriceInput}
-                    onFocus={() => {
-                      if (priceRange.min === 0 && minPriceInput === "0") {
-                        setMinPriceInput("");
-                      }
-                    }}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      setMinPriceInput(raw);
-                      if (raw === "") return;
-                      const n = Number(raw);
-                      if (Number.isNaN(n)) return;
-                      setPriceRange((prev) => ({
-                        ...prev,
-                        min: clampMinPrice(n, prev.max),
-                      }));
-                    }}
-                    onBlur={() => {
-                      if (minPriceInput === "") {
-                        setMinPriceInput(String(priceRange.min));
-                      }
-                    }}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Max Price</p>
-                <input
-                  type="range"
-                  min="0"
-                  max={MAX_PRICE_CEILING}
-                  step="100"
-                  value={priceRange.max}
-                  onChange={(e) => {
-                    const nextMax = Math.max(
-                      Number(e.target.value),
-                      priceRange.min,
-                    );
-                    setPriceRange((prev) => ({
-                      ...prev,
-                      max: nextMax,
-                    }));
-                    setMaxPriceInput(String(nextMax));
-                  }}
-                  className="w-full cursor-pointer accent-primary"
-                />
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-sm text-gray-600 shrink-0">৳</span>
-                  <input
-                    type="number"
-                    min={priceRange.min}
-                    max={MAX_PRICE_CEILING}
-                    step={100}
-                    value={maxPriceInput}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      setMaxPriceInput(raw);
-                      if (raw === "") return;
-                      const n = Number(raw);
-                      if (Number.isNaN(n)) return;
-                      setPriceRange((prev) => ({
-                        ...prev,
-                        max: clampMaxPrice(n, prev.min),
-                      }));
-                    }}
-                    onBlur={() => {
-                      if (maxPriceInput === "") {
-                        setMaxPriceInput(String(priceRange.max));
-                      }
-                    }}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={clearFilters}
-            className="w-full bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg py-2 text-sm font-medium cursor-pointer"
-          >
-            Clear Filters
-          </button>
+          <FilterPanel {...panelProps} />
         </aside>
 
+        {/* ── Product grid ── */}
         <div className="flex-1">
           <div className="mb-2 flex items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold text-gray-700">Products</h2>
+            <h2 className="text-2xl font-bold text-gray-700">
+              {searchQuery ? `Search results for "${searchQuery}"` : "Products"}
+            </h2>
+
+            {/* Mobile filter button */}
             <button
               type="button"
               onClick={() => setIsMobileFilterOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white text-primary px-3 py-2 text-sm font-medium text-gray-700 shadow-sm cursor-pointer"
+              className="lg:hidden inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white text-primary px-3 py-2 text-sm font-medium shadow-sm cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -356,24 +412,64 @@ const ProductsPage = () => {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="h-4 w-4 text-primary"
+                className="h-4 w-4"
               >
                 <path d="M3 5h18M6 12h12M10 19h4" />
               </svg>
               Filter
+              {activeFilters.length > 0 && (
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                  {activeFilters.length}
+                </span>
+              )}
             </button>
           </div>
-          <div>
-            <Products filters={filterValues} isFilterLayout />
-          </div>
+
+          {/* ── Active filter chips ── */}
+          {activeFilters.length > 0 && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {activeFilters.map((chip) => (
+                <span
+                  key={chip.key}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                >
+                  {chip.label}
+                  <button
+                    onClick={chip.onRemove}
+                    aria-label={`Remove ${chip.label} filter`}
+                    className="rounded-full hover:bg-primary/20 p-0.5 transition-colors cursor-pointer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      className="h-3 w-3"
+                    >
+                      <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
+                    </svg>
+                  </button>
+                </span>
+              ))}
+              <button
+                onClick={clearFilters}
+                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2 cursor-pointer transition-colors"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+
+          <Products params={apiParams} isFilterLayout />
         </div>
       </div>
 
+      {/* ── Mobile filter drawer ── */}
       <div
         className={`fixed inset-0 z-50 lg:hidden ${
           isMobileFilterOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
       >
+        {/* Backdrop */}
         <button
           type="button"
           aria-label="Close filter drawer"
@@ -382,209 +478,33 @@ const ProductsPage = () => {
           }`}
           onClick={() => setIsMobileFilterOpen(false)}
         />
+
+        {/* Drawer panel */}
         <aside
-          className={`absolute right-0 top-0 h-full w-[60%] max-w-sm overflow-y-auto bg-white p-4 shadow-xl transform transition-transform duration-400 ease-out ${
+          className={`absolute right-0 top-0 h-full w-[70%] max-w-sm overflow-y-auto bg-white p-4 shadow-xl transform transition-transform duration-300 ease-out ${
             isMobileFilterOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-            <div className="mb-4 flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Filter</h1>
-              <button
-                type="button"
-                className="rounded-md p-1 text-gray-600 cursor-pointer"
-                onClick={() => setIsMobileFilterOpen(false)}
+          <div className="mb-5 flex items-center justify-between">
+            <h1 className="text-xl font-bold">Filter</h1>
+            <button
+              type="button"
+              className="rounded-md p-1 text-gray-500 hover:text-gray-800 cursor-pointer transition-colors"
+              onClick={() => setIsMobileFilterOpen(false)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-5 w-5"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-5 w-5 text-primary"
-                >
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <h2 className="font-semibold mb-3 text-lg">Categories</h2>
-                <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
-                  {visibleCategories.length > 0 ? (
-                    visibleCategories.map((category) => (
-                      <label
-                        key={`mobile-category-${category.id}`}
-                        className="flex items-center gap-2 text-sm cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="mobile_category"
-                          checked={selectedCategories.includes(category.id)}
-                          onChange={() => selectSingle(category.id, setSelectedCategories)}
-                          onClick={() => {
-                            if (selectedCategories.includes(category.id)) {
-                              setSelectedCategories([]);
-                            }
-                          }}
-                          className="cursor-pointer accent-primary"
-                        />
-                        <span>{category.name}</span>
-                      </label>
-                    ))
-                  ) : (
-                    <p className="text-xs text-gray-500 italic">No available categories</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h2 className="font-semibold mb-3 text-lg">Brands</h2>
-                <div className="space-y-2 max-h-44 overflow-auto pr-1 bg-gray-100 text-primary p-4 rounded-lg">
-                  {visibleBrands.length > 0 ? (
-                    visibleBrands.map((brand) => (
-                      <label
-                        key={`mobile-brand-${brand.id}`}
-                        className="flex items-center gap-2 text-sm cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="mobile_brand"
-                          checked={selectedBrands.includes(brand.id)}
-                          onChange={() => selectSingle(brand.id, setSelectedBrands)}
-                          onClick={() => {
-                            if (selectedBrands.includes(brand.id)) {
-                              setSelectedBrands([]);
-                            }
-                          }}
-                          className="cursor-pointer accent-primary"
-                        />
-                        <span>{brand.name}</span>
-                      </label>
-                    ))
-                  ) : (
-                    <p className="text-xs text-gray-500 italic">No available brands</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h2 className="font-semibold mb-3">Price Range</h2>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Min Price</p>
-                    <input
-                      type="range"
-                      min="0"
-                      max={MAX_PRICE_CEILING}
-                      step="100"
-                      value={priceRange.min}
-                      onChange={(e) => {
-                        const nextMin = Math.min(
-                          Number(e.target.value),
-                          priceRange.max,
-                        );
-                        setPriceRange((prev) => ({
-                          ...prev,
-                          min: nextMin,
-                        }));
-                        setMinPriceInput(String(nextMin));
-                      }}
-                      className="w-full cursor-pointer accent-primary"
-                    />
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-sm text-gray-600 shrink-0">৳</span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={priceRange.max}
-                        step={100}
-                        value={minPriceInput}
-                        onFocus={() => {
-                          if (priceRange.min === 0 && minPriceInput === "0") {
-                            setMinPriceInput("");
-                          }
-                        }}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          setMinPriceInput(raw);
-                          if (raw === "") return;
-                          const n = Number(raw);
-                          if (Number.isNaN(n)) return;
-                          setPriceRange((prev) => ({
-                            ...prev,
-                            min: clampMinPrice(n, prev.max),
-                          }));
-                        }}
-                        onBlur={() => {
-                          if (minPriceInput === "") {
-                            setMinPriceInput(String(priceRange.min));
-                          }
-                        }}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Max Price</p>
-                    <input
-                      type="range"
-                      min="0"
-                      max={MAX_PRICE_CEILING}
-                      step="100"
-                      value={priceRange.max}
-                      onChange={(e) => {
-                        const nextMax = Math.max(
-                          Number(e.target.value),
-                          priceRange.min,
-                        );
-                        setPriceRange((prev) => ({
-                          ...prev,
-                          max: nextMax,
-                        }));
-                        setMaxPriceInput(String(nextMax));
-                      }}
-                      className="w-full cursor-pointer accent-primary"
-                    />
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-sm text-gray-600 shrink-0">৳</span>
-                      <input
-                        type="number"
-                        min={priceRange.min}
-                        max={MAX_PRICE_CEILING}
-                        step={100}
-                        value={maxPriceInput}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          setMaxPriceInput(raw);
-                          if (raw === "") return;
-                          const n = Number(raw);
-                          if (Number.isNaN(n)) return;
-                          setPriceRange((prev) => ({
-                            ...prev,
-                            max: clampMaxPrice(n, prev.min),
-                          }));
-                        }}
-                        onBlur={() => {
-                          if (maxPriceInput === "") {
-                            setMaxPriceInput(String(priceRange.max));
-                          }
-                        }}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={clearFilters}
-                className="w-full bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg py-2 text-sm font-medium cursor-pointer"
-              >
-                Clear Filters
-              </button>
-            </div>
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <FilterPanel {...panelProps} />
         </aside>
       </div>
     </div>

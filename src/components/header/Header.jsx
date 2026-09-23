@@ -25,6 +25,7 @@ import {
   apiMarkAllNotificationsRead,
   apiMarkNotificationRead,
 } from "../../api/authApi";
+import SearchBox from "./SearchBox";
 
 const Header = () => {
   const { cartItems, removeItem, updateQuantity } = useCart();
@@ -140,15 +141,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="relative flex-1 max-w-[700px]">
-          <input
-            className="w-full h-10 rounded-full border border-gray-200 bg-gray-50 px-4 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition-all duration-200"
-            type="search"
-            placeholder="Search products..."
-          />
-          <Search
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors cursor-pointer"
-            size={18}
-          />
+          <SearchBox />
         </div>
 
         <nav className="flex items-center gap-5 lg:gap-8 text-xs lg:text-lg font-medium text-zinc-700">
@@ -360,19 +353,8 @@ const Header = () => {
 
       {/* Mobile Search Bar */}
       {mobileSearchOpen && (
-        <div className="md:hidden w-full px-4 py-1.5 bg-gray-50 border-b border-gray-150 transition-all duration-300">
-          <div className="relative">
-            <input
-              className="w-full h-8 rounded-full border border-gray-200 bg-white px-4 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-primary"
-              type="search"
-              placeholder="Search products..."
-              autoFocus
-            />
-            <Search
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-              size={15}
-            />
-          </div>
+        <div className="md:hidden w-full px-4 py-2 bg-gray-50 border-b border-gray-150 transition-all duration-300">
+          <SearchBox autoFocus onSearch={() => setMobileSearchOpen(false)} />
         </div>
       )}
 

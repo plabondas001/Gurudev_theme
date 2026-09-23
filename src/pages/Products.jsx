@@ -11,12 +11,6 @@ const Products = ({
   initialProducts = null,
   isFilterLayout = false,
   isHomePage = false,
-  filters = {
-    categories: [],
-    brands: [],
-    minPrice: 0,
-    maxPrice: Number.MAX_SAFE_INTEGER,
-  },
 }) => {
   const [products, setProducts] = useState(initialProducts || []);
   const [page, setPage] = useState(1);
@@ -103,24 +97,6 @@ const Products = ({
     );
   }
 
-  // Filter products locally based on side bar options
-  const filteredProducts = products.filter((product) => {
-    const productCategoryId = product.category?.id;
-    const productBrandId = product.brand?.id;
-    const productPrice = Number(product.price || product.sale_price || 0);
-
-    const categoryMatch =
-      !filters.categories?.length ||
-      filters.categories.includes(productCategoryId);
-    const brandMatch =
-      !filters.brands?.length || filters.brands.includes(productBrandId);
-    const minPriceMatch = productPrice >= (filters.minPrice ?? 0);
-    const maxPriceMatch =
-      productPrice <= (filters.maxPrice ?? Number.MAX_SAFE_INTEGER);
-
-    return categoryMatch && brandMatch && minPriceMatch && maxPriceMatch;
-  });
-
   const wrapperClasses = isFilterLayout
     ? "w-full px-0 py-4 all-products"
     : "w-full px-4 md:px-8 py-8 all-products";
@@ -161,7 +137,7 @@ const Products = ({
               PRODUCT GRID
           ========================= */}
           <div className={gridClasses}>
-            {filteredProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
 
@@ -171,7 +147,7 @@ const Products = ({
             ))}
           </div>
 
-          {!loadingMore && filteredProducts.length === 0 && (
+          {!loadingMore && products.length === 0 && (
             <p className="text-center text-gray-500 mt-8">
               No products found for selected filters
             </p>
@@ -213,7 +189,7 @@ const Products = ({
           {/* =========================
               END MESSAGE
           ========================= */}
-          {!isHomePage && !hasMore && filteredProducts.length > 0 && (
+          {!isHomePage && !hasMore && products.length > 0 && (
             <p className="text-center text-gray-400 mt-12">
               No more products to load
             </p>

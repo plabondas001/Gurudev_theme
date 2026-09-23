@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router';
 import Header from '../components/header/Header';
 import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/footer/Footer';
+import WhatsAppButton from '../components/common/WhatsAppButton';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -65,6 +66,7 @@ const MainLayout = () => {
                 <Outlet />
             </main>
             <Footer />
+            <WhatsAppButton />
             <ToastContainer
                 position="top-right"
                 autoClose={3000}
