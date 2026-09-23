@@ -47,13 +47,6 @@ const Products = ({
         page_size: pageSize,
       };
 
-      if (filters.categories?.length) {
-        apiParams.category = filters.categories.join(",");
-      }
-      if (filters.brands?.length) {
-        apiParams.brand = filters.brands.join(",");
-      }
-
       const data = await apiClient.fetchProducts(apiParams);
       const newProducts = Array.isArray(data) ? data : data.results || [];
 
@@ -86,7 +79,7 @@ const Products = ({
       setPage(1);
       fetchProducts(1);
     }
-  }, [JSON.stringify(params), JSON.stringify(filters)]);
+  }, [JSON.stringify(params)]);
 
   // =========================
   // ERROR STATE
