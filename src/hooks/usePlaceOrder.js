@@ -24,9 +24,14 @@ export function usePlaceOrder() {
       
       if (order) {
         clearCartSilent();
+        if (order.payment_url) {
+          toast.info("Redirecting to SSLCommerz payment gateway...");
+          window.location.href = order.payment_url;
+          return order;
+        }
         toast.success("Order placed successfully!");
         navigate("/profile?tab=orders");
-        return true;
+        return order;
       }
       return false;
     },

@@ -19,6 +19,7 @@ import {
   apiGetDivisions,
   apiGetDistricts,
   apiGetSubDistricts,
+  apiInitiateOrderPayment,
 } from "../api/authApi";
 
 const MAX_AVATAR_BYTES = 380 * 1024;
@@ -291,9 +292,30 @@ const UserProfile = () => {
     updateProfile,
     changePassword,
     logout,
+    getAccessToken,
   } = useAuth();
   const { orders, ordersLoading, addresses, addressesLoading, addAddress, updateAddress, removeAddress, setDefaultAddress } =
     useUserData();
+
+  const [payingOrderId, setPayingOrderId] = useState(null);
+
+  const handlePayNow = async (orderId) => {
+    setPayingOrderId(orderId);
+    try {
+      const token = getAccessToken?.();
+      const res = await apiInitiateOrderPayment(orderId, token);
+      if (res.ok && res.data?.payment_url) {
+        toast.info("Redirecting to SSLCommerz...");
+        window.location.href = res.data.payment_url;
+      } else {
+        toast.error(res.data?.detail || "Could not start payment.");
+      }
+    } catch {
+      toast.error("Failed to connect to payment gateway.");
+    } finally {
+      setPayingOrderId(null);
+    }
+  };
 
   const tab = searchParams.get("tab") || "orders";
 
@@ -715,6 +737,23 @@ const UserProfile = () => {
                       </div>
 
                       <div className="mt-5 flex flex-wrap gap-3">
+                        {(!order.payment?.is_paid && order.payment?.payment_method === 'sslcommerz' && getOrderStatus(order).toLowerCase().includes('pending')) && (
+                          <button
+                            type="button"
+                            disabled={payingOrderId === order.id}
+                            onClick={() => handlePayNow(order.id)}
+                            className="inline-flex items-center cursor-pointer justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 shadow-sm transition-all disabled:opacity-60"
+                          >
+                            {payingOrderId === order.id ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Connecting...
+                              </>
+                            ) : (
+                              "Pay Now"
+                            )}
+                          </button>
+                        )}
                         <Link
                           to={`/track?order=${order.id}`}
                           className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95"

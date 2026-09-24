@@ -58,7 +58,6 @@ export const UserDataProvider = ({ children }) => {
   const placeOrder = useCallback(
     async (userId, cartItems, payload = {}) => {
       const token = getAccessToken();
-      if (!token) return null;
 
       const { ok, data } = await apiCreateOrder(token, payload);
       if (!ok) {
@@ -70,8 +69,10 @@ export const UserDataProvider = ({ children }) => {
         return null;
       }
 
-      // Prepend the new order to local state
-      setOrders((prev) => [data, ...prev]);
+      // Prepend the new order to local state if authenticated
+      if (token) {
+        setOrders((prev) => [data, ...prev]);
+      }
       return data;
     },
     [getAccessToken]

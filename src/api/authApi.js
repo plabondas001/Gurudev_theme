@@ -270,6 +270,14 @@ export async function apiValidateCoupon(code, subtotal) {
   });
 }
 
+/** POST /orders/{orderId}/initiate-payment/ → { success, payment_url, ... } */
+export async function apiInitiateOrderPayment(orderId, accessToken = null) {
+  return authFetch(`${BASE_URL}/orders/${orderId}/initiate-payment/`, {
+    method: "POST",
+    headers: bearerHeaders(accessToken),
+  });
+}
+
 // ---------------------------------------------------------------------------
 // REVIEWS  — GET /reviews/?product={id} , POST /reviews/
 // ---------------------------------------------------------------------------

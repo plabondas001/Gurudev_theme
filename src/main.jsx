@@ -24,6 +24,8 @@ import Checkout from "./pages/Checkout.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
+import PaymentSuccess from "./pages/PaymentSuccess.jsx";
+import PaymentFailed from "./pages/PaymentFailed.jsx";
 
 const router = createBrowserRouter([
   {
@@ -98,6 +100,18 @@ const router = createBrowserRouter([
       {
         path: "reset-password",
         element: <ResetPassword />,
+      },
+      {
+        path: "payment/success",
+        element: <PaymentSuccess />,
+      },
+      {
+        path: "payment/failed",
+        element: <PaymentFailed />,
+      },
+      {
+        path: "payment/cancelled",
+        element: <PaymentFailed cancelled={true} />,
       },
     ],
   },

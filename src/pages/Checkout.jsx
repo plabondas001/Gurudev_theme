@@ -10,6 +10,7 @@ import {
   Sparkles,
   BadgeCheck,
   ChevronRight,
+  CreditCard,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -303,6 +304,7 @@ const Checkout = () => {
   );
   const paymentStepComplete =
     paymentMethod === "cod" ||
+    paymentMethod === "sslcommerz" ||
     Boolean(
       paymentDetails.paidFrom.trim() &&
       paymentDetails.transactionId.trim() &&
@@ -388,6 +390,16 @@ const Checkout = () => {
       return toast.error("Please select division, district, and sub district.");
     // Note: Address saving is handled by the backend Order API when save_address is true.
 
+    const isManualMFS = ["bkash", "nagad", "rocket"].includes(paymentMethod);
+    if (isManualMFS) {
+      if (!paymentDetails.paidFrom.trim()) {
+        return toast.error("Please enter sender phone/account number.");
+      }
+      if (!paymentDetails.transactionId.trim()) {
+        return toast.error("Please enter the transaction ID.");
+      }
+    }
+
     const payload = {
       address_id: selectedAddressId || undefined,
       full_name: form.fullName,
@@ -398,7 +410,7 @@ const Checkout = () => {
       district: form.district || undefined,
       sub_district: form.subDistrict || undefined,
       payment_method: paymentMethod,
-      payment_details: paymentMethod !== "cod" ? paymentDetails : undefined,
+      payment_details: isManualMFS ? paymentDetails : undefined,
       coupon_code: voucherCode || undefined,
       save_address: saveAddress,
     };
@@ -659,26 +671,32 @@ const Checkout = () => {
               <div className="space-y-3 p-6">
                 {[
                   {
+                    id: "sslcommerz",
+                    title: "Pay Online (Cards / Mobile Banking)",
+                    subtitle: "bKash, Nagad, Rocket, Visa, Mastercard, Internet Banking",
+                    badge: "SSLCommerz",
+                  },
+                  {
                     id: "cod",
                     title: "Cash on Delivery",
                     logo: "/Img/checkoutPayment/cash.png",
                   },
                   {
                     id: "bkash",
-                    title: "Bkash",
+                    title: "bKash (Manual Send Money)",
                     logo: "/Img/checkoutPayment/BKash_Logo.png",
                   },
                   {
                     id: "nagad",
-                    title: "Nagad",
+                    title: "Nagad (Manual Send Money)",
                     logo: "/Img/checkoutPayment/nagad.png",
                   },
                   {
                     id: "rocket",
-                    title: "Rocket",
+                    title: "Rocket (Manual Send Money)",
                     logo: "/Img/checkoutPayment/rocket.png.webp",
                   },
-                ].map(({ id, title, logo }) => (
+                ].map(({ id, title, subtitle, logo, badge }) => (
                   <button
                     key={id}
                     type="button"
@@ -701,10 +719,22 @@ const Checkout = () => {
                           <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                         )}
                       </span>
-                      <span className="truncate text-base font-bold text-gray-900">
-                        {title}
+                      <span className="flex flex-col">
+                        <span className="truncate text-base font-bold text-gray-900">
+                          {title}
+                        </span>
+                        {subtitle && (
+                          <span className="text-xs text-gray-500 font-medium">
+                            {subtitle}
+                          </span>
+                        )}
                       </span>
                     </span>
+                    {badge && (
+                      <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold text-blue-700 shrink-0">
+                        {badge}
+                      </span>
+                    )}
                     {logo && (
                       <img
                         src={logo}
@@ -716,7 +746,36 @@ const Checkout = () => {
                   </button>
                 ))}
 
-                {paymentMethod !== "cod" && (
+                {paymentMethod === "sslcommerz" && (
+                  <div className="mt-4 rounded-2xl bg-blue-50/70 border border-blue-100 p-4 space-y-2.5 animate-fade-in">
+                    <div className="flex items-center gap-2 text-sm font-bold text-blue-900">
+                      <BadgeCheck className="h-4 w-4 text-blue-600" />
+                      Instant & Secure Online Payment
+                    </div>
+                    <p className="text-xs text-blue-800/90 leading-relaxed">
+                      You will be redirected to the official SSLCommerz portal to pay securely via:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <span className="bg-white text-[11px] font-semibold text-blue-950 px-2.5 py-1 rounded-lg border border-blue-200/80 shadow-xs">
+                        Visa / Mastercard / Amex
+                      </span>
+                      <span className="bg-white text-[11px] font-semibold text-pink-700 px-2.5 py-1 rounded-lg border border-pink-200/80 shadow-xs">
+                        bKash
+                      </span>
+                      <span className="bg-white text-[11px] font-semibold text-orange-700 px-2.5 py-1 rounded-lg border border-orange-200/80 shadow-xs">
+                        Nagad
+                      </span>
+                      <span className="bg-white text-[11px] font-semibold text-purple-700 px-2.5 py-1 rounded-lg border border-purple-200/80 shadow-xs">
+                        Rocket / Upay
+                      </span>
+                      <span className="bg-white text-[11px] font-semibold text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-xs">
+                        Internet Banking
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {["bkash", "nagad", "rocket"].includes(paymentMethod) && (
                   <div className="mt-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 p-5 space-y-3">
                     {paymentMethod === "bkash" && (
                       <div className="text-sm text-pink-800 space-y-1">
@@ -757,7 +816,7 @@ const Checkout = () => {
                   </div>
                 )}
 
-                {paymentMethod !== "cod" && (
+                {["bkash", "nagad", "rocket"].includes(paymentMethod) && (
                   <div className="mt-6 border-t border-gray-100 pt-5 animate-fade-in">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
@@ -973,6 +1032,12 @@ const Checkout = () => {
                       <>
                         <Loader2 className="h-5 w-5 animate-spin" />
                         Placing Order...
+                      </>
+                    ) : paymentMethod === "sslcommerz" ? (
+                      <>
+                        <CreditCard className="h-5 w-5" />
+                        Place Order & Pay with SSLCommerz
+                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </>
                     ) : (
                       <>
