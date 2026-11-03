@@ -15,11 +15,13 @@ import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { useUserData } from "../context/UserDataContext";
 import { getUserAvatarImgProps } from "../utils/avatarUrl";
+import { getOrderStatusCode, getOrderStatusMeta } from "../utils/orderStatus";
 import {
   apiGetDivisions,
   apiGetDistricts,
   apiGetSubDistricts,
   apiInitiateOrderPayment,
+  apiDownloadInvoice,
 } from "../api/authApi";
 
 const MAX_AVATAR_BYTES = 380 * 1024;
@@ -50,61 +52,7 @@ function formatOrderDate(iso) {
 }
 
 function getOrderStatus(order) {
-  // API returns status as display_name string or via order_status object
-  return order.status || order.order_status?.display_name || "Pending";
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function downloadInvoice(order, user) {
-  const rows = order.items
-    .map(
-      (line) => `
-        <tr>
-          <td>${escapeHtml(line.name)}</td>
-          <td>${escapeHtml(line.quantity)}</td>
-          <td>${escapeHtml(line.price)}</td>
-        </tr>`,
-    )
-    .join("");
-  const html = `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Invoice ${order.id}</title>
-    <style>
-      body { font-family: Arial, sans-serif; color: #111827; padding: 32px; }
-      h1 { margin: 0 0 8px; }
-      table { width: 100%; border-collapse: collapse; margin-top: 24px; }
-      th, td { border-bottom: 1px solid #d1d5db; padding: 10px; text-align: left; }
-      .total { margin-top: 24px; font-size: 18px; font-weight: 700; text-align: right; }
-    </style>
-  </head>
-  <body>
-    <h1>Invoice</h1>
-    <p>Order: ${escapeHtml(order.id)}</p>
-    <p>Customer: ${escapeHtml(user?.name || "")}</p>
-    <p>Date: ${formatOrderDate(order.createdAt)}</p>
-    <table>
-      <thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="total">Total: ${escapeHtml(order.totalLabel)}</div>
-  </body>
-</html>`;
-  const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `invoice-${order.id.slice(0, 8)}.html`;
-  link.click();
-  URL.revokeObjectURL(url);
+  return getOrderStatusMeta(order).label;
 }
 
 function ProfileSettings({ user, avatarImgProps, updateProfile, changePassword }) {
@@ -314,6 +262,33 @@ const UserProfile = () => {
       toast.error("Failed to connect to payment gateway.");
     } finally {
       setPayingOrderId(null);
+    }
+  };
+
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState(null);
+
+  const handleDownloadInvoice = async (orderId) => {
+    setDownloadingInvoiceId(orderId);
+    try {
+      const res = await apiDownloadInvoice(getAccessToken?.(), orderId);
+      if (res.ok && res.blob) {
+        const url = URL.createObjectURL(res.blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `invoice_${orderId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      } else if (res.status === 401) {
+        toast.error("Your session has expired. Please sign in again.");
+      } else {
+        toast.error("Could not download the invoice. Please try again.");
+      }
+    } catch {
+      toast.error("Could not download the invoice. Please try again.");
+    } finally {
+      setDownloadingInvoiceId(null);
     }
   };
 
@@ -575,7 +550,7 @@ const UserProfile = () => {
                               <p className="text-xs text-gray-500">{formatOrderDate(order.created_at || order.createdAt)}</p>
                             </div>
                             <div className="text-right">
-                              <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                              <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${getOrderStatusMeta(order).badge}`}>
                                 {getOrderStatus(order)}
                               </span>
                               <p className="font-bold mt-1">{order.grand_total ?? order.total_amount ?? order.totalLabel ?? "—"} ৳</p>
@@ -618,7 +593,12 @@ const UserProfile = () => {
                               <Link to={`/track?order=${order.id}`} className="px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-lg hover:opacity-90 transition-colors">
                                 Track Order
                               </Link>
-                              <button onClick={() => downloadInvoice(order, user)} className="px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-lg hover:opacity-90 transition-colors flex items-center gap-1">
+                              <button
+                                onClick={() => handleDownloadInvoice(order.id)}
+                                disabled={downloadingInvoiceId === order.id}
+                                className="px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-lg hover:opacity-90 transition-colors flex items-center gap-1 disabled:opacity-60"
+                              >
+                                {downloadingInvoiceId === order.id && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Download Invoice
                               </button>
                             </div>
@@ -683,7 +663,7 @@ const UserProfile = () => {
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                          <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${getOrderStatusMeta(order).badge}`}>
                             {getOrderStatus(order)}
                           </span>
                            <p className="text-lg font-semibold text-slate-950">
@@ -737,7 +717,7 @@ const UserProfile = () => {
                       </div>
 
                       <div className="mt-5 flex flex-wrap gap-3">
-                        {(!order.payment?.is_paid && order.payment?.payment_method === 'sslcommerz' && getOrderStatus(order).toLowerCase().includes('pending')) && (
+                        {(!order.payment?.is_paid && order.payment?.payment_method === 'sslcommerz' && getOrderStatusCode(order) === 'pending') && (
                           <button
                             type="button"
                             disabled={payingOrderId === order.id}
@@ -762,9 +742,11 @@ const UserProfile = () => {
                         </Link>
                         <button
                           type="button"
-                          onClick={() => downloadInvoice(order, user)}
-                          className="inline-flex items-center cursor-pointer justify-center rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                          onClick={() => handleDownloadInvoice(order.id)}
+                          disabled={downloadingInvoiceId === order.id}
+                          className="inline-flex items-center gap-2 cursor-pointer justify-center rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
                         >
+                          {downloadingInvoiceId === order.id && <Loader2 className="w-4 h-4 animate-spin" />}
                           Download Invoice
                         </button>
                       </div>

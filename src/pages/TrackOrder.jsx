@@ -16,14 +16,40 @@ import { useAuth } from "../context/AuthContext";
 import { useConfig } from "../context/ConfigContext";
 import { apiGetOrder } from "../api/authApi";
 import { parsePrice } from "../utils/orderUtils";
+import {
+  TRACKING_FLOW,
+  TERMINAL_STATUSES,
+  getOrderStatusCode,
+  getOrderStatusMeta,
+} from "../utils/orderStatus";
 
-const TRACKING_STEPS = [
-  "Order Placed",
-  "Packed",
-  "Shipped",
-  "Out for Delivery",
-  "Delivered",
-];
+// Step labels for TRACKING_FLOW (pending → confirmed → processing → shipped → delivered).
+const TRACKING_STEP_LABELS = {
+  pending: "Order Placed",
+  confirmed: "Confirmed",
+  processing: "Processing",
+  shipped: "Shipped",
+  delivered: "Delivered",
+};
+const TRACKING_STEPS = TRACKING_FLOW.map((code) => TRACKING_STEP_LABELS[code]);
+
+const STATUS_MESSAGES = {
+  pending: { location: "We've received your order", eta: "Awaiting confirmation" },
+  confirmed: { location: "Your order has been confirmed", eta: "Preparing soon" },
+  processing: { location: "Your order is being prepared and packed", eta: "Processing" },
+  shipped: { location: "Your order is on its way", eta: "In transit" },
+  delivered: { location: "Your order has been delivered", eta: "Delivered" },
+  cancelled: { location: "This order was cancelled", eta: "Cancelled" },
+  returned: { location: "This order was returned", eta: "Returned" },
+};
+
+const PAYMENT_METHOD_LABELS = {
+  cod: "Cash on delivery",
+  sslcommerz: "Online payment",
+  bkash: "bKash",
+  nagad: "Nagad",
+  rocket: "Rocket",
+};
 
 const ORDERS_KEY = "gurudev_orders";
 
@@ -57,14 +83,8 @@ const formatWithSymbol = (amount, symbol) => {
 
 const getOrderCode = (order) => String(order.id).slice(0, 6).toUpperCase();
 
-const getTrackingStep = (status) => {
-  const normalized = String(status || "").toLowerCase();
-  if (normalized.includes("deliver")) return 4;
-  if (normalized.includes("out")) return 3;
-  if (normalized.includes("ship")) return 2;
-  if (normalized.includes("pack")) return 1;
-  return 0;
-};
+// Index in TRACKING_FLOW, or -1 for cancelled / returned orders.
+const getTrackingStep = (statusCode) => TRACKING_FLOW.indexOf(statusCode);
 
 const formatLastUpdated = (iso) => {
   try {
@@ -77,31 +97,53 @@ const formatLastUpdated = (iso) => {
   }
 };
 
-const mapOrderToTracking = (order) => ({
+const mapOrderToTracking = (order) => {
+  const statusCode = getOrderStatusCode(order);
+  const messages = STATUS_MESSAGES[statusCode] || STATUS_MESSAGES.pending;
+  return {
   orderId: order.id,
   orderCode: getOrderCode(order),
-  currentStep: getTrackingStep(order.status),
-  eta: order.status === "Delivered" ? "Delivered" : "Processing",
-  location: "Your order is being prepared",
-  rider: "Assigned soon",
+  statusCode,
+  statusLabel: getOrderStatusMeta(order).label,
+  isTerminal: TERMINAL_STATUSES.includes(statusCode),
+  currentStep: getTrackingStep(statusCode),
+  eta: messages.eta,
+  location: messages.location,
+  rider: statusCode === "shipped" ? "On the way" : "Assigned soon",
   items: order.items?.map((item) => {
     const product = item.product || {};
     const variant = item.variant || {};
+    const variantLabel = [
+      item.ram && `${item.ram}GB RAM`,
+      item.storage && `${item.storage}GB`,
+      item.color,
+    ]
+      .filter(Boolean)
+      .join(" / ");
     return {
       id: item.id,
       slug: product.slug,
       name: product.name || "Unknown Product",
+      variantLabel,
       quantity: item.quantity || 1,
       price: item.price,
       image: variant.image || product.image || "/Img/logo/logo.png",
     };
   }) || [],
+  // Totals come from the backend so they match the invoice exactly.
+  subtotal: order.subtotal != null ? parseFloat(order.subtotal) : null,
   discount: parseFloat(order.discount) || 0,
   deliveryCharge: parseFloat(order.delivery_charge) || 0,
-  total: parseFloat(order.total_amount) || parseFloat(order.grand_total) || 0,
+  tax: parseFloat(order.tax) || 0,
+  total: parseFloat(order.grand_total) || parseFloat(order.total_amount) || 0,
+  paid: parseFloat(order.paid_amount) || 0,
+  due: order.due_amount != null ? parseFloat(order.due_amount) : null,
+  isPaid: Boolean(order.payment?.is_paid),
+  paymentMethod: order.payment?.payment_method || "",
   totalLabel: "Grand Total",
-  lastUpdated: formatLastUpdated(order.created_at || order.updated_at),
-});
+  lastUpdated: formatLastUpdated(order.updated_at || order.created_at),
+  };
+};
 
 const TrackOrder = () => {
   const { orders } = useUserData();
@@ -184,15 +226,21 @@ const TrackOrder = () => {
   const totals = useMemo(() => {
     if (!trackingData) return null;
 
-    const subtotal = trackingData.items.reduce(
-      (sum, item) => sum + parsePrice(item.price) * item.quantity,
-      0,
-    );
+    const subtotal =
+      trackingData.subtotal ??
+      trackingData.items.reduce(
+        (sum, item) => sum + parsePrice(item.price) * item.quantity,
+        0,
+      );
     const discount = trackingData.discount || 0;
     const deliveryCharge = trackingData.deliveryCharge || 0;
-    const total = trackingData.total || Math.max(0, subtotal + deliveryCharge - discount);
+    const tax = trackingData.tax || 0;
+    const total =
+      trackingData.total || Math.max(0, subtotal + deliveryCharge + tax - discount);
+    const paid = trackingData.paid || 0;
+    const due = trackingData.due ?? Math.max(0, total - paid);
 
-    return { subtotal, discount, deliveryCharge, total };
+    return { subtotal, discount, deliveryCharge, tax, total, paid, due };
   }, [trackingData]);
 
   const fetchTracking = async (event) => {
@@ -337,7 +385,18 @@ const TrackOrder = () => {
                     </div>
                   </div>
 
-                  <div className="mt-6 space-y-5">
+                  {trackingData.isTerminal && (
+                    <div className="mt-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3">
+                      <p className="text-sm font-bold text-red-700">
+                        Order {trackingData.statusLabel}
+                      </p>
+                      <p className="text-xs text-red-600 mt-1">
+                        Please contact us if you have any questions about this order.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className={`mt-6 space-y-5 ${trackingData.isTerminal ? "opacity-50" : ""}`}>
                     {TRACKING_STEPS.map((step, idx) => {
                       const isDone = idx <= trackingData.currentStep;
                       const isCurrent = idx === trackingData.currentStep;
@@ -387,46 +446,51 @@ const TrackOrder = () => {
                   </h2>
                   <div className="grid grid-cols-1 gap-3">
                     {trackingData.items.map((item) => {
-                      const productPath = item.slug || item.id;
-                      return (
+                      const content = (
+                        <>
+                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-white flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-900 font-bold text-sm line-clamp-2 group-hover:text-primary transition-colors">
+                              {item.name}
+                            </p>
+                            {item.variantLabel && (
+                              <p className="text-gray-500 text-xs mt-0.5">
+                                {item.variantLabel}
+                              </p>
+                            )}
+                            <p className="text-gray-500 text-xs mt-1">
+                              Qty: {item.quantity} × {formatWithSymbol(item.price, currencySymbol)}
+                            </p>
+                          </div>
+                          <p className="text-primary font-extrabold text-sm md:text-base">
+                            {formatWithSymbol(parsePrice(item.price) * item.quantity, currencySymbol)}
+                          </p>
+                        </>
+                      );
+
+                      // Only link when the product slug is known; the item id is the order line, not the product.
+                      return item.slug ? (
+                        <Link
+                          key={item.id}
+                          to={`/product/${item.slug}`}
+                          title={`View ${item.name}`}
+                          className="group flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/60 p-3 hover:border-primary/40 hover:bg-white hover:shadow-sm transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                        >
+                          {content}
+                        </Link>
+                      ) : (
                         <div
                           key={item.id}
                           className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/60 p-3"
                         >
-                          {productPath ? (
-                            <Link
-                              to={`/product/${productPath}`}
-                              className="w-16 h-16 rounded-xl overflow-hidden bg-white flex-shrink-0 ring-2 ring-transparent hover:ring-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-shadow"
-                              title={`View ${item.name}`}
-                            >
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </Link>
-                          ) : (
-                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-white flex-shrink-0">
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-900 font-bold text-sm line-clamp-2">
-                              {item.name}
-                            </p>
-                            <p className="text-gray-500 text-xs mt-1">
-                              Qty: {item.quantity}
-                            </p>
-                          </div>
-                          <p className="text-primary font-extrabold text-sm md:text-base">
-                            {formatWithSymbol(item.price, currencySymbol)}
-                          </p>
+                          {content}
                         </div>
                       );
                     })}
@@ -472,6 +536,14 @@ const TrackOrder = () => {
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
+                    <span>Tax</span>
+                    <span className="font-semibold text-gray-900">
+                      {totals.tax > 0
+                        ? `+ ${formatWithSymbol(totals.tax, currencySymbol)}`
+                        : formatWithSymbol(0, currencySymbol)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
                     <span>Discount</span>
                     <span className={`font-semibold ${totals.discount > 0 ? "text-emerald-600" : "text-gray-900"}`}>
                       {totals.discount > 0
@@ -484,6 +556,43 @@ const TrackOrder = () => {
                     <span className="text-primary">
                       {formatWithSymbol(totals.total, currencySymbol)}
                     </span>
+                  </div>
+
+                  <div className="border-t border-dashed border-gray-200 pt-3 space-y-3">
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <span>Payment</span>
+                      <span className="flex items-center gap-2">
+                        {trackingData.paymentMethod && (
+                          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            {PAYMENT_METHOD_LABELS[trackingData.paymentMethod.toLowerCase()] ||
+                              trackingData.paymentMethod}
+                          </span>
+                        )}
+                        <span
+                          className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold ${
+                            totals.due <= 0
+                              ? "bg-green-100 text-green-700"
+                              : totals.paid > 0
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {totals.due <= 0 ? "Paid" : totals.paid > 0 ? "Partially paid" : "Unpaid"}
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Paid</span>
+                      <span className="font-semibold text-emerald-600">
+                        {formatWithSymbol(totals.paid, currencySymbol)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm font-bold">
+                      <span className="text-gray-900">Due</span>
+                      <span className={totals.due > 0 ? "text-red-600" : "text-gray-900"}>
+                        {formatWithSymbol(totals.due, currencySymbol)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

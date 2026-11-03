@@ -251,6 +251,16 @@ export async function apiGetOrder(accessToken, orderId) {
   });
 }
 
+/** GET /orders/<id>/invoice/ → PDF blob (same invoice as the admin dashboard). */
+export async function apiDownloadInvoice(accessToken, orderId) {
+  const response = await fetch(`${BASE_URL}/orders/${orderId}/invoice/`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const blob = response.ok ? await response.blob() : null;
+  return { ok: response.ok, status: response.status, blob };
+}
+
 /** Create order from cart. Payload: { address_id?, full_name, phone, email,
  *  shipping_address, division, district, sub_district?,
  *  payment_method, coupon_code?, save_address? } */
