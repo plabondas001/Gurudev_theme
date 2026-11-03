@@ -26,6 +26,7 @@ import {
   apiMarkNotificationRead,
 } from "../../api/authApi";
 import SearchBox from "./SearchBox";
+import useNotificationSocket from "../../hooks/useNotificationSocket";
 
 const Header = () => {
   const { cartItems, removeItem, updateQuantity } = useCart();
@@ -51,12 +52,19 @@ const Header = () => {
     if (ok && Array.isArray(data)) setNotifications(data);
   }, [getAccessToken]);
 
+  // Live updates over WebSocket; polling only runs while the socket is down
+  const { isConnected } = useNotificationSocket(
+    isAuthenticated ? getAccessToken : null,
+    (notif) => setNotifications((prev) => [notif, ...prev.filter((n) => n.id !== notif.id)].slice(0, 50))
+  );
+
   useEffect(() => {
     if (!isAuthenticated) { setNotifications([]); return; }
     fetchNotifications();
+    if (isConnected) return;
     const interval = setInterval(fetchNotifications, 60_000);
     return () => clearInterval(interval);
-  }, [isAuthenticated, fetchNotifications]);
+  }, [isAuthenticated, isConnected, fetchNotifications]);
 
   // Close notif panel on outside click
   useEffect(() => {
@@ -89,14 +97,14 @@ const Header = () => {
     }
     setNotifOpen(false);
 
-    // Extract order ID from the notification link, e.g. "/order-tracking/<uuid>"
-    // and navigate to /track?order=<id> so TrackOrder auto-loads the order.
-    const orderId = n.link
-      ? n.link.replace(/.*\/order-tracking\//i, "").replace(/\/+$/, "")
-      : null;
+    // Order links ("/order-tracking/<id>") open /track?order=<id> so TrackOrder auto-loads the order;
+    // other in-site links (e.g. "/product/<slug>" for answered questions) open as-is.
+    const orderId = n.link?.match(/\/order-tracking\/([^/?#]+)/i)?.[1];
 
     if (orderId) {
       navigate(`/track?order=${encodeURIComponent(orderId)}`);
+    } else if (n.link?.startsWith("/")) {
+      navigate(n.link);
     } else {
       navigate("/track");
     }
